@@ -964,6 +964,11 @@ html, body { width: 100%; min-height: 100lvh; overflow: hidden; overscroll-behav
 html { background-color: #fff; }
 html[data-theme="dark"] { background-color: #0e0f15; }
 .petlayer { overflow: hidden; }
+
+/* ---- v58 : zone de réponse toujours visible au-dessus du clavier ---- */
+.q-compose { position: sticky; bottom: 10px; z-index: 4; box-shadow: 0 10px 30px rgba(226, 77, 138, .28), 0 0 0 1px var(--line); }
+.q-compose textarea { scroll-margin-bottom: 120px; }
+.clist { overscroll-behavior: contain; }
 </style>
 </head>
 <body>
@@ -2039,7 +2044,7 @@ function commentPill(t) {
 function commentListHTML(id) {
   const cs = commentsOf(id);
   if (!cs.length) return `<div class="cm-empty">${ic("message", 30)}<b>ما في تعليقات لسا</b><span>اكتب أول تعليق 💬</span></div>`;
-  return cs.map((c) => { const w = whoOf(c.author_id), mine = c.author_id === S.user.id; return `<div class="cmt ${mine ? "mine" : ""}${Date.now() - ts(c.created_at) < 4000 ? " new" : ""}"><span class="avt sm ${avCls(w)}"></span><div class="cmt-b"><div class="cmt-t">${ue(c.body)}</div><div class="cmt-m">${esc(nm(w))} · ${esc(ago(c.created_at))}${mine ? ` · <button data-act="cm-del" data-id="${c.id}">حذف</button>` : ""}</div></div></div>`; }).join("");
+  return cs.map((c) => { const w = whoOf(c.author_id), mine = c.author_id === S.user.id; return `<div class="cmt ${mine ? "mine" : ""}${Date.now() - ts(c.created_at) < 4000 ? " new" : ""}" data-cid="${c.id}"><span class="avt sm ${avCls(w)}"></span><div class="cmt-b"><div class="cmt-t">${ue(c.body)}</div><div class="cmt-m">${esc(nm(w))} · ${esc(ago(c.created_at))}${mine ? ` · <button data-act="cm-del" data-id="${c.id}">حذف</button>` : ""}</div></div></div>`; }).join("");
 }
 function partnerHTML() {
   const list = partnerTasks(), seg = S.seg.partner, pw = other(myWho());
@@ -2091,7 +2096,7 @@ function questionHTML() {
   const q = questionFor(S.today), mine = myAnswer(), theirs = partnerAnswer();
   const composer = !mine || S.editAns;
   const mineCard = composer
-    ? `<div class="card2 ink-input"><div class="ans-h">${ic("heart", 18, true)}<span>إجابتك</span></div><textarea data-keep="q-input" id="q-input" rows="4" maxlength="2000" placeholder="جاوب هون…">${ue(mine ? mine.answer : "")}</textarea><button class="btn" data-act="q-save" style="margin-top:8px">حفظ الإجابة</button></div>`
+    ? `<div class="card2 ink-input q-compose"><div class="ans-h">${ic("heart", 18, true)}<span>إجابتك</span></div><textarea data-keep="q-input" id="q-input" rows="4" maxlength="2000" placeholder="جاوب هون…">${ue(mine ? mine.answer : "")}</textarea><button class="btn" data-act="q-save" style="margin-top:8px">حفظ الإجابة</button></div>`
     : `<div class="card2"><div class="ans-h">${ic("heart", 18, true)}<span>إجابة ${esc(myName())}</span><button data-act="q-edit" style="margin-inline-start:auto;color:#a23fb5;font-size:calc(13px * var(--fz,1));font-weight:600">تعديل</button></div><div class="ans-t">${ue(mine.answer)}</div></div>`;
   const theirCard = theirs
     ? `<div class="card2"><div class="ans-h">${ic("heart", 18, true)}<span>إجابة ${esc(partnerName())}</span></div><div class="ans-t">${ue(theirs.answer)}</div></div>`
@@ -2629,8 +2634,16 @@ function openComments(id) {
 function refreshComments() {
   const sh = S.sheet; if (!sh || sh.type !== "comments") return;
   const l = document.getElementById("clist"); if (!l) return;
-  const atEnd = l.scrollHeight - l.scrollTop - l.clientHeight < 40;
-  l.innerHTML = fin(commentListHTML(sh.id)); if (atEnd) l.scrollTop = l.scrollHeight;
+  const cs = commentsOf(sh.id);
+  const have = new Set([...l.querySelectorAll("[data-cid]")].map((e) => e.dataset.cid));
+  if (cs.length === have.size && cs.every((c) => have.has(c.id))) return; // rien de nouveau : on ne touche à rien
+  const atEnd = l.scrollHeight - l.scrollTop - l.clientHeight < 60;
+  const removed = [...have].some((id) => !cs.some((c) => c.id === id));
+  if (removed || !have.size) { l.innerHTML = fin(commentListHTML(sh.id)); if (atEnd) l.scrollTop = l.scrollHeight; return; }
+  const tmp = document.createElement("div"); tmp.innerHTML = fin(commentListHTML(sh.id));
+  let added = 0;
+  tmp.querySelectorAll("[data-cid]").forEach((e) => { if (!have.has(e.dataset.cid)) { e.classList.add("new"); l.appendChild(e); added++; } });
+  if (added && atEnd) requestAnimationFrame(() => l.scrollTo({ top: l.scrollHeight, behavior: "smooth" }));
 }
 async function sendComment(taskId) {
   const inp = document.getElementById("cm-in"); const body = ((inp && inp.value) || "").trim(); if (!body) return;
@@ -2638,7 +2651,8 @@ async function sendComment(taskId) {
   const { data, error } = await sb.from("task_comments").insert({ couple_id: S.profile.couple_id, task_id: taskId, author_id: S.user.id, body }).select("*").single();
   if (error) { if (inp) inp.value = body; return toast(mapError(error)); }
   if (!S.comments.some((c) => c.id === data.id)) S.comments.push(data);
-  refreshComments(); const l = document.getElementById("clist"); if (l) l.scrollTop = l.scrollHeight;
+  const l0 = document.getElementById("clist"); if (l0) l0.dataset.stick = "1";
+  refreshComments();
 }
 async function delComment(id) {
   S.comments = S.comments.filter((c) => c.id !== id); refreshComments();
