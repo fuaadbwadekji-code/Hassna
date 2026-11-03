@@ -392,7 +392,7 @@ input:focus, textarea:focus { border-color: var(--pink); }
 /* ============================================================
    Transitions dans l'application, iPhone
    ============================================================ */
-#root.enter > .screen { animation: appin .7s cubic-bezier(.2, .8, .2, 1) backwards; }
+#root.entering > .screen { animation: appin .7s cubic-bezier(.2, .8, .2, 1) backwards; }
 @keyframes appin { from { opacity: 0; transform: scale(.97) translateY(14px); } }
 .screen[data-nav="tab"] .in > * { animation: rise .45s cubic-bezier(.2, .8, .2, 1) backwards; }
 .screen[data-nav="tab"] .in > :nth-child(2) { animation-delay: .05s; }
@@ -935,7 +935,7 @@ html[data-theme="dark"] .sback { background: rgba(200, 206, 222, .12); color: va
 .gate.phase-code .gpanel > :nth-child(5) { animation-delay: .27s; }
 .gate.phase-code .gpanel > :nth-child(6) { animation-delay: .3s; }
 .gate.leaving { animation-duration: .36s; }
-#root.enter > .screen { animation-duration: .45s; }
+#root.entering > .screen { animation-duration: .45s; }
 input:not([type="range"]):not([type="file"]):not([type="checkbox"]), textarea, select { font-size: max(16px, calc(15px * var(--fz, 1))) !important; }
 
 /* ---------- entrée fluide (transform/opacity uniquement) ---------- */
@@ -2338,7 +2338,7 @@ async function enterApp() {
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
   render(true);
-  root.classList.add("enter"); setTimeout(() => root.classList.remove("enter"), 900);
+  root.classList.add("entering"); setTimeout(() => root.classList.remove("entering"), 900);
   connectRealtime();
   S.timers.forEach(clearInterval);
   S.timers = [setInterval(tick, 30000), setInterval(poll, 25000)];
