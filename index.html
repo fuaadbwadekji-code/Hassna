@@ -2773,6 +2773,19 @@ function savePrefs() {
   clearTimeout(prefT);
   prefT = setTimeout(() => { try { sb.from("profiles").update({ prefs: P }).eq("id", S.user.id).then(() => {}); } catch {} }, 600);
 }
+async function saveCode() {
+  const a = document.getElementById("s-c1"), b = document.getElementById("s-c2");
+  const c1 = ((a && a.value) || "").replace(/\D/g, ""), c2 = ((b && b.value) || "").replace(/\D/g, "");
+  if (c1.length !== N) return toast("الكود لازم يكون " + N + " أرقام");
+  if (c1 !== c2) return toast("الكودين مو متطابقين");
+  if (!sb || !S.user) return toast("سجّل الدخول من جديد");
+  try {
+    const { error } = await sb.auth.updateUser({ password: pw(c1) });
+    if (error) return toast(mapError(error));
+    if (a) a.value = ""; if (b) b.value = "";
+    toast("تغيّر الكود ✓ استعمله بالدخول الجاي");
+  } catch { toast("صار خطأ، جرب مرة تانية"); }
+}
 function setPref(k, v) {
   if (k === "fz" || k === "lead" || k === "vol") v = +v;
   if (!(k in P) || k === "n" || k === "pet") return;
