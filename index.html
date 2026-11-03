@@ -2227,6 +2227,7 @@ function sheetHTML() {
       <div class="sgrp">الإشعارات</div>
       <div class="notrow"><span>إشعارات الهاتف</span>${perm === "denied" ? `<b class="nok">مقفلة من إعدادات الجهاز</b>` : perm === "unsupported" ? `<b class="nok">غير مدعومة هون</b>` : pushOn() ? `<b class="okk">مفعّلة ✓</b>` : `<button class="btn light sm" data-act="enable-notif">${ic("bell", 16)} فعّلها</button>`}</div>
       ${pushOn() ? `<div class="notrow"><button class="btn light sm" data-act="test-push">جرّب إشعار</button><button class="btn light sm" data-act="disable-push">إيقاف</button></div>` : `<div class="muted small" style="margin:4px 2px 8px">${isIOS() && !isStandalone() ? "بالآيفون: افتح التطبيق من Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية»، وبعدين فعّلها من داخل التطبيق." : "بتوصلك إشعارات حتى لو التطبيق مسكّر."}</div>`}
+      <div class="notrow"><button class="btn light sm" data-act="test-partner">${ic("bell", 16)} ابعت إشعار تجريبي لشريكي</button></div>
       ${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}
       <div class="sgrp small2">التذكير قبل الموعد بـ</div>
       <div class="opts">${[5, 15, 30, 60].map((m) => chip("lead", m, m + " د", P.lead === m)).join("")}</div>
@@ -2449,17 +2450,25 @@ async function enablePush() {
     const r = await Notification.requestPermission();
     if (r !== "granted") { toast("الإشعارات مو مفعلة"); render(); return; }
     await pushSubscribe(); saveJSON("hf_push_" + S.profile.who, true);
-    toast("اتفعلت إشعارات الهاتف ✓"); playTone(true);
-  } catch (e) { toast("ما انفعلت، تأكد من تشغيل push.sql وإعداد السيرفر"); }
+    toast("اتفعلت إشعارات الهاتف ✓ (" + "مسجّل بالسيرفر" + ")"); playTone(true);
+  } catch (e) { toast("ما انفعلت: " + ((e && (e.message || e.name)) || e)); }
   render();
 }
 async function disablePush() {
   try { const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription(); if (sub) { await sb.from("push_subs").delete().eq("endpoint", sub.endpoint); await sub.unsubscribe(); } } catch {}
   saveJSON("hf_push_" + S.profile.who, false); toast("انوقفت الإشعارات"); render();
 }
+async function testPartner() {
+  if (!sb || !S.user) return toast("سجّل الدخول من جديد");
+  try {
+    const { data, error } = await sb.rpc("push_test");
+    if (error) return toast("خطأ: " + (error.message || error.code));
+    toast(data > 0 ? "انبعت ✓ لازم يوصل لشريكك خلال ثواني" : "شريكك لسا ما فعّل الإشعارات من تطبيقه");
+  } catch (e) { toast("خطأ: " + ((e && e.message) || e)); }
+}
 async function testPush() {
   playTone(true);
-  try { const reg = await navigator.serviceWorker.ready; await reg.showNotification("Hasnaa & Fouad", { body: trS("هيك بيطلع الإشعار 💌"), icon: "icon-192.png", tag: "test", vibrate: P.vib ? (P.slen === "long" ? [400, 150, 400, 150, 600] : [200]) : [] }); } catch {}
+  try { const reg = await navigator.serviceWorker.ready; await reg.showNotification("Hasnaa & Fouad", { body: trS("هيك بيطلع الإشعار 💌"), icon: "icon-192.png", tag: "test", vibrate: P.vib ? (P.slen === "long" ? [400, 150, 400, 150, 600] : [200]) : [] }); } catch (e) { toast("فشل الإشعار: " + ((e && (e.message || e.name)) || e)); }
 }
 function notify(title, body) {
   if (pushOn()) return; // le serveur envoie déjà les notifications
@@ -2574,6 +2583,7 @@ async function onClick(e) {
     case "pref-vib": P.vib = !P.vib; savePrefs(); flip(el); if (P.vib && navigator.vibrate) navigator.vibrate(P.slen === "long" ? [400, 150, 400, 150, 600] : [200]); break;
     case "test-sound": playTone(true); if (P.vib && navigator.vibrate) navigator.vibrate(P.slen === "long" ? [400, 150, 400, 150, 600] : [200]); break;
     case "test-push": return testPush();
+    case "test-partner": return testPartner();
   }
 }
 
