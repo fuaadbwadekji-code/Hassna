@@ -969,6 +969,7 @@ html[data-theme="dark"] { background-color: #0e0f15; }
 .q-compose { position: sticky; bottom: 10px; z-index: 4; box-shadow: 0 10px 30px rgba(226, 77, 138, .28), 0 0 0 1px var(--line); }
 .q-compose textarea { scroll-margin-bottom: 120px; }
 .clist { overscroll-behavior: contain; }
+.crnew { animation: rise .35s cubic-bezier(.2, .8, .2, 1) backwards; }
 </style>
 </head>
 <body>
@@ -1631,6 +1632,7 @@ function mapError(err) {
   const m = (err && (err.message || err.details || "")) + "";
   if (m.includes("spot_taken")) return "هالمكان محجوز لحساب تاني";
   if (m.includes("already_claimed")) return "هالحساب جاهز أصلاً";
+  if (m.includes("already_replied")) return "رديت على هالكبسولة من قبل";
   if (/Invalid login/i.test(m)) return "الكود غلط";
   if (/already registered/i.test(m)) return "هالحساب موجود، فوت بالكود";
   if (/rate limit|too many/i.test(m)) return "محاولات كثيرة، استنى شوي وجرب";
@@ -2124,10 +2126,12 @@ function capCard(c, today) {
 function capsulesHTML() {
   const up = S.capsules.filter((c) => !c.is_open), hist = S.capsules.filter((c) => c.is_open).reverse();
   const rows = (up.length ? `<div class="sec">قادمة ⏳</div>` + up.map((c) => capCard(c, false)).join("") : "") + (hist.length ? `<div class="sec hist">السجل · كبسولات انفتحت 💌</div>` + hist.map((c) => capCard(c, false)).join("") : "");
+  const rep = (S.creplies || []).filter((r) => r.author_id !== S.user.id).slice().reverse();
+  const repHTML = rep.length ? `<div class="sec">ردود على كبسولاتك 💬</div>` + rep.map((r) => `<div class="card2"><div class="ans-h">${ic("heart", 18, true)}<span>${esc(nm(whoOf(r.author_id)))} ردّ على «${ue(r.title)}»</span></div><div class="ans-t">${ue(r.body)}</div><div class="muted small" style="margin-top:4px">${esc(ago(r.created_at))}</div></div>`).join("") : "";
   return `<div class="art capart">${ART.jar ? ART.jar() : ""}</div>
   <div class="in"><div class="ttl">${ic("heart", 26)}<span>كبسولة الزمن</span></div>
     <button class="btn pillbtn" data-act="cap-new" style="margin-bottom:14px">كبسولة جديدة ${ic("plus", 20)}</button>
-    ${rows || `<div class="glass"><div class="empty">${ic("mail", 34)}<div>ما وصلتك كبسولات بعد. اكتب وحدة لـ${esc(partnerName())} وبتوصلها لما ينفتح موعدها.</div></div></div>`}
+    ${repHTML}${(rows || repHTML) ? rows : `<div class="glass"><div class="empty">${ic("mail", 34)}<div>ما وصلتك كبسولات بعد. اكتب وحدة لـ${esc(partnerName())} وبتوصلها لما ينفتح موعدها.</div></div></div>`}
   </div>`;
 }
 
@@ -2181,6 +2185,7 @@ function sheetHTML() {
         <div class="capmsg"><h3>${ue(c.title)}</h3><div class="muted small" style="text-align:center">من ${esc(who)} · ${esc(fmtDate(c.open_at))}</div>
         <div class="paper">${ue(c.body || "—")}</div>
         ${urls.length ? `<div class="att">${urls.map((u) => (u.type || "").startsWith("image/") ? `<a href="${esc(u.url)}" target="_blank" rel="noopener"><img src="${esc(u.url)}" alt="${ue(u.name)}"></a>` : `<a href="${esc(u.url)}" target="_blank" rel="noopener">${ic("file", 18)}<span>${ue(u.name)}</span></a>`).join("")}</div>` : ""}</div></div>`;
+      inner += capReplyHTML(c);
     } else {
       const ms = Math.max(0, new Date(c.open_at) - Date.now());
       const dd = Math.floor(ms / 864e5), hh = Math.floor(ms % 864e5 / 36e5), mm = Math.floor(ms % 36e5 / 6e4);
@@ -2338,7 +2343,7 @@ async function boot(session, who) {
 
 async function enterApp() {
   S.today = localDay();
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments()]);
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies()]);
   initSeen();
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
@@ -2353,7 +2358,7 @@ async function enterApp() {
 function teardown() {
   S.timers.forEach(clearInterval); S.timers = [];
   if (S.dbChannel && sb) { sb.removeChannel(S.dbChannel); S.dbChannel = null; }
-  Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], sheet: null, screen: "home", capUrls: {}, picked: [], editAns: false });
+  Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], sheet: null, screen: "home", capUrls: {}, creplies: [], picked: [], editAns: false });
 }
 async function restoreSession() {
   try {
@@ -2408,6 +2413,29 @@ async function loadAnswers() {
   const { data } = await sb.from("answers").select("day,user_id,answer").eq("couple_id", S.profile.couple_id).gte("day", localDay(since)).order("day", { ascending: false });
   S.answers = data || [];
 }
+/* ---------- ردود الكبسولات ---------- */
+async function loadReplies() {
+  try { const { data } = await sb.rpc("list_capsule_replies"); S.creplies = Array.isArray(data) ? data : []; } catch { S.creplies = S.creplies || []; }
+}
+function capReplyListHTML(id) {
+  return (S.creplies || []).filter((r) => r.capsule_id === id).map((r) => { const w = whoOf(r.author_id), mine = r.author_id === S.user.id; return `<div class="cmt ${mine ? "mine" : ""}"><span class="avt sm ${avCls(w)}"></span><div class="cmt-b"><div class="cmt-t">${ue(r.body)}</div><div class="cmt-m">${esc(nm(w))} · ${esc(ago(r.created_at))}</div></div></div>`; }).join("");
+}
+function capReplyHTML(c) {
+  if (c.created_by === S.user.id) return "";
+  const done = (S.creplies || []).some((r) => r.capsule_id === c.id && r.author_id === S.user.id);
+  if (done) return `<div class="crbox"><div class="sec" style="margin:16px 0 8px">ردّك 💌</div><div class="clist cr-list" id="crlist">${capReplyListHTML(c.id)}</div></div>`;
+  return `<div class="crbox"><div class="sec" style="margin:16px 0 8px">ردّك على الكبسولة 💬 <span class="muted small">(مرة وحدة)</span></div><div class="cm-send" style="margin-top:0;border-top:0;padding-top:0"><span class="avt sm ${avCls(myWho())}"></span><input data-keep="cr-in" id="cr-in" type="text" maxlength="1000" autocomplete="off" placeholder="اكتب ردك…"><button class="cm-btn" data-act="cr-send" data-id="${c.id}" aria-label="send">${ic("send", 20)}</button></div></div>`;
+}
+async function sendCapReply(id) {
+  const inp = document.getElementById("cr-in"); const body = ((inp && inp.value) || "").trim(); if (!body) return;
+  if (inp) inp.value = "";
+  const { error } = await sb.rpc("reply_capsule", { p_id: id, p_body: body });
+  if (error) { if (inp) inp.value = body; return toast(mapError(error)); }
+  await loadReplies();
+  const box = document.querySelector(".crbox"), cap = S.capsules.find((x) => x.id === id);
+  if (box && cap) { const t = document.createElement("div"); t.innerHTML = fin(capReplyHTML(cap)); const nb = t.firstElementChild; if (nb) { nb.classList.add("crnew"); box.replaceWith(nb); } }
+  toast("انبعت ردك 💌");
+}
 async function loadCapsules() {
   const { data } = await sb.rpc("list_capsules");
   S.capsules = (Array.isArray(data) ? data : []).filter((c) => !S.user || c.created_by !== S.user.id);
@@ -2434,7 +2462,7 @@ function connectRealtime() {
 
 async function poll() {
   if (document.hidden || S.stage !== "app" || !S.profile || S.sheet) return;
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), syncNames()]);
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncNames()]);
   checkEvents();
   render();
 }
@@ -2577,7 +2605,7 @@ async function onClick(e) {
     case "lock": S.sheet = null; return lockApp();
 
     case "tab": S.nav = "tab"; S.screen = v; S.sheet = null; render(true); break;
-    case "open": S.nav = "push"; S.screen = v; S.editAns = false; if (v === "capsules") loadCapsules().then(() => { if (S.screen === "capsules") render(); }); render(true); break;
+    case "open": S.nav = "push"; S.screen = v; S.editAns = false; if (v === "capsules") Promise.all([loadCapsules(), loadReplies()]).then(() => { if (S.screen === "capsules") render(); }); render(true); break;
     case "back": S.nav = "pop"; S.screen = ["shared", "question", "capsules", "partner"].includes(S.screen) ? "us" : "home"; render(true); break;
     case "seg": S.seg[el.dataset.w] = v; render(); break;
 
@@ -2590,6 +2618,7 @@ async function onClick(e) {
       break;
     case "comments": return openComments(id);
     case "cm-send": return sendComment(id);
+    case "cr-send": return sendCapReply(id);
     case "cm-del": return delComment(id);
     case "toggle": return toggleDone(id);
     case "fav": return toggleFav(id);
@@ -2953,7 +2982,7 @@ function bind() {
       if (v.length === N && S.stage === "gate") setTimeout(() => (S.gate.mode === "setup" ? setupNext() : submitLogin()), 70);
     } else if (t.id === "cropzoom") { CROP.z = +t.value; paintCrop(); } else if (t.id === "s-c1" || t.id === "s-c2") t.value = t.value.replace(/\D/g, "").slice(0, N);
   });
-  root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target && e.target.id === "cm-in") { e.preventDefault(); sendComment(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "codein" && S.stage === "gate" && S.gate.mode === "login") { e.preventDefault(); submitLogin(); } });
+  root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target && e.target.id === "cm-in") { e.preventDefault(); sendComment(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "cr-in") { e.preventDefault(); sendCapReply(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "codein" && S.stage === "gate" && S.gate.mode === "login") { e.preventDefault(); submitLogin(); } });
   setInterval(() => { if (P.theme === "auto") applyPrefs(); }, 60000);
   document.addEventListener("visibilitychange", () => {
     document.documentElement.classList.toggle("bgpause", document.hidden);
