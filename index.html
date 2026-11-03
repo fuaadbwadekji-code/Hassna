@@ -2436,8 +2436,15 @@ function playTone(force) {
   } catch {}
 }
 function b64u(s) { const p = "=".repeat((4 - (s.length % 4)) % 4), b = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, (c) => c.charCodeAt(0)); }
+async function swReady() {
+  let reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) reg = await navigator.serviceWorker.register("sw.js");
+  const t = new Promise((_, rej) => setTimeout(() => rej(new Error("sw.js ما اشتغل، تأكد إنه مرفوع بنفس مكان index.html")), 8000));
+  await Promise.race([navigator.serviceWorker.ready, t]);
+  return (await navigator.serviceWorker.getRegistration()) || reg;
+}
 async function pushSubscribe() {
-  const reg = await navigator.serviceWorker.ready;
+  const reg = await swReady();
   let sub = await reg.pushManager.getSubscription();
   if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(VAPID_PUB) });
   const j = sub.toJSON();
@@ -2448,7 +2455,8 @@ async function enablePush() {
   if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) { toast(isIOS() ? "ضيف التطبيق للشاشة الرئيسية من Safari أولاً" : "المتصفح ما بيدعم الإشعارات"); return; }
   try {
     const r = await Notification.requestPermission();
-    if (r !== "granted") { toast("الإشعارات مو مفعلة"); render(); return; }
+    if (r !== "granted") { toast("الإشعارات مو مفعلة (" + r + ")"); render(); return; }
+    toast("عم نفعّل...");
     await pushSubscribe(); saveJSON("hf_push_" + S.profile.who, true);
     toast("اتفعلت إشعارات الهاتف ✓ (" + "مسجّل بالسيرفر" + ")"); playTone(true);
   } catch (e) { toast("ما انفعلت: " + ((e && (e.message || e.name)) || e)); }
@@ -2468,7 +2476,7 @@ async function testPartner() {
 }
 async function testPush() {
   playTone(true);
-  try { const reg = await navigator.serviceWorker.ready; await reg.showNotification("Hasnaa & Fouad", { body: trS("هيك بيطلع الإشعار 💌"), icon: "icon-192.png", tag: "test", vibrate: P.vib ? (P.slen === "long" ? [400, 150, 400, 150, 600] : [200]) : [] }); } catch (e) { toast("فشل الإشعار: " + ((e && (e.message || e.name)) || e)); }
+  try { const reg = await swReady(); await reg.showNotification("Hasnaa & Fouad", { body: trS("هيك بيطلع الإشعار 💌"), icon: "icon-192.png", tag: "test", vibrate: P.vib ? (P.slen === "long" ? [400, 150, 400, 150, 600] : [200]) : [] }); } catch (e) { toast("فشل الإشعار: " + ((e && (e.message || e.name)) || e)); }
 }
 function notify(title, body) {
   if (pushOn()) return; // le serveur envoie déjà les notifications
