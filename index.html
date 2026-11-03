@@ -1870,7 +1870,7 @@ function gateHTML() {
       <button class="ph f" data-act="pick" data-v="fouad" aria-label="فؤاد"></button>
     </div>
     <p class="ghint" id="ghint"></p>
-    ${/setup/.test(location.hash) ? `<button class="glink gsetup" id="gsetup" data-act="setup-start"></button>` : ""}
+    ${/setup/.test(location.hash) || S.gate.showSetup ? `<button class="glink gsetup" id="gsetup" data-act="setup-start"></button>` : ""}
     <div class="gpanel">
       <h1 class="gt">hussii &amp; fuaaeed</h1>
       <p class="gprompt" id="gprompt"></p>
@@ -2906,6 +2906,10 @@ function init() {
     navigator.serviceWorker.register("sw.js").catch(() => {});
     navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); });
   }
+  window.addEventListener("hashchange", () => { if (S.stage === "gate") render(true); });
+  let setupT = null;
+  document.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest(".gt.t1")) { clearTimeout(setupT); setupT = setTimeout(() => { if (S.stage === "gate") { S.gate.showSetup = true; render(true); toast("ظهر رابط إعداد الحساب"); } }, 1200); } });
+  ["pointerup", "pointercancel", "pointermove"].forEach((ev) => document.addEventListener(ev, () => clearTimeout(setupT)));
   document.addEventListener("pointerdown", () => { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); } catch {} }, { once: true });
   if (!sb) toast(configured ? "تعذّر تحميل Supabase" : "config.js: ضيف رابط ومفتاح Supabase");
 }
