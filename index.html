@@ -2630,6 +2630,7 @@ function flip(el) { const sw = el.querySelector(".sw"); if (sw) sw.classList.tog
 function openComments(id) {
   S.sheet = { type: "comments", id }; render(true);
   const l = document.getElementById("clist"); if (l) l.scrollTop = l.scrollHeight;
+  const ci = document.getElementById("cm-in"); if (ci) { try { ci.focus({ preventScroll: true }); } catch {} } // le clavier s'ouvre tout de suite : la barre est déjà au-dessus
 }
 function refreshComments() {
   const sh = S.sheet; if (!sh || sh.type !== "comments") return;
