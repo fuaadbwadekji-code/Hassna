@@ -970,6 +970,11 @@ html[data-theme="dark"] { background-color: #0e0f15; }
 .q-compose textarea { scroll-margin-bottom: 120px; }
 .clist { overscroll-behavior: contain; }
 .crnew { animation: rise .35s cubic-bezier(.2, .8, .2, 1) backwards; }
+
+/* ---- v62 : barre de réponse collée en bas, visible au-dessus du clavier ---- */
+.crbox .cm-send { position: sticky; bottom: -1px; z-index: 3; margin-top: 8px; padding: 8px 0 4px; background: #fff7fb; }
+html[data-theme="dark"] .crbox .cm-send { background: #0f1016; }
+.sheet input, .sheet textarea { scroll-margin-bottom: 90px; }
 </style>
 </head>
 <body>
@@ -3014,6 +3019,7 @@ function init() {
     navigator.serviceWorker.register("sw.js").catch(() => {});
     navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); });
   }
+  document.addEventListener("focusin", (e) => { const t = e.target; if (t && t.closest && t.closest(".sheet") && /^(INPUT|TEXTAREA)$/.test(t.tagName)) setTimeout(() => { try { if (document.activeElement === t) t.scrollIntoView({ block: "center", behavior: "smooth" }); } catch {} }, 320); });
   window.addEventListener("hashchange", () => { if (S.stage === "gate") render(true); });
   let setupT = null;
   document.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest(".gt.t1")) { clearTimeout(setupT); setupT = setTimeout(() => { if (S.stage === "gate") { S.gate.showSetup = true; render(true); toast("ظهر رابط إعداد الحساب"); } }, 1200); } });
