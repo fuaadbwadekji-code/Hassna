@@ -973,7 +973,7 @@ window.HF_CONFIG = {
   CODE_LENGTH: 4,
 
   // Le code est redemandé après ce nombre de minutes en arrière-plan (0 = jamais)
-  AUTO_LOCK_MINUTES: 3,
+  AUTO_LOCK_MINUTES: 0,
 
   // Domaine des identifiants internes (jamais utilisé pour envoyer des e-mails)
   EMAIL_DOMAIN: "hf-couple.app"
@@ -1383,7 +1383,7 @@ const ART = window.HF_ART || {};
    ===================================================== */
 const N = Math.max(4, Math.min(8, parseInt(cfg.CODE_LENGTH, 10) || 4));
 const DOM = cfg.EMAIL_DOMAIN || "hf-couple.app";
-const LOCK_MS = (cfg.AUTO_LOCK_MINUTES == null ? 3 : +cfg.AUTO_LOCK_MINUTES) * 60000;
+const LOCK_MS = (cfg.AUTO_LOCK_MINUTES == null ? 0 : +cfg.AUTO_LOCK_MINUTES) * 60000;
 const WHO = {
   hasnaa: { name: "حسناء", email: "hasnaa@" + DOM, theme: "blossom", cls: "h" },
   fouad: { name: "فؤاد", email: "fouad@" + DOM, theme: "moon", cls: "f" }
@@ -1611,7 +1611,7 @@ let sb = null;
 if (configured && window.supabase) {
   // Rien n'est gardé entre deux ouvertures : le code est redemandé à chaque lancement.
   sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: false }
+    auth: { persistSession: true, storageKey: "hf-auth", autoRefreshToken: true, detectSessionInUrl: false }
   });
 }
 function mapError(err) {
@@ -1829,6 +1829,7 @@ function render(fresh) {
 
   let html = "";
   if (S.stage === "gate") html = gateHTML();
+  else if (S.stage === "boot") html = '<div class="screen"></div>';
   else html = appHTML();
   const same = key === lastKey, hadOv = root.querySelector(".ov"), hadOv0 = !!hadOv;
   let snap = null, ghost = null;
@@ -2248,7 +2249,7 @@ function sheetHTML() {
         <input data-keep="s-c2" id="s-c2" class="code-input" type="tel" inputmode="numeric" maxlength="${N}" placeholder="أعد كتابته" autocomplete="off">
       </div>
       <button class="btn" data-act="code-save">حفظ الكود</button>
-      <button class="btn danger" data-act="lock">${ic("lock", 18)} قفل التطبيق</button>`;
+      <button class="btn danger" data-act="lock">${ic("lock", 18)} تسجيل الخروج</button>`;
   }
   return `<div class="ov" data-act="ov"><div class="sheet"><div class="sbar"><button class="sback" data-act="${sh.type === "crop" ? "crop-cancel" : "ov-close"}" aria-label="back">${ic("chev", 20)}</button></div><div class="grab"></div>${inner}</div></div>`;
 }
@@ -2290,6 +2291,7 @@ async function submitLogin() {
   if (S.busy || st.phase !== "code" || !st.who || S.code.length !== N) return;
   if (!sb) return fail(configured ? "تعذّر تحميل Supabase" : "config.js: ضيف رابط ومفتاح Supabase");
   setBusy(true);
+  { const ci = document.getElementById("codein"); if (ci) ci.blur(); }
   const { data, error } = await sb.auth.signInWithPassword({ email: WHO[st.who].email, password: pw(S.code) });
   if (error || !data || !data.session) return fail(mapError(error || { message: "Invalid login" }));
   saveJSON("hf_last", st.who);
@@ -2339,6 +2341,20 @@ function teardown() {
   S.timers.forEach(clearInterval); S.timers = [];
   if (S.dbChannel && sb) { sb.removeChannel(S.dbChannel); S.dbChannel = null; }
   Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], sheet: null, screen: "home", capUrls: {}, picked: [], editAns: false });
+}
+async function restoreSession() {
+  try {
+    const { data } = await sb.auth.getSession();
+    const ses = data && data.session;
+    const who = ses && Object.keys(WHO).find((k) => WHO[k].email === ses.user.email);
+    if (ses && who) {
+      S.user = ses.user;
+      const { data: prof, error } = await sb.from("profiles").select("*").eq("id", ses.user.id).maybeSingle();
+      if (!error && prof) { S.profile = prof; await syncAvatars(); await enterApp(); return; }
+      S.user = null;
+    }
+  } catch { S.user = null; }
+  toLogin();
 }
 async function lockApp() {
   teardown();
@@ -2802,7 +2818,7 @@ async function saveCode() {
     const { error } = await sb.auth.updateUser({ password: pw(c1) });
     if (error) return toast(mapError(error));
     if (a) a.value = ""; if (b) b.value = "";
-    toast("تغيّر الكود ✓ استعمله بالدخول الجاي");
+    toast("تغيّر الكود ✓ استعمله لما تسجل دخول من جديد");
   } catch { toast("صار خطأ، جرب مرة تانية"); }
 }
 function setPref(k, v) {
@@ -2926,14 +2942,22 @@ function bind() {
   });
   if (window.visualViewport) {
     let fullH = 0;
-    const fit = () => { const vh = window.visualViewport.height; if (vh > fullH) fullH = vh; const d = document.documentElement.style; d.setProperty("--app-h", vh + "px"); d.setProperty("--gh", fullH + "px"); window.scrollTo(0, 0); };
-    window.visualViewport.addEventListener("resize", fit); fit();
+    const fit = () => {
+      const vh = window.visualViewport.height; if (vh > fullH) fullH = vh;
+      const ae = document.activeElement, typing = !!(ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName));
+      const d = document.documentElement.style;
+      d.setProperty("--app-h", typing && fullH - vh > 100 ? vh + "px" : "100%");
+      d.setProperty("--gh", fullH + "px"); window.scrollTo(0, 0);
+    };
+    window.visualViewport.addEventListener("resize", fit); document.addEventListener("focusout", () => { setTimeout(fit, 60); setTimeout(fit, 350); }); fit();
   }
 }
 
 function init() {
   P = mergeP(loadJSON("hf_prefs_gate", null)); applyPrefs();
-  applyAvatars(); bind(); toLogin();
+  applyAvatars(); bind();
+  let hasSes = false; try { hasSes = !!(sb && localStorage.getItem("hf-auth")); } catch {}
+  if (hasSes) { S.stage = "boot"; render(true); restoreSession(); } else toLogin();
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
     navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); });

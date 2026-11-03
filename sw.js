@@ -1,5 +1,5 @@
 // Réseau d'abord, cache en secours hors-ligne. Change VERSION à chaque mise à jour.
-const VERSION = "v54";
+const VERSION = "v55";
 const CACHE = "hf-" + VERSION;
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
