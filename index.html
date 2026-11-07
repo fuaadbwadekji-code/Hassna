@@ -1128,6 +1128,9 @@ html[data-theme="white"] .hello b, html[data-theme="white"] .hello span { text-s
 html[data-theme="dark"] .hello span { color: #e4e8f2; }
 .pn.go { cursor: pointer; }
 .pn.go:active { transform: scale(.98); }
+.pet{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.acc{display:none}
+.pet-b[data-acc="bow"] .a-bow,.pet-b[data-acc="crown"] .a-crown,.pet-b[data-acc="glasses"] .a-glasses,.pet-b[data-acc="hat"] .a-hat{display:inline}
 </style>
 </head>
 <body>
@@ -1572,8 +1575,8 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v71";
-const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true } };
+const APP_V = "v73";
+const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
   const o = JSON.parse(JSON.stringify(DEF_P));
@@ -1805,13 +1808,13 @@ function mapError(err) {
    Compagnon : une petite créature qui te suit d'une page à l'autre
    ===================================================== */
 const Pet = (() => {
-  const SVG = `<svg viewBox="0 0 96 100" width="78" height="81" aria-hidden="true">
+  const SVG = `<svg viewBox="0 0 96 100" width="78" height="81" aria-hidden="true" style="overflow:visible">
     <defs>
-      <linearGradient id="pxb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fe3cf"/><stop offset="1" stop-color="#4fb8a6"/></linearGradient>
+      <linearGradient id="pxb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pc1,#8fe3cf)"/><stop offset="1" style="stop-color:var(--pc2,#4fb8a6)"/></linearGradient>
       <linearGradient id="pxs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1e8ff"/><stop offset="1" stop-color="#d8c5fa"/></linearGradient>
     </defs>
-    <g class="p-arm l"><path d="M14 48L6 66" stroke="#2f8f80" stroke-width="3.4" fill="none" stroke-linecap="round"/></g>
-    <g class="p-arm r"><path d="M82 48L90 66" stroke="#2f8f80" stroke-width="3.4" fill="none" stroke-linecap="round"/></g>
+    <g class="p-arm l"><path d="M14 48L6 66" style="stroke:var(--pcd,#2f8f80)" stroke-width="3.4" fill="none" stroke-linecap="round"/></g>
+    <g class="p-arm r"><path d="M82 48L90 66" style="stroke:var(--pcd,#2f8f80)" stroke-width="3.4" fill="none" stroke-linecap="round"/></g>
     <rect x="14" y="8" width="68" height="80" rx="9" fill="url(#pxb)"/>
     <path d="M22 17v-3q0-2 3-2h13" stroke="#fff" stroke-opacity=".6" stroke-width="3.4" stroke-linecap="round" fill="none"/>
     <rect x="24" y="17" width="48" height="36" rx="5" fill="url(#pxs)" stroke="#fff3" stroke-width="1.5"/>
@@ -1824,50 +1827,94 @@ const Pet = (() => {
       <g class="f-sleep"><path d="M32 34h9M55 34h9" stroke="#4a2870" stroke-width="2.8" stroke-linecap="round"/><path d="M44 43h8" stroke="#4a2870" stroke-width="2.4" stroke-linecap="round"/></g>
     </g>
     <circle cx="31" cy="67" r="5.2" fill="#ffd84a"/><circle cx="31" cy="67" r="2.2" fill="#c99a10"/><path d="M31 63.200v3.800" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
-    <rect x="42" y="63" width="14" height="2.6" rx="1.3" fill="#2f8f80"/><rect x="42" y="69" width="14" height="2.6" rx="1.3" fill="#2f8f80"/>
+    <rect x="42" y="63" width="14" height="2.6" rx="1.3" style="fill:var(--pcd,#2f8f80)"/><rect x="42" y="69" width="14" height="2.6" rx="1.3" style="fill:var(--pcd,#2f8f80)"/>
     <circle cx="63" cy="68" r="3.6" fill="#ff7aa8"/><circle cx="72" cy="68" r="3.6" fill="#b79bff"/>
+    <g class="acc a-bow"><path d="M68 9L56 2v14zM68 9l12-7v14z" fill="#ff4f93"/><circle cx="68" cy="9" r="3.4" fill="#ff9cc4"/></g>
+    <g class="acc a-crown"><path d="M32 9l3-11 8 7 5-10 5 10 8-7 3 11z" fill="#ffd84a" stroke="#c99a10" stroke-width="1.4" stroke-linejoin="round"/><circle cx="48" cy="2" r="1.8" fill="#ff5c8a"/></g>
+    <g class="acc a-glasses"><rect x="28" y="25" width="17" height="14" rx="5.5" fill="#fff" fill-opacity=".18" stroke="#2a2233" stroke-width="2.4"/><rect x="51" y="25" width="17" height="14" rx="5.5" fill="#fff" fill-opacity=".18" stroke="#2a2233" stroke-width="2.4"/><path d="M45 31h6" stroke="#2a2233" stroke-width="2.4"/></g>
+    <g class="acc a-hat"><path d="M36 10L48-18 60 10z" fill="#7b5cff"/><circle cx="46" cy="-2" r="2" fill="#ffd84a"/><circle cx="52" cy="4" r="2" fill="#ff7aa8"/><circle cx="48" cy="-19" r="3.4" fill="#ffd84a"/></g>
   </svg>`;
+  const COLS = {
+    mint: ["#8fe3cf", "#4fb8a6", "#2f8f80"], blue: ["#9cc8ff", "#5a95e6", "#2f5fa8"],
+    purple: ["#cdb0ff", "#9370e6", "#5d3fb0"], pink: ["#ffb4d1", "#f0709f", "#b83f73"]
+  };
   const W = 78, H = 81;
   const ACTS = ["hop", "wave", "spin", "dance", "peek", "clap", "boing", "flop"];
-  let actT, lastPraise = -1, layer, el, body, bub, cur = null, idleT, sleepT, sayT, hidden = true, asleep = false, firstTime = true;
+  const one = (a) => a[(Math.random() * a.length) | 0];
+  let actT, lastPraise = -1, layer, el, body, bub, cur = null, sleepT, sayT, hidden = true, asleep = false, firstTime = true;
+  let dragged = false, drag = null, lpT, lastTap = 0, shk = [], lastLove = 0, taps = [];
+  let said = new Set(); try { said = new Set(loadJSON("hf_petsay", [])); } catch {}
+  const pname = () => (P.petName || "بيمو");
+  const female = () => { try { return myWho() === "hasnaa"; } catch { return true; } };
+  const pfem = () => { try { return other(myWho()) === "hasnaa"; } catch { return false; } };
 
+  function look() {
+    if (!body) return;
+    const c = COLS[P.petCol] || COLS.mint;
+    body.style.setProperty("--pc1", c[0]); body.style.setProperty("--pc2", c[1]); body.style.setProperty("--pcd", c[2]);
+    body.dataset.acc = P.petAcc || "none";
+  }
   function mk() {
     if (layer) return;
     layer = document.createElement("div"); layer.className = "petlayer hide";
     layer.innerHTML = `<div class="pet"><div class="pet-say"></div><div class="pet-b">${SVG}<span class="zzz">z<i>z</i></span></div></div>`;
     document.body.appendChild(layer);
     el = layer.querySelector(".pet"); body = layer.querySelector(".pet-b"); bub = layer.querySelector(".pet-say");
-    el.addEventListener("click", (e) => { e.stopPropagation(); poke(); });
+    el.addEventListener("pointerdown", down);
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", (e) => up(e, true));
+    el.addEventListener("contextmenu", (e) => e.preventDefault());
+    look();
     setInterval(idle, 7000);
-    window.addEventListener("resize", () => sync(true));
+    window.addEventListener("resize", () => { dragged = false; sync(true); });
   }
-  const female = () => { try { return myWho() === "hasnaa"; } catch { return true; } };
+
+  /* ---------- العبارات ---------- */
   function lines() {
-    const f = female(), pn = partnerName();
+    const f = female(), n = pname();
     const base = [
       "نونو جاهز للعب! 🎮", "يلا نلعب! 🕹️", "نونو بيحبكن! 💜", "أنا بطل خارق! 🦸", "جولة جديدة؟ 🎮",
       "ضغطت زر؟ 🔘", "نونو جوعان بطاريات 🔋", "بتحبني؟ 🥺", "لا تطفيني! 😱", "نونو عنده فكرة! 💡",
       "أنا ملك الألعاب! 👑", "نونو رايح بمهمة! 🚀", "عم بمثّل إني نينجا 🥷", "بحكي مع الغيوم ☁️",
       "بدي سندويشة بكسلات 🥪", "نونو ما بيزعل أبداً 😄", "أنا أحلى كائن! 😎", f ? "حلوة اليوم! 🌸" : "شاطر اليوم! 💪",
       "شفتوا؟ أنا بتحرك! ✨", "نونو بيحرس الحب 💂"
-    ];
+    ].map((s) => s.replace(/نونو/g, n));
     try {
-      const n = S.tasks.filter((t) => isMine(t) && !t.done && t.due_at && startOfDay(new Date(t.due_at)) <= startOfDay(new Date())).length;
-      base.push(n ? `باقي ${n} ${n > 2 ? "مهام" : "مهمة"} اليوم 🎯` : "ما في مهام متأخرة! ✨");
+      const k = S.tasks.filter((t) => isMine(t) && !t.done && t.due_at && startOfDay(new Date(t.due_at)) <= startOfDay(new Date())).length;
+      base.push(k ? `باقي ${k} ${k > 2 ? "مهام" : "مهمة"} اليوم 🎯` : "ما في مهام متأخرة! ✨");
       if (!myAnswer()) base.push(f ? "جاوبي عالسؤال 💬" : "جاوب عالسؤال 💬");
-      else if (!partnerAnswer()) base.push(`نستنّى جواب ${pn} 🙈`);
+      else if (!partnerAnswer()) base.push(`نستنّى جواب ${partnerName()} 🙈`);
     } catch {}
     return base;
   }
+  function tapLines() {
+    const f = female(), n = pname();
+    return [
+      "ههههه كركرتيني 🤣", f ? "اخخخ لا تضربي 😔" : "اخخخ لا تضرب 😔", "شو بدك اليوم 🫣", `انا ${n} ارحميني 🥹`,
+      f ? "انتي كتير حلوة بحبك 😉❤️" : "إنت كتير حلو بحبك 😉❤️", "بعشققككك 🫂🤭", "بحبك 😍",
+      f ? "عطيني حضون كبير 🥺🫶" : "عطيني حضن كبير 🥺🫶", "حضنتك 🫂🤭", "ياعمري شو بحبك ❤️"
+    ];
+  }
+  const LOVE = ["بحبكم كتير كتير 💕", "إنتو أحلى شي بحياتي 🥰", "حبكم كبير متل قلبي 💖", "احضنوا بعض ورايي 🤗", "الحب بيناتكم بيدفّيني 🫶"];
+  const SHAKE = ["واااو! حب حب حب 😍💕", "دوّختوني من الحب 🥰", "كمان كمان! 💕"];
   const FUN = {
-    boing: ["بووينغ! 🦘", "نونو بيطير! 🚀", "هوووب! 🤸", "أعلى قفزة! 😎"],
-    spin: ["دوخت! 🌀", "نونو مروحة! 🌪️", "ولّعت! 🎡"],
-    dance: ["رقصة النصر! 💃", "الدور عليك! 🕺", "نونو بيرقص! 🎶"],
-    hop: ["هوب! 🐸", "نطّة! 🐰", "لفل جديد! ⬆️"],
-    flop: ["أووف! 😵"], wave: ["هاي! 👋", "بدأت اللعبة! 🎮", "جاهز! ⚡"]
+    boing: ["بووينغ! 🦘", "هوووب! 🤸", "أعلى قفزة! 😎"],
+    spin: ["دوخت! 🌀", "ولّعت! 🎡"],
+    dance: ["رقصة النصر! 💃", "الدور عليك! 🕺"],
+    hop: ["هوب! 🐸", "نطّة! 🐰"],
+    flop: ["أووف! 😵"], wave: ["هاي! 👋", "جاهز! ⚡"]
   };
-  let taps = [], sayTs = [];
-  function sayAll(arr) { say(arr[0], 2200); }
+  function timeLine() {
+    const h = new Date().getHours(), f = female();
+    if (h >= 5 && h < 11) return one(["صباح الخير، جاهز لليوم؟ ☀️", "صباح الورد 🌸"]);
+    if (h >= 11 && h < 14) return "كلتوا؟ لا تنسوا تاكلوا 🍽️";
+    if (h >= 14 && h < 18) return "شو الأخبار؟ تعبتوا؟ ☕";
+    if (h >= 18 && h < 23) return "سهرة حلوة إلكم 🌙";
+    return f ? "تصبحي على خير، نامي بكير 😴" : "تصبح على خير، نام بكير 😴";
+  }
+
+  /* ---------- الحركة ---------- */
   function target() {
     const r = root.getBoundingClientRect();
     const tab = root.querySelector(".tab.on"), bar = root.querySelector(".tabs");
@@ -1897,13 +1944,16 @@ const Pet = (() => {
     const show = P.pet && S.stage === "app" && !S.sheet;
     layer.classList.toggle("hide", !show);
     hidden = !show;
-    if (S.stage !== "app") { cur = null; firstTime = true; return; }
+    if (S.stage !== "app") { cur = null; firstTime = true; dragged = false; return; }
     const t = target(), key = S.screen;
+    if (dragged && !force && cur && cur.key === key) return; // بقي حيث تركته لين تتنقل بالتطبيق
+    if (cur && cur.key !== key) dragged = false;
     const px = t.x - W / 2, py = t.y - H;
     if (firstTime) {
       firstTime = false; el.style.transition = "none"; el.style.transform = `translate(${px}px,${py}px)`; cur = { x: t.x, key };
       void el.offsetWidth; el.style.transition = ""; act("drop", 1100); wake();
       setTimeout(() => say("مرحباً " + myName() + "! 💜"), 1300);
+      setTimeout(() => say(timeLine(), 3200), 4300);
       setTimeout(() => sync(true), 950);
       return;
     }
@@ -1917,10 +1967,11 @@ const Pet = (() => {
     cur = { x: t.x, key };
   }
   function say(txt, ms = 2600) {
-    if (hidden) return;
+    if (hidden || P.petTalk === "mute") return;
     bub.textContent = trS(txt); bub.classList.remove("on"); bub.style.removeProperty("--sx");
     void bub.offsetWidth; bub.classList.add("on");
-    const r = bub.getBoundingClientRect(), rr = root.getBoundingClientRect();
+    const r0 = bub.getBoundingClientRect(), rr = root.getBoundingClientRect(), bw = bub.offsetWidth, bc = r0.left + r0.width / 2;
+    const r = { left: bc - bw / 2, right: bc + bw / 2 };
     let sx = 0; if (r.left < rr.left + 8) sx = rr.left + 8 - r.left; else if (r.right > rr.right - 8) sx = rr.right - 8 - r.right;
     bub.style.setProperty("--sx", sx + "px");
     clearTimeout(sayT); sayT = setTimeout(() => bub.classList.remove("on"), ms);
@@ -1936,46 +1987,127 @@ const Pet = (() => {
     }
   }
   function center() { const r = body.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height * .4]; }
+
+  /* ---------- اللمس: ضغطة، ضغطتين، ضغطة طويلة، سحب، هز ---------- */
+  function down(e) {
+    if (hidden) return; wake();
+    const r = el.getBoundingClientRect();
+    drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: e.clientX - r.left, oy: e.clientY - r.top, moved: false, lp: false, lx: e.clientX, dir: 0, x: r.left, y: r.top };
+    try { el.setPointerCapture(e.pointerId); } catch {}
+    clearTimeout(lpT);
+    lpT = setTimeout(() => { if (drag && !drag.moved) { drag.lp = true; if (navigator.vibrate) try { navigator.vibrate(18); } catch {} loveMoment(); } }, 520);
+  }
+  function move(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.moved && Math.hypot(dx, dy) > 10) { drag.moved = true; clearTimeout(lpT); el.style.transition = "none"; bub.classList.remove("on"); face("wow", 700); }
+    if (!drag.moved) return;
+    const rr = root.getBoundingClientRect();
+    const x = Math.max(rr.left, Math.min(rr.right - W, e.clientX - drag.ox));
+    const y = Math.max(rr.top + 4, Math.min(rr.bottom - H, e.clientY - drag.oy));
+    el.style.transform = `translate(${x}px,${y}px)`; drag.x = x; drag.y = y;
+    const sx = e.clientX - drag.lx;
+    if (Math.abs(sx) > 6) {
+      const d = sx > 0 ? 1 : -1;
+      if (drag.dir && d !== drag.dir) {
+        const now = Date.now(); shk = shk.filter((t) => now - t < 1100); shk.push(now);
+        if (shk.length >= 4 && now - lastLove > 3000) { lastLove = now; shk = []; shakeLove(); }
+      }
+      drag.dir = d; drag.lx = e.clientX;
+    }
+  }
+  function up(e, cancel) {
+    if (!drag || e.pointerId !== drag.id) return;
+    clearTimeout(lpT);
+    const d = drag; drag = null;
+    if (d.lp) return;
+    if (d.moved) {
+      el.style.transition = ""; dragged = true;
+      const t = target();
+      if (Math.hypot(d.x - (t.x - W / 2), d.y - (t.y - H)) > 140) setTimeout(() => say("يلا رجعوني 😅"), 450);
+      return;
+    }
+    if (!cancel) poke();
+  }
+  function loveMoment() {
+    const [x, y] = center();
+    act("hop", 700); face("love", 2800); burst(x, y, 12, ["💕", "❤️", "💗", "😍"]);
+    say(one(LOVE), 3000);
+  }
+  function shakeLove() {
+    const [x, y] = center();
+    face("love", 2600); burst(x, y, 16, ["💕", "❤️", "💗", "😍", "💖"]);
+    say(one(SHAKE), 2600);
+  }
   function poke() {
     if (hidden) return; wake();
-    const now = Date.now(); taps = taps.filter((x) => now - x < 4500); taps.push(now);
-    const [x, y] = center(); const r = Math.random();
-    const one = (arr) => arr[(Math.random() * arr.length) | 0];
-    if (taps.length >= 5) {
-      taps = []; act("dance", 1600); face("joy", 2400); burst(x, y, 10, ["😂", "💜", "✨", "🤭"]);
-      return sayAll(["هههه دغدغة! 😂"]);
-    }
-    if (r < 0.15) {
-      act("wave", 1400); face("wink", 1400); burst(x, y, 5, ["🎮", "✨"]);
-      return sayAll([one(FUN.wave)]);
-    }
-    const pool = ["spin", "dance", "hop", "boing", "boing", "flop"], a = one(pool);
+    const now = Date.now(); const dbl = now - lastTap < 380; lastTap = now;
+    taps = taps.filter((x) => now - x < 4500); taps.push(now);
+    const [x, y] = center();
+    if (dbl) { act("boing", 1000); face("joy", 1400); burst(x, y, 8); return say(one(["هوب! 🎈", "يييي! 🎉"]), 1800); }
+    if (taps.length >= 5) { taps = []; act("dance", 1600); face("joy", 2400); burst(x, y, 10, ["😂", "💜", "✨", "🤭"]); return say("هههه دغدغة! 😂", 2200); }
+    const r = Math.random();
+    if (r < 0.15) { act("wave", 1400); face("wink", 1400); burst(x, y, 5, ["🎮", "✨"]); return say(one(FUN.wave), 2000); }
+    const a = one(["spin", "dance", "hop", "boing", "boing", "flop"]);
     act(a, { dance: 1600, boing: 1000, flop: 1700, spin: 900, hop: 900 }[a]);
-    if (a === "flop") { burst(x, y, 6, ["😵", "💫", "⭐"]); return sayAll([one(FUN.flop)]); }
+    if (a === "flop") { burst(x, y, 6, ["😵", "💫", "⭐"]); return say(one(FUN.flop), 2000); }
     face(one(["love", "joy", "wink"]), 1800); burst(x, y, 6);
-    sayAll([Math.random() < 0.55 ? one(FUN[a]) : one(lines())]);
+    say(Math.random() < 0.8 ? one(tapLines()) : one(lines()), 2800);
   }
+
+  /* ---------- ردود الفعل ---------- */
   function cheer() {
     if (hidden) return; wake(); act("clap", 2000);
     [250, 700, 1150, 1600].forEach((t) => setTimeout(() => { const [x, y] = center(); burst(x, y - 24, 3, ["👏", "✨", "👏"]); }, t));
-    const P = female()
-      ? ["شطورة! 👏", "برافووو! 🎉", "برافو عليكي! 🎉", "يا سلام عليكي! ✨", "شطورة برافووو! 💜", "ولا أحلى! 🌸", "كمّلي هيك! 💪"]
-      : ["شاطر! 👏", "برافووو! 🎉", "برافو عليك! 🎉", "يا سلام عليك! ✨", "شاطر برافووو! 💜", "ولا أحلى! 🌟", "كمّل هيك! 💪"];
-    let k = Math.floor(Math.random() * P.length); if (k === lastPraise) k = (k + 1) % P.length; lastPraise = k;
-    say(P[k]);
+    const L = ["برافووووو 😍", female() ? "شطورةة 🤭" : "شاطرر 🤭", "لك والله كفووو 😍"];
+    let k = Math.floor(Math.random() * L.length); if (k === lastPraise) k = (k + 1) % L.length; lastPraise = k;
+    say(L[k]);
   }
+  function allDone() { if (hidden) return; setTimeout(() => { face("love", 2600); const [x, y] = center(); burst(x, y, 12, ["🏆", "✨", "🎉"]); say("اليوم خلصتوا كل شي! 🏆", 3200); }, 2300); }
+  function added() { if (hidden) return; setTimeout(() => { act("hop", 700); say(one(["تمام، سجلتها ✍️", "ضفتها، لا تنساها 😉"]), 2000); }, 500); }
+  function react(k, e) {
+    if (hidden || S.sheet) return; wake();
+    const pf = pfem(), pn = partnerName(), f = female(), [x, y] = center();
+    let t = "";
+    if (k === "comment") { const tk = e && S.tasks.find((z) => z.id === e.id); t = `${pn} ${pf ? "علّقت" : "علّق"}${tk ? " عند «" + tk.title + "»" : ""} 💬`; }
+    else if (k === "question") t = `${pn} ${pf ? "جاوبت" : "جاوب"}! ${f ? "روحي" : "روح"} شوف 💌`;
+    else if (k === "task") t = `${pn} ${pf ? "ضافت" : "ضاف"} مهمة مشتركة 📝`;
+    else if (k === "capsule") t = f ? "انفتحت! تعالي اقرأيها 💌" : "انفتحت! تعال اقرأها 💌";
+    else if (k === "newcap") t = "في مفاجأة ناطرتك 🎁";
+    else if (k === "avatar") t = f ? "شفتي صورته الجديدة؟ 😍" : "شفت صورتها الجديدة؟ 😍";
+    if (!t) return;
+    act("wave", 1400); face("wow", 1600); burst(x, y, 6, ["💌", "✨", "💜"]);
+    say(t, 3600);
+  }
+  function capCheck() {
+    if (hidden || S.sheet || !S.capsules) return;
+    const now = Date.now(); let ch = false;
+    for (const c of S.capsules) {
+      if (c.created_by === S.user.id) continue;
+      const diff = ts(c.open_at) - now; let key = "", t = "";
+      if (diff <= 0 && diff > -10 * 60000) { key = "co:" + c.id; t = f2("انفتحت! تعالي اقرأيها 💌", "انفتحت! تعال اقرأها 💌"); }
+      else if (diff > 0 && diff <= 3600000) { key = "c1:" + c.id; t = "ساعة وبتنفتح الكبسولة ⏳"; }
+      else if (diff > 3600000 && diff <= 86400000) { key = "c24:" + c.id; t = "بكرة تنفتح كبسولة! 🎊"; }
+      if (!key || said.has(key)) continue;
+      said.add(key); ch = true; act("wave", 1400); face("wow", 1600); say(t, 3800); break;
+    }
+    if (ch) try { saveJSON("hf_petsay", [...said].slice(-120)); } catch {}
+  }
+  const f2 = (a, b) => (female() ? a : b);
   function idle() {
-    if (hidden || asleep || document.hidden) return;
+    if (hidden || asleep || document.hidden || drag) return;
+    const sayP = { many: .4, normal: .12, few: .04, mute: 0 }[P.petTalk || "normal"];
     const r = Math.random();
-    if (r < .3) act("hop", 700);
-    else if (r < .5) act("wave", 1400);
-    else if (r < .65) face("wow", 1200);
-    else if (r < .72) face("love", 1800);
-    else if (r < .8) act("spin", 900);
-    else if (r < .9) act("dance", 1600);
-    else { const L = lines(); say(L[(Math.random() * L.length) | 0]); }
+    if (r < sayP) { return say(Math.random() < .3 ? timeLine() : one(lines())); }
+    const q = Math.random();
+    if (q < .3) act("hop", 700);
+    else if (q < .5) act("wave", 1400);
+    else if (q < .65) face("wow", 1200);
+    else if (q < .75) face("love", 1800);
+    else if (q < .87) act("spin", 900);
+    else act("dance", 1600);
   }
-  return { sync, burst, cheer };
+  return { sync, burst, cheer, react, capCheck, look, allDone, added };
 })();
 
 /* =====================================================
@@ -2417,8 +2549,16 @@ function sheetHTML() {
       <div class="sgrp">الخط الفرنسي</div>
       <div class="opts">${FR_FONTS.map((f) => chip("frFont", f, f, P.frFont === f, `font-family:'${f}',serif`)).join("")}</div>
 
-      <div class="sgrp">نونو</div>
-      ${tg("pref-pet", "pet", "إظهار نونو", P.pet)}
+      <div class="sgrp">${esc(P.petName || "بيمو")}</div>
+      ${tg("pref-pet", "pet", "إظهار " + esc(P.petName || "بيمو"), P.pet)}
+      <div class="sgrp small2">اللون</div>
+      <div class="opts">${[["mint", "تركوازي"], ["blue", "أزرق"], ["purple", "بنفسجي"], ["pink", "وردي"]].map(([v, l]) => chip("petCol", v, l, P.petCol === v)).join("")}</div>
+      <div class="sgrp small2">إكسسوار</div>
+      <div class="opts">${[["none", "بدون"], ["bow", "فيونكة"], ["crown", "تاج"], ["glasses", "نظارة"], ["hat", "قبعة"]].map(([v, l]) => chip("petAcc", v, l, P.petAcc === v)).join("")}</div>
+      <div class="sgrp small2">كثرة الحكي</div>
+      <div class="opts">${[["many", "كتير"], ["normal", "عادي"], ["few", "قليل"], ["mute", "ساكت"]].map(([v, l]) => chip("petTalk", v, l, P.petTalk === v)).join("")}</div>
+      <div class="sgrp small2">الاسم</div>
+      <div class="namerow"><input data-keep="pet-nm" id="pet-nm" type="text" maxlength="12" value="${esc(P.petName || "بيمو")}"><button class="btn" data-act="pet-name">حفظ</button></div>
 
       <div class="sgrp">الإشعارات</div>
       <div class="notrow"><span>إشعارات الهاتف</span>${perm === "denied" ? `<b class="nok">مقفلة من إعدادات الجهاز</b>` : perm === "unsupported" ? `<b class="nok">غير مدعومة هون</b>` : pushOn() ? `<b class="okk">مفعّلة ✓</b>` : `<button class="btn light sm" data-act="enable-notif">${ic("bell", 16)} فعّلها</button>`}</div>
@@ -2533,7 +2673,9 @@ async function goOpen(k, id) {
   if (!S.profile || S.stage !== "app") { S.pendingOpen = { k, id }; return; }
   S.sheet = null;
   try { await Promise.all([loadTasks(), loadComments(), loadCapsules(), loadReplies(), loadAnswers()]); } catch {}
-  const t = id && S.tasks.find((x) => x.id === id);
+  let t = id && S.tasks.find((x) => x.id === id);
+  if (!t && k === "comment") { const lc = [...S.comments].reverse().find((c) => c.author_id !== S.user.id); if (lc) { id = lc.task_id; t = S.tasks.find((x) => x.id === id); } }
+  if (!t && k === "task") { const lt = [...S.tasks].filter((x) => x.created_by !== S.user.id && (x.scope === "shared" || x.owner_id !== S.user.id || true)).sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""))[0]; if (lt) { t = lt; id = lt.id; } }
   if ((k === "comment" || k === "task") && t) { S.nav = "push"; S.screen = t.scope === "shared" ? "shared" : t.owner_id === S.user.id ? "mine" : "partner"; if (S.screen === "mine") S.nav = "tab"; render(true); if (k === "comment") setTimeout(() => openComments(id), 380); return; }
   if (k === "task") { S.nav = "tab"; S.screen = "mine"; render(true); return; }
   if (k === "capsule" || k === "capsules") { S.nav = "push"; S.screen = "capsules"; render(true); if (k === "capsule" && id && S.capsules.some((x) => x.id === id)) setTimeout(() => openCapsule(id), 380); return; }
@@ -2769,8 +2911,10 @@ function checkEvents() {
     if (S.evN.has(e.key)) return;
     S.evN.add(e.key); changed = true;
     if (document.hidden) notify(trS(e.head), trS(e.sub));
-    else { toast(e.head); playTone(); }
+    else { toast(e.head); playTone(); Pet.react(e.k, e); }
   });
+  if (!S.capSeen) S.capSeen = new Set((S.capsules || []).map((c) => c.id));
+  else (S.capsules || []).forEach((c) => { if (!S.capSeen.has(c.id)) { S.capSeen.add(c.id); if (c.created_by && c.created_by !== S.user.id && !document.hidden) Pet.react("newcap"); } });
   if (changed) saveJSON(evKey(), [...S.evN].slice(-300));
 }
 function tick() {
@@ -2785,7 +2929,7 @@ function tick() {
     }
   });
   if (changed) saveJSON("hf_notified", [...S.notified].slice(-200));
-  checkEvents();
+  checkEvents(); Pet.capCheck();
   if (S.today !== localDay()) { S.today = localDay(); loadAnswers().then(() => render()); return; }
   if ((S.screen === "home" || S.screen === "notif") && !S.sheet) render();
 }
@@ -2844,6 +2988,7 @@ async function onClick(e) {
     case "pref": { const g = el.parentNode; if (g) g.querySelectorAll(".opt").forEach((x) => x.classList.toggle("on", x === el)); return setPref(el.dataset.k, v); }
     case "pref-n": { const k = el.dataset.k; if (k in P.n) { P.n[k] = !P.n[k]; savePrefs(); flip(el); } break; }
     case "pref-pet": P.pet = !P.pet; savePrefs(); flip(el); if (P.pet) setTimeout(() => Pet.cheer(), 450); break;
+    case "pet-name": { const i = document.getElementById("pet-nm"), nv = ((i && i.value) || "").trim().slice(0, 12); if (!nv) return toast("اكتب اسم"); P.petName = nv; savePrefs(); toast("انحفظ ✓"); render(); break; }
     case "name-save": return saveName();
     case "crop-save": return closeCrop(true);
     case "crop-cancel": return closeCrop(false);
@@ -2916,6 +3061,7 @@ async function toggleDone(id) {
     const cb = root.querySelector(`.cb[data-id="${id}"]`);
     if (cb) { const r = cb.getBoundingClientRect(); Pet.burst(r.left + r.width / 2, r.top + r.height / 2, 10); }
     Pet.cheer();
+    if (!S.tasks.some((x) => isMine(x) && !x.done && x.due_at && startOfDay(new Date(x.due_at)) <= startOfDay(new Date()))) Pet.allDone();
     setTimeout(() => { if (S.justDone === id) S.justDone = null; }, 1100);
   }
   const { error } = await sb.from("tasks").update({ done: t.done, done_at: t.done_at }).eq("id", id);
@@ -2947,7 +3093,7 @@ async function saveTask() {
     const payload = { couple_id: S.profile.couple_id, scope: sh.scope, owner_id: sh.scope === "private" ? S.user.id : null, title, due_at, due_all_day, created_by: S.user.id };
     const { data, error } = await sb.from("tasks").insert(payload).select("*").single();
     if (error) return toast(mapError(error));
-    mergeTask(data); S.sheet = null; S.seg[sh.scope === "shared" ? "shared" : "mine"] = "todo"; render(true);
+    mergeTask(data); S.sheet = null; S.seg[sh.scope === "shared" ? "shared" : "mine"] = "todo"; render(true); Pet.added();
   }
 }
 async function deleteTask(id) {
@@ -3080,9 +3226,11 @@ async function saveCode() {
 }
 function setPref(k, v) {
   if (k === "fz" || k === "lead" || k === "vol") v = +v;
+  if (k === "petCol" || k === "petAcc" || k === "petTalk") { P[k] = v; savePrefs(); Pet.look(); if (k === "petTalk" && v !== "mute") setTimeout(() => Pet.react("newcap"), 200); return; }
   if (!(k in P) || k === "n" || k === "pet") return;
   P[k] = v; applyPrefs(); savePrefs();
   if (k === "lang") FR_RX = null;
+  if (k === "petCol" || k === "petAcc") Pet.look();
   render();
 }
 

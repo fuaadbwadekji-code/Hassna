@@ -1,5 +1,5 @@
 // Réseau d'abord, cache en secours hors-ligne. Change VERSION à chaque mise à jour.
-const VERSION = "v71";
+const VERSION = "v73";
 const CACHE = "hf-" + VERSION;
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
@@ -35,7 +35,7 @@ self.addEventListener("push", (e) => {
     cs.forEach((c) => c.postMessage({ type: "push" }));
     await self.registration.showNotification(d.title || "Hasnaa & Fouad", {
       body: d.body || "", icon: "icon-192.png", badge: "icon-192.png", tag: d.tag || undefined,
-      vibrate: d.vib || [200], dir: "auto", data: { url: d.url || "./", k: d.k || "", id: d.id || "" }
+      vibrate: d.vib || [200], dir: "auto", data: { url: d.url || "./", k: d.k || ({ comment: "comment", capsule: "capsule", shared: "task", todo: "task", r: "task", creply: "capsules", answer: "question", dq: "question" }[(d.tag || "").split(":")[0]] || ""), id: d.id || "" }
     });
   })());
 });
