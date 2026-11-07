@@ -1,5 +1,5 @@
 // Réseau d'abord, cache en secours hors-ligne. Change VERSION à chaque mise à jour.
-const VERSION = "v67";
+const VERSION = "v68";
 const CACHE = "hf-" + VERSION;
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
@@ -7,7 +7,7 @@ self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => Promise.allSettled(SHELL.map((u) => c.add(u)))).catch(() => {}).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", (e) => {
-  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith("hf-v") && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener("fetch", (e) => {
   const req = e.request, url = new URL(req.url);
@@ -20,10 +20,12 @@ self.addEventListener("fetch", (e) => {
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
   const d = e.notification.data || {};
-  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
+  e.waitUntil((async () => {
+    try { const c = await caches.open("hf-open"); await c.put("/__open", new Response(JSON.stringify({ k: d.k || "", id: d.id || "", t: Date.now() }))); } catch {}
+    const cs = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const c of cs) { if ("focus" in c) { c.postMessage({ type: "open", k: d.k || "", id: d.id || "" }); return c.focus(); } }
     return self.clients.openWindow("./#o=" + encodeURIComponent((d.k || "") + ":" + (d.id || "")));
-  }));
+  })());
 });
 self.addEventListener("push", (e) => {
   let d = {}; try { d = e.data ? e.data.json() : {}; } catch {}

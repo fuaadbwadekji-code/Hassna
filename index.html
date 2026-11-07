@@ -1119,6 +1119,13 @@ html[data-theme="white"] .fav.on { color: #262b36; }
 html[data-theme="white"] .pet-say { color: #161922; }
 html[data-theme="white"] .sback, html[data-theme="white"] .pop-x { background: rgba(20, 26, 40, .07); color: #2b303b; }
 html[data-theme="dark"] .sback, html[data-theme="dark"] .pop-x { background: rgba(210, 216, 232, .16); color: #f1f3f9; }
+/* ---- v68 : الخلفيات (ورود ونجوم) أوضح بالأبيض والداكن ---- */
+html[data-theme="white"] .art svg, html[data-theme="white"] .gate .land svg { filter: grayscale(1) contrast(1.08) opacity(.8); }
+html[data-theme="white"] .bfly, html[data-theme="white"] .capart .fh { filter: grayscale(1) opacity(.9); }
+html[data-theme="dark"] .art svg, html[data-theme="dark"] .gate .land svg { filter: grayscale(1) brightness(.78) contrast(1.2); }
+html[data-theme="dark"] .bfly, html[data-theme="dark"] .capart .fh { filter: grayscale(1) brightness(1.05); }
+html[data-theme="white"] .hello b, html[data-theme="white"] .hello span { text-shadow: 0 1px 10px rgba(255, 255, 255, .95), 0 0 18px rgba(255, 255, 255, .9); }
+html[data-theme="dark"] .hello span { color: #e4e8f2; }
 </style>
 </head>
 <body>
@@ -2508,7 +2515,17 @@ async function boot(session, who) {
   await enterApp();
 }
 
+async function checkOpenCache() {
+  try {
+    if (!window.caches) return;
+    const c = await caches.open("hf-open"), r = await c.match("/__open"); if (!r) return;
+    await c.delete("/__open");
+    const d = await r.json(); if (d && Date.now() - d.t < 120000) goOpen(d.k, d.id);
+  } catch {}
+}
 async function goOpen(k, id) {
+  if (goOpen.last === k + ":" + id && Date.now() - (goOpen.t || 0) < 3000) return;
+  goOpen.last = k + ":" + id; goOpen.t = Date.now();
   if (!S.profile || S.stage !== "app") { S.pendingOpen = { k, id }; return; }
   S.sheet = null;
   try { await Promise.all([loadTasks(), loadComments(), loadCapsules(), loadReplies(), loadAnswers()]); } catch {}
@@ -3167,6 +3184,7 @@ function bind() {
   document.addEventListener("visibilitychange", () => {
     document.documentElement.classList.toggle("bgpause", document.hidden);
     if (!document.hidden && P.theme === "auto") applyPrefs();
+    if (!document.hidden) checkOpenCache();
     if (document.hidden) { hiddenAt = Date.now(); return; }
     if (S.stage !== "app") return;
     if (LOCK_MS > 0 && hiddenAt && Date.now() - hiddenAt > LOCK_MS) { lockApp(); return; }
@@ -3193,13 +3211,13 @@ function bind() {
 
 function init() {
   P = mergeP(loadJSON("hf_prefs_gate", null)); applyPrefs();
-  applyAvatars(); bind();
+  applyAvatars(); bind(); checkOpenCache();
   try { const m = /[#&]o=([^&]*)/.exec(location.hash); if (m) { const [k, id] = decodeURIComponent(m[1]).split(":"); S.pendingOpen = { k, id: id || "" }; history.replaceState(null, "", location.pathname + location.search); } } catch {}
   let hasSes = false; try { hasSes = !!(sb && localStorage.getItem("hf-auth")); } catch {}
   if (hasSes) { S.stage = "boot"; render(true); restoreSession(); } else toLogin();
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
-    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); if (e.data && e.data.type === "open") goOpen(e.data.k, e.data.id); });
+    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); if (e.data && e.data.type === "open") { try { caches.open("hf-open").then((c) => c.delete("/__open")); } catch {} goOpen(e.data.k, e.data.id); } });
   }
   document.addEventListener("focusin", (e) => { const t = e.target; if (t && t.closest && t.closest(".sheet") && /^(INPUT|TEXTAREA)$/.test(t.tagName)) setTimeout(() => { try { if (document.activeElement === t) t.scrollIntoView({ block: "center", behavior: "smooth" }); } catch {} }, 320); });
   window.addEventListener("hashchange", () => { if (S.stage === "gate") render(true); });
