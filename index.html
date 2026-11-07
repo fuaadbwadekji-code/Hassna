@@ -1131,6 +1131,83 @@ html[data-theme="dark"] .hello span { color: #e4e8f2; }
 .pet{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .acc{display:none}
 .pet-b[data-acc="bow"] .a-bow,.pet-b[data-acc="crown"] .a-crown,.pet-b[data-acc="glasses"] .a-glasses,.pet-b[data-acc="hat"] .a-hat{display:inline}
+/* ============ الدردشة ============ */
+.chat { --cm1: #ff7eb6; --cm2: #e24d8a; --cmt: #fff; --cth: rgba(255, 255, 255, .97); --ctt: #4b1d3f; --chd: rgba(255, 255, 255, .94); --cmeta: #9b6b88; --cinp: #fff; position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; color: var(--ctt); }
+html[data-theme="dark"] .chat { --cm1: #8a52c0; --cm2: #c43d7b; --cth: #272b39; --ctt: #f1f3f9; --chd: rgba(26, 28, 40, .96); --cmeta: #aab0c2; --cinp: #272b39; }
+html[data-theme="white"] .chat { --cm1: #4a5160; --cm2: #262b36; --cth: #f1f3f7; --ctt: #161922; --chd: rgba(255, 255, 255, .97); --cmeta: #667085; --cinp: #f1f3f7; }
+.chead { display: flex; align-items: center; gap: 10px; padding: calc(var(--safe-top) + 8px) 12px 8px; background: var(--chd); box-shadow: 0 2px 14px rgba(60, 20, 70, .14); position: relative; z-index: 2; }
+.cback { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--ctt); flex: none; }
+[dir="rtl"] .cback .ic { transform: scaleX(-1); }
+.chead .avt { width: 42px; height: 42px; }
+.cwho { flex: 1; min-width: 0; }
+.cwho b { display: block; font-size: calc(16px * var(--fz, 1)); }
+.cwho span { display: block; font-size: calc(12px * var(--fz, 1)); color: var(--cmeta); min-height: 1.3em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cwho span.on { color: #2fb67a; font-weight: 700; }
+.cflame { display: flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #ffb347, #ff5e62); color: #fff; border-radius: 999px; padding: 5px 11px; font-weight: 800; font-size: calc(14px * var(--fz, 1)); flex: none; box-shadow: 0 4px 12px rgba(255, 94, 98, .4); }
+.cflame s, .flm-f, .cfl { text-decoration: none; }
+.cflame s { display: inline-block; animation: flick 1.5s ease-in-out infinite; }
+.cflame.none { background: var(--cth); color: var(--ctt); box-shadow: none; border: 1px dashed var(--cmeta); }
+@keyframes flick { 0%, 100% { transform: scale(1) rotate(0); } 30% { transform: scale(1.18) rotate(-7deg); } 60% { transform: scale(1.06) rotate(5deg); } }
+.cmsgs { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 10px 12px 8px; display: flex; flex-direction: column; background-repeat: repeat; }
+.cmsgs::-webkit-scrollbar { display: none; }
+.cmore { align-self: center; margin: 4px 0 8px; font-size: calc(12px * var(--fz, 1)); padding: 5px 14px; border-radius: 999px; background: var(--cth); color: var(--ctt); box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
+.cempty { margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 22px; border-radius: 22px; background: var(--cth); color: var(--ctt); }
+.cempty span { font-size: calc(13px * var(--fz, 1)); color: var(--cmeta); }
+.csep { width: max-content; max-width: 90%; margin: 14px auto 8px; padding: 3px 13px; border-radius: 999px; background: var(--cth); color: var(--cmeta); font-size: calc(12px * var(--fz, 1)); box-shadow: 0 1px 3px rgba(0, 0, 0, .1); }
+.csep.big { font-weight: 700; }
+.cm { position: relative; display: flex; margin-top: 6px; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.cm.me { justify-content: flex-start; } .cm.th { justify-content: flex-end; }
+.cm.tight { margin-top: 2px; } .cm.gap { margin-top: 22px; } .cm.hs { margin-bottom: 12px; }
+.cbub { position: relative; max-width: 82%; will-change: transform; }
+.cb2 { padding: 7px 11px 5px; border-radius: 18px; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; line-height: 1.5; font-size: calc(15.5px * var(--fz, 1)); box-shadow: 0 1px 2px rgba(60, 20, 70, .16); }
+.cb2::after { content: ""; display: block; clear: both; }
+.cm.me .cb2 { background: linear-gradient(135deg, var(--cm1), var(--cm2)); color: var(--cmt); border-end-start-radius: 5px; }
+.cm.th .cb2 { background: var(--cth); color: var(--ctt); border-end-end-radius: 5px; }
+.cm.tight.me .cb2 { border-end-start-radius: 18px; } .cm.tight.th .cb2 { border-end-end-radius: 18px; }
+.ct { float: inline-end; margin-inline-start: 10px; margin-top: 6px; display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; opacity: .78; white-space: nowrap; }
+.ctick { letter-spacing: -3px; margin-inline-start: 2px; } .ctick.rd { color: #9be6ff; letter-spacing: -3px; opacity: 1; }
+html[data-theme="white"] .ctick.rd { color: #7fd8ff; }
+.cq { border-inline-start: 3px solid rgba(255, 255, 255, .85); background: rgba(0, 0, 0, .12); border-radius: 8px; padding: 3px 9px; margin-bottom: 5px; font-size: calc(12.5px * var(--fz, 1)); cursor: pointer; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.cq b { display: block; font-size: calc(11.5px * var(--fz, 1)); opacity: .9; }
+.cm.th .cq { border-inline-start-color: var(--cm2); background: rgba(127, 127, 127, .14); }
+.chh { position: absolute; bottom: -12px; inset-inline-end: 8px; background: var(--cth); border-radius: 999px; padding: 0 6px; font-size: 13px; line-height: 20px; box-shadow: 0 1px 4px rgba(0, 0, 0, .22); animation: cmpop .35s cubic-bezier(.3, 1.8, .5, 1); }
+.chh i { font-style: normal; font-size: 11px; margin-inline-start: 2px; color: var(--ctt); }
+.cswi { position: absolute; top: 50%; margin-top: -15px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--cth); color: var(--cm2); font-size: 16px; opacity: 0; pointer-events: none; box-shadow: 0 2px 8px rgba(0, 0, 0, .2); }
+.cm.flash .cb2 { animation: cmflash 1.2s ease-out; }
+@keyframes cmflash { 0%, 40% { box-shadow: 0 0 0 4px rgba(255, 220, 90, .85); } 100% { box-shadow: 0 1px 2px rgba(60, 20, 70, .16); } }
+.cbig { position: absolute; inset: 0; display: grid; place-items: center; font-size: 58px; pointer-events: none; animation: cbig .8s ease-out forwards; z-index: 3; }
+@keyframes cbig { 0% { transform: scale(.2); opacity: 0; } 30% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1.5) translateY(-24px); opacity: 0; } }
+.ci.new .cm { animation: cmpop .26s cubic-bezier(.2, .9, .3, 1.15); }
+@keyframes cmpop { 0% { transform: translateY(8px) scale(.94); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.cm.touch { justify-content: center; margin: 12px 0; }
+.ctouch { display: flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: 999px; background: linear-gradient(135deg, rgba(255, 126, 182, .32), rgba(162, 63, 181, .26)), var(--cth); color: var(--ctt); font-size: calc(14px * var(--fz, 1)); box-shadow: 0 2px 10px rgba(226, 77, 138, .22); max-width: 92%; }
+.ctouch s { text-decoration: none; font-size: 21px; animation: flick 1.3s ease-in-out infinite; }
+.ctouch time { font-size: 10.5px; color: var(--cmeta); }
+.crep { display: none; align-items: center; gap: 8px; margin: 0 10px; padding: 7px 12px; border-radius: 16px 16px 0 0; background: var(--chd); color: var(--ctt); }
+.crep.on { display: flex; }
+.crq { flex: 1; min-width: 0; border-inline-start: 3px solid var(--cm2); padding-inline-start: 9px; }
+.crq b { display: block; font-size: calc(12px * var(--fz, 1)); color: var(--cm2); }
+.crq span { display: block; font-size: calc(13px * var(--fz, 1)); color: var(--cmeta); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crep > button { color: var(--cmeta); width: 30px; height: 30px; display: grid; place-items: center; }
+.cbar { display: flex; align-items: flex-end; gap: 8px; padding: 8px 10px calc(8px + var(--safe-bottom)); }
+html.kbd .cbar { padding-bottom: 8px; }
+.cbar textarea { flex: 1; min-width: 0; resize: none; border: 0; outline: none; border-radius: 22px; padding: 11px 15px; min-height: 44px; max-height: 120px; background: var(--cinp); color: var(--ctt); font-size: 16px; line-height: 1.4; box-shadow: 0 1px 5px rgba(60, 20, 70, .14); }
+.cbar textarea::placeholder { color: var(--cmeta); opacity: .8; }
+.csend, .cheart { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.csend { background: linear-gradient(135deg, var(--cm1), var(--cm2)); color: #fff; box-shadow: 0 3px 10px rgba(226, 77, 138, .4); }
+[dir="rtl"] .csend .ic { transform: scaleX(-1); }
+.csend:active, .cheart:active { transform: scale(.92); }
+.cheart { background: var(--cinp); font-size: 21px; box-shadow: 0 1px 5px rgba(60, 20, 70, .14); }
+.chcard .pair .avt { width: 46px; height: 46px; }
+.cfl { font-weight: 800; font-size: calc(13px * var(--fz, 1)); padding: 2px 9px; border-radius: 999px; background: rgba(255, 255, 255, .28); white-space: nowrap; }
+.chcard .s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.flm { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 4px 0 8px; }
+.flm-f { font-size: 52px; animation: flick 1.5s ease-in-out infinite; display: inline-block; }
+.flm-n { font-size: 54px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ffb347, #ff5e62); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.flm-l { font-weight: 700; margin-bottom: 4px; }
+.flm-nx { margin-top: 6px; font-size: calc(13px * var(--fz, 1)); padding: 4px 12px; border-radius: 999px; background: rgba(255, 126, 182, .18); }
+.cbgrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+
 </style>
 </head>
 <body>
@@ -1575,13 +1652,13 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v73";
-const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true } };
+const APP_V = "v74";
+const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
   const o = JSON.parse(JSON.stringify(DEF_P));
   if (raw && typeof raw === "object") {
-    ["lang", "theme", "dFrom", "dTo", "fz", "arFont", "frFont", "pet", "lead", "tone", "slen", "vol", "vib"].forEach((k) => { if (raw[k] !== undefined && typeof raw[k] === typeof o[k]) o[k] = raw[k]; });
+    ["lang", "theme", "dFrom", "dTo", "fz", "arFont", "frFont", "pet", "petCol", "petAcc", "petTalk", "petName", "chatBg", "lead", "tone", "slen", "vol", "vib"].forEach((k) => { if (raw[k] !== undefined && typeof raw[k] === typeof o[k]) o[k] = raw[k]; });
     if (!AR_FONTS.includes(o.arFont)) o.arFont = DEF_P.arFont;
     if (!FR_FONTS.includes(o.frFont)) o.frFont = DEF_P.frFont;
     if (raw.n && typeof raw.n === "object") Object.keys(o.n).forEach((k) => { if (typeof raw.n[k] === "boolean") o.n[k] = raw.n[k]; });
@@ -1941,7 +2018,7 @@ const Pet = (() => {
   }
   function sync(force) {
     mk();
-    const show = P.pet && S.stage === "app" && !S.sheet;
+    const show = P.pet && S.stage === "app" && !S.sheet && S.screen !== "chat";
     layer.classList.toggle("hide", !show);
     hidden = !show;
     if (S.stage !== "app") { cur = null; firstTime = true; dragged = false; return; }
@@ -2074,6 +2151,7 @@ const Pet = (() => {
     else if (k === "task") t = `${pn} ${pf ? "ضافت" : "ضاف"} مهمة مشتركة 📝`;
     else if (k === "capsule") t = f ? "انفتحت! تعالي اقرأيها 💌" : "انفتحت! تعال اقرأها 💌";
     else if (k === "newcap") t = "في مفاجأة ناطرتك 🎁";
+    else if (k === "msg") t = "جاتك رسالة 💬";
     else if (k === "avatar") t = f ? "شفتي صورته الجديدة؟ 😍" : "شفت صورتها الجديدة؟ 😍";
     if (!t) return;
     act("wave", 1400); face("wow", 1600); burst(x, y, 6, ["💌", "✨", "💜"]);
@@ -2107,8 +2185,413 @@ const Pet = (() => {
     else if (q < .87) act("spin", 900);
     else act("dance", 1600);
   }
-  return { sync, burst, cheer, react, capCheck, look, allDone, added };
+  function celebrate(t) { if (hidden) return; wake(); act("dance", 1600); face("love", 3000); const [x, y] = center(); burst(x, y, 16, ["🔥", "🎉", "💕", "✨"]); say(t, 4200); }
+  return { sync, burst, cheer, react, capCheck, look, allDone, added, celebrate };
 })();
+
+/* =====================================================
+   الدردشة: رسائل، ردود، قلوب، لمسة، آخر ظهور، فلام
+   ===================================================== */
+const CHAT_PAGE = 60;
+function C() { return S.chat || (S.chat = { msgs: [], more: true, loaded: false, fresh: new Set(), reply: null, typingUntil: 0, seen: null, online: false, loadingOlder: false, lastTypingSent: 0 }); }
+const chatMine = (m) => m.author_id === S.user.id;
+const pfemale = () => other(myWho()) === "hasnaa";
+const hmOf = (t) => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+const sameDayT = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
+const AR_DAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+function chatDayLabel(t) {
+  const d = new Date(t), now = new Date(), y = new Date(); y.setDate(y.getDate() - 1);
+  if (sameDayT(t, now)) return "اليوم";
+  if (sameDayT(t, y)) return "أمس";
+  const diff = (startOfDay(now) - startOfDay(d)) / 864e5;
+  if (diff < 7) return AR_DAYS[d.getDay()];
+  return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+}
+function seenFmt(t) {
+  const d = new Date(t), now = new Date(), y = new Date(); y.setDate(y.getDate() - 1);
+  if (sameDayT(t, now)) return "اليوم " + hmOf(t);
+  if (sameDayT(t, y)) return "أمس " + hmOf(t);
+  return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + hmOf(t);
+}
+function seenText() {
+  const c = C();
+  if (c.typingUntil > Date.now()) return pfemale() ? "عم تكتب..." : "عم يكتب...";
+  if (c.online) return "متصل الآن";
+  return c.seen ? "آخر ظهور " + seenFmt(c.seen) : "";
+}
+function paintSeen() {
+  const el = document.getElementById("cseen"); if (!el) return;
+  el.textContent = seenText();
+  el.classList.toggle("on", C().online || C().typingUntil > Date.now());
+}
+
+/* ----- بيانات ----- */
+function mergeMsg(m) {
+  const c = C(), i = c.msgs.findIndex((x) => x.id === m.id);
+  if (i >= 0) c.msgs[i] = { ...c.msgs[i], ...m };
+  else { c.msgs.push(m); c.msgs.sort((a, b) => ts(a.created_at) - ts(b.created_at)); }
+}
+async function loadChat() {
+  if (!sb || !S.profile) return false;
+  const c = C();
+  try {
+    const { data, error } = await sb.from("messages").select("*").eq("couple_id", S.profile.couple_id).order("created_at", { ascending: false }).limit(CHAT_PAGE);
+    if (error) return false;
+    (data || []).forEach(mergeMsg);
+    if (!c.loaded) c.more = (data || []).length === CHAT_PAGE;
+    c.loaded = true; return true;
+  } catch { return false; }
+}
+async function loadOlder() {
+  const c = C(); if (c.loadingOlder || !c.more) return;
+  const first = c.msgs.find((m) => !m.pending); if (!first) return;
+  c.loadingOlder = true;
+  try {
+    const { data, error } = await sb.from("messages").select("*").eq("couple_id", S.profile.couple_id).lt("created_at", first.created_at).order("created_at", { ascending: false }).limit(CHAT_PAGE);
+    if (!error) { (data || []).forEach(mergeMsg); c.more = (data || []).length === CHAT_PAGE; }
+  } catch {}
+  c.loadingOlder = false; refreshChat("keep");
+}
+const chatUnread = () => C().msgs.filter((m) => !chatMine(m) && !m.read_at && !m.pending).length;
+let readT = null;
+function markChatRead() {
+  clearTimeout(readT);
+  readT = setTimeout(() => {
+    if (S.screen !== "chat" || document.hidden || S.stage !== "app" || !chatUnread()) return;
+    const now = new Date().toISOString();
+    C().msgs.forEach((m) => { if (!chatMine(m) && !m.read_at) m.read_at = now; });
+    try { sb.rpc("mark_chat_read").then(() => {}); } catch {}
+    refreshChat("keep");
+  }, 350);
+}
+
+/* ----- عرض القائمة ----- */
+function chatItems() {
+  const c = C(), out = [];
+  let prev = null;
+  c.msgs.forEach((m) => {
+    let cls = "", sep = null;
+    if (!prev) sep = chatDayLabel(m.created_at), cls = "gap";
+    else {
+      const gap = ts(m.created_at) - ts(prev.created_at);
+      if (!sameDayT(m.created_at, prev.created_at)) sep = chatDayLabel(m.created_at);
+      else if (gap >= 3 * 3600e3) sep = chatDayLabel(m.created_at) + " " + hmOf(m.created_at);
+      else if (gap >= 15 * 60e3) cls = "gap";
+      else if (prev.author_id === m.author_id && prev.kind !== "touch" && m.kind !== "touch" && gap < 2 * 60e3) cls = "tight";
+    }
+    if (sep) out.push({ key: "s" + m.id, html: `<div class="csep${!prev || !sameDayT(m.created_at, prev.created_at) ? " big" : ""}">${esc(sep)}</div>` });
+    const me = chatMine(m), t = hmOf(m.created_at);
+    if (m.kind === "touch") {
+      const who = me ? "بعتّ لمسة" : esc(partnerName()) + (pfemale() ? " بعتتلك لمسة" : " بعتلك لمسة");
+      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm touch" data-id="${m.id}"><div class="ctouch"><s>💗</s><span>${who}: ${ue(m.body)}</span><time>${t}</time></div></div>` });
+    } else {
+      const tick = me ? `<span class="ctick${m.read_at ? " rd" : ""}">${m.pending ? "🕒" : m.read_at ? "✓✓" : "✓"}</span>` : "";
+      const rn = m.reply_by === S.user.id ? "أنت" : partnerName();
+      const q = m.reply_body ? `<div class="cq" data-act="chat-jump" data-id="${esc(m.reply_to || "")}"><b>${esc(rn)}</b>${ue(m.reply_body)}</div>` : "";
+      const hs = (m.hearts || []).length;
+      const hh = hs ? `<span class="chh">❤️${hs > 1 ? `<i>${hs}</i>` : ""}</span>` : "";
+      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm ${me ? "me" : "th"} ${cls}${hs ? " hs" : ""}" data-id="${m.id}"><span class="cswi">↩</span><div class="cbub"><div class="cb2">${q}<span class="cx">${ue(m.body)}</span><span class="ct">${t}${tick}</span></div>${hh}</div></div>` });
+    }
+    prev = m;
+  });
+  return out;
+}
+function chatListHTML() {
+  const c = C(), items = chatItems();
+  let h = c.more && c.msgs.length ? `<button class="cmore" data-act="chat-older">رسائل أقدم</button>` : "";
+  if (!items.length) h += `<div class="cempty">${ic("message", 34)}<b>ابدأ المحادثة</b><span>اكتب أول رسالة، أو ابعت لمسة 💗</span></div>`;
+  return h + items.map((i) => `<div class="ci" data-k="${i.key}" data-h="${hashStr(fin(i.html))}">${i.html}</div>`).join("");
+}
+function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h + ":" + s.length; }
+/* تحديث ذكي: ما بنلمس إلا الرسائل اللي تغيّرت، فما في وميض ولا قفزات */
+function refreshChat(mode) {
+  const list = document.getElementById("cmsgs"); if (!list) return;
+  const c = C(), items = chatItems();
+  const near = list.scrollHeight - list.scrollTop - list.clientHeight < 140;
+  const oldH = list.scrollHeight, oldTop = list.scrollTop;
+  const wanted = new Map(items.map((i) => [i.key, i]));
+  const empty = list.querySelector(".cempty"); if (empty && items.length) empty.remove();
+  const more = list.querySelector(".cmore");
+  if (c.more && c.msgs.length && !more) { const b = document.createElement("button"); b.className = "cmore"; b.dataset.act = "chat-older"; b.textContent = "رسائل أقدم"; list.prepend(b); }
+  else if (more && !(c.more && c.msgs.length)) more.remove();
+  [...list.querySelectorAll(".ci")].forEach((n) => { if (!wanted.has(n.dataset.k)) n.remove(); });
+  let cur = list.querySelector(".ci"), added = false;
+  items.forEach((it) => {
+    const html = fin(it.html), h = hashStr(html);
+    if (cur && cur.dataset.k === it.key) {
+      if (cur.dataset.h !== h) { const n = mkCi(it, html, h, false); cur.replaceWith(n); cur = n.nextElementSibling; } else cur = cur.nextElementSibling;
+      while (cur && !cur.classList.contains("ci")) cur = cur.nextElementSibling;
+    } else {
+      const n = mkCi(it, html, h, it.fresh);
+      if (cur) list.insertBefore(n, cur); else list.appendChild(n);
+      added = true;
+    }
+  });
+  if (!items.length && !list.querySelector(".cempty")) list.insertAdjacentHTML("beforeend", fin(`<div class="cempty">${ic("message", 34)}<b>ابدأ المحادثة</b><span>اكتب أول رسالة، أو ابعت لمسة 💗</span></div>`));
+  c.fresh.clear();
+  if (mode === "bottom" || (near && added)) {
+    if (mode === "bottom") list.scrollTop = list.scrollHeight;
+    else requestAnimationFrame(() => list.scrollTo({ top: list.scrollHeight, behavior: "smooth" }));
+  } else if (mode === "keep" && list.scrollHeight !== oldH && oldTop < 80) list.scrollTop = oldTop + (list.scrollHeight - oldH);
+  else if (near) list.scrollTop = list.scrollHeight;
+}
+function mkCi(it, html, h, fresh) {
+  const d = document.createElement("div"); d.className = "ci" + (fresh ? " new" : ""); d.dataset.k = it.key; d.dataset.h = h; d.innerHTML = html; return d;
+}
+
+/* ----- الشاشة ----- */
+function chatHTML() {
+  const w = other(myWho()), c = C(), rp = c.reply;
+  return `<div class="chat">
+    <header class="chead">
+      <button class="cback" data-act="back" aria-label="back">${ic("chev", 22)}</button>
+      <span class="avt ${avCls(w)}"></span>
+      <div class="cwho"><b>${esc(partnerName())}</b><span id="cseen" class="${c.online ? "on" : ""}">${esc(seenText())}</span></div>
+      ${flameChip()}
+    </header>
+    <div class="cmsgs" id="cmsgs">${chatListHTML()}</div>
+    <div class="crep${rp ? " on" : ""}" id="crep"><div class="crq"><b id="crn">${rp ? esc(rp.author_id === S.user.id ? "ردّ على نفسك" : "ردّ على " + partnerName()) : ""}</b><span id="crt">${rp ? ue(rp.body.slice(0, 120)) : ""}</span></div><button data-act="chat-cancel-reply" aria-label="cancel">${ic("x", 18)}</button></div>
+    <div class="cbar">
+      <button class="csend" data-act="chat-send" data-keepfocus="1" aria-label="send">${ic("send", 20)}</button>
+      <textarea id="cin" data-keep="cin" rows="1" maxlength="4000" autocomplete="off" placeholder="اكتب رسالة…"></textarea>
+      <button class="cheart" data-chatheart="1" data-keepfocus="1" aria-label="touch">💗</button>
+    </div>
+  </div>`;
+}
+function flameChip() {
+  const n = flameDays();
+  return `<button class="cflame${n == null ? " none" : ""}" data-act="flame" aria-label="flame"><s>🔥</s><b>${n == null ? "حدّد التاريخ" : n}</b></button>`;
+}
+function chatPreview() {
+  const m = [...C().msgs].reverse().find((x) => !x.pending);
+  if (!m) return "ابدأ المحادثة 💬";
+  const t = m.kind === "touch" ? "💗 " + m.body : m.body;
+  return (chatMine(m) ? "أنت: " : "") + t.slice(0, 60);
+}
+function autosize(t) { if (!t) return; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 120) + "px"; }
+function paintReply() {
+  const c = C(), rp = c.reply, box = document.getElementById("crep"); if (!box) return;
+  box.classList.toggle("on", !!rp);
+  const n = document.getElementById("crn"), t = document.getElementById("crt");
+  if (rp && n && t) { n.textContent = rp.author_id === S.user.id ? "ردّ على نفسك" : "ردّ على " + partnerName(); t.textContent = trS(rp.body.slice(0, 120)); }
+}
+function startReply(id) {
+  const m = C().msgs.find((x) => x.id === id); if (!m || m.kind === "touch") return;
+  C().reply = { id: m.id, body: m.body, author_id: m.author_id }; paintReply();
+  const i = document.getElementById("cin"); if (i) { try { i.focus({ preventScroll: true }); } catch {} }
+}
+async function sendChat(kind, text) {
+  const inp = document.getElementById("cin"), c = C();
+  const body = ((kind === "touch" ? text : inp && inp.value) || "").trim(); if (!body) return;
+  const rep = kind === "text" ? c.reply : null;
+  if (kind === "text") { if (inp) { inp.value = ""; autosize(inp); } c.reply = null; paintReply(); }
+  const tmp = { id: "tmp-" + Date.now() + Math.random().toString(36).slice(2, 6), couple_id: S.profile.couple_id, author_id: S.user.id, kind, body, reply_to: rep ? rep.id : null, reply_body: rep ? rep.body.slice(0, 140) : null, reply_by: rep ? rep.author_id : null, hearts: [], read_at: null, created_at: new Date().toISOString(), pending: true };
+  c.msgs.push(tmp); c.fresh.add(tmp.id); refreshChat("bottom");
+  const row = { couple_id: tmp.couple_id, author_id: tmp.author_id, kind, body, reply_to: tmp.reply_to, reply_body: tmp.reply_body, reply_by: tmp.reply_by };
+  let res; try { res = await sb.from("messages").insert(row).select("*").single(); } catch (e) { res = { error: e }; }
+  c.msgs = c.msgs.filter((m) => m.id !== tmp.id);
+  if (res.error || !res.data) { toast(mapError(res.error)); if (kind === "text" && inp && !inp.value) { inp.value = body; autosize(inp); } refreshChat(); return; }
+  mergeMsg(res.data); refreshChat("bottom");
+  if (kind === "touch") { burstAtHeart(); }
+}
+function burstAtHeart() {
+  const b = document.querySelector(".cheart"); if (!b) return;
+  const r = b.getBoundingClientRect(); Pet.burst(r.left + r.width / 2, r.top, 9, ["💗", "💕", "❤️", "✨"]);
+}
+const touchOptions = () => { const f = pfemale(); return ["عم فكر فيك" + (f ? "ي" : "") + " 💭", "اشتقتلك 🥺", "بحبك 💕", "حضن كبير 🫂", "صباح الخير ☀️", "تصبح" + (f ? "ي" : "") + " على خير 🌙"]; };
+async function toggleHeart(id) {
+  const m = C().msgs.find((x) => x.id === id); if (!m || m.pending || m.kind === "touch") return;
+  const me = S.user.id, hs = (m.hearts || []).slice(), i = hs.indexOf(me);
+  if (i >= 0) hs.splice(i, 1); else hs.push(me);
+  m.hearts = hs; refreshChat();
+  if (i < 0) {
+    const row = document.querySelector(`.cm[data-id="${id}"]`);
+    if (row) { const h = document.createElement("div"); h.className = "cbig"; h.textContent = "❤️"; row.appendChild(h); setTimeout(() => h.remove(), 850); }
+    if (navigator.vibrate) try { navigator.vibrate(10); } catch {}
+  }
+  try { const { error } = await sb.rpc("heart_message", { p_id: id }); if (error) throw error; } catch { toast("ما قدرت أحفظ القلب"); loadChat().then(() => refreshChat()); }
+}
+function chatOnInsert(m) {
+  const c = C(); if (c.msgs.some((x) => x.id === m.id)) return;
+  if (chatMine(m)) { const i = c.msgs.findIndex((x) => x.pending && x.body === m.body && x.kind === m.kind); if (i >= 0) c.msgs.splice(i, 1); }
+  mergeMsg(m);
+  if (chatMine(m)) { if (S.screen === "chat") refreshChat(); return; }
+  c.typingUntil = 0;
+  if (S.screen === "chat" && !document.hidden) {
+    c.fresh.add(m.id); refreshChat(); paintSeen(); markChatRead();
+    if (m.kind === "touch") { const b = document.querySelector(".chead .avt"); if (b) { const r = b.getBoundingClientRect(); Pet.burst(r.left + r.width / 2, r.bottom, 10, ["💗", "💕", "❤️"]); } if (navigator.vibrate) try { navigator.vibrate([20, 40, 20]); } catch {} }
+  } else if (S.stage === "app" && !document.hidden) {
+    toast("💬 " + partnerName() + ": " + (m.kind === "touch" ? "💗 " : "") + m.body.slice(0, 40)); playTone();
+    Pet.react("msg");
+    if (!S.sheet) render();
+  }
+}
+function chatOnUpdate(m) {
+  const c = C(), cur = c.msgs.find((x) => x.id === m.id); if (!cur) return;
+  mergeMsg(m); if (S.screen === "chat") refreshChat();
+}
+
+/* ----- الحضور وآخر ظهور ----- */
+async function seenPing() { if (!sb || !S.user || S.stage !== "app" || document.hidden) return; try { await sb.rpc("touch_seen"); } catch {} }
+async function refreshSeen() {
+  if (!sb || !S.user || S.stage !== "app") return;
+  try {
+    const r = await sb.from("profiles").select("who,last_seen"); if (r.error) return;
+    const p = (r.data || []).find((x) => x.who === other(myWho()));
+    if (p && p.last_seen) { C().seen = ts(p.last_seen); paintSeen(); }
+  } catch {}
+}
+function connectPresence() {
+  if (!sb || !S.profile) return;
+  try {
+    if (S.presCh) sb.removeChannel(S.presCh);
+    const me = S.user.id, ch = sb.channel("pres-" + S.profile.couple_id, { config: { presence: { key: me } } });
+    ch.on("presence", { event: "sync" }, () => {
+      const on = Object.keys(ch.presenceState()).some((k) => k !== me), c = C();
+      if (c.online !== on) { c.online = on; if (!on) setTimeout(refreshSeen, 1500); paintSeen(); }
+    }).on("broadcast", { event: "typing" }, (p) => {
+      if (p && p.payload && p.payload.u !== me) { C().typingUntil = Date.now() + 4000; paintSeen(); setTimeout(paintSeen, 4200); }
+    }).subscribe((st) => { if (st === "SUBSCRIBED" && !document.hidden) { try { ch.track({ at: Date.now() }); } catch {} } });
+    S.presCh = ch;
+  } catch {}
+}
+function presenceVis() {
+  try { if (!S.presCh) return; if (document.hidden) S.presCh.untrack(); else S.presCh.track({ at: Date.now() }); } catch {}
+  if (document.hidden) { try { sb.rpc("touch_seen").then(() => {}); } catch {} } else seenPing();
+}
+function sendTyping() {
+  const c = C(), now = Date.now(); if (now - c.lastTypingSent < 2500 || !S.presCh) return; c.lastTypingSent = now;
+  try { S.presCh.send({ type: "broadcast", event: "typing", payload: { u: S.user.id } }); } catch {}
+}
+
+/* ----- الفلام ----- */
+async function loadSince() { try { const r = await sb.from("couple_meta").select("since").maybeSingle(); S.since = r && r.data ? r.data.since : S.since || null; } catch {} }
+function sinceDate() { if (!S.since) return null; const [y, m, d] = String(S.since).split("-").map(Number); return new Date(y, m - 1, d); }
+function flameDays() { const s = sinceDate(); if (!s) return null; return Math.max(0, Math.round((startOfDay(new Date()) - s) / 864e5)); }
+function ymdSince() {
+  const s = sinceDate(), t = startOfDay(new Date()); if (!s) return "";
+  let y = t.getFullYear() - s.getFullYear(), m = t.getMonth() - s.getMonth(), d = t.getDate() - s.getDate();
+  if (d < 0) { m--; d += new Date(t.getFullYear(), t.getMonth(), 0).getDate(); }
+  if (m < 0) { y--; m += 12; }
+  const parts = [];
+  if (y) parts.push(y === 1 ? "سنة" : y === 2 ? "سنتين" : y + (y < 11 ? " سنين" : " سنة"));
+  if (m) parts.push(m === 1 ? "شهر" : m === 2 ? "شهرين" : m + (m < 11 ? " شهور" : " شهر"));
+  if (d || !parts.length) parts.push(d === 1 ? "يوم" : d === 2 ? "يومين" : d + (d < 11 ? " أيام" : " يوم"));
+  return parts.join(" و");
+}
+const FLAME_MS = [100, 200, 300, 365, 500, 730, 1000, 1095, 1461, 1500, 1826, 2000, 2500, 3000];
+function nextMilestone(n) { const nx = FLAME_MS.find((x) => x > n); return nx || (Math.floor(n / 365) + 1) * 365; }
+async function saveSince() {
+  const el = document.getElementById("flame-date"), v = el && el.value; if (!v) return toast("اختار التاريخ");
+  try { const { error } = await sb.rpc("set_since", { p_since: v }); if (error) throw error; S.since = v; S.sheet = null; toast("انحفظ ✓ 🔥"); render(true); }
+  catch (e) { toast(/bad_date/.test((e && e.message) || "") ? "تاريخ غير صحيح" : "ما انحفظ، تأكد من تشغيل chat.sql"); }
+}
+function flameCheck() {
+  const n = flameDays(); if (n == null || n < 1 || S.stage !== "app" || S.sheet) return;
+  if (!(FLAME_MS.includes(n) || n % 365 === 0)) return;
+  const key = "hf_fl_" + n; if (loadJSON(key, false)) return;
+  saveJSON(key, true);
+  const txt = n % 365 === 0 ? `🔥 ${n / 365 === 1 ? "سنة كاملة" : n / 365 + " سنين"} مع بعض! كل عام وأنتو أحلى 🎉` : `🔥 ${n} يوم مع بعض! 🎉`;
+  toast(txt); Pet.celebrate(txt);
+}
+
+/* ----- الخلفية ----- */
+const CHAT_BGS = {
+  none: "", rose: "radial-gradient(circle at 15% 12%, rgba(255,126,182,.28), transparent 45%), radial-gradient(circle at 85% 78%, rgba(162,63,181,.22), transparent 50%)",
+  hearts: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'><text x='8' y='34' font-size='22' opacity='.16'>💗</text><text x='52' y='74' font-size='18' opacity='.12'>💕</text></svg>\")",
+  night: "radial-gradient(circle at 20% 8%, rgba(120,110,255,.30), transparent 45%), radial-gradient(circle at 80% 88%, rgba(40,120,200,.22), transparent 50%)",
+  sunset: "linear-gradient(180deg, rgba(255,150,90,.30), rgba(226,77,138,.26) 55%, rgba(110,60,170,.30))",
+  mint: "radial-gradient(circle at 80% 10%, rgba(120,220,190,.30), transparent 48%), radial-gradient(circle at 12% 85%, rgba(90,170,230,.22), transparent 50%)"
+};
+const chatPhotoKey = () => "hf_chatbg_" + myWho();
+function paintChatBg() {
+  const el = document.getElementById("cmsgs"); if (!el) return;
+  let bg = "", size = "", extra = "";
+  if (P.chatBg === "photo") {
+    const u = loadJSON(chatPhotoKey(), ""); if (u) { bg = `linear-gradient(rgba(10,6,20,.28), rgba(10,6,20,.28)), url("${u}")`; size = "cover"; extra = "center"; }
+  } else bg = CHAT_BGS[P.chatBg] || "";
+  el.style.backgroundImage = bg; el.style.backgroundSize = P.chatBg === "hearts" ? "90px 90px" : size; el.style.backgroundPosition = extra;
+  el.classList.toggle("photo", P.chatBg === "photo" && !!bg);
+}
+function pickChatPhoto(file) {
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => {
+    const mx = 900, k = Math.min(1, mx / Math.max(img.width, img.height)), cv = document.createElement("canvas");
+    cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+    cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+    const data = cv.toDataURL("image/jpeg", .72);
+    try { localStorage.setItem(chatPhotoKey(), JSON.stringify(data)); P.chatBg = "photo"; savePrefs(); toast("انحفظت الخلفية ✓"); render(); }
+    catch { toast("الصورة كبيرة، جرّب غيرها"); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast("ما قدرت أقرأ الصورة"); };
+  img.src = url;
+}
+
+/* ----- اللمس: سحب للرد، ضغطتين = قلب، ضغطة طويلة = قائمة، قلب اللمسة ----- */
+function initChat() {
+  let G = null, lastTap = { id: "", t: 0 };
+  const SW_AT = 40, SW_MAX = 90;
+  const release = (g, animate) => { const b = g.row.querySelector(".cbub"); if (!b) return; b.style.transition = animate ? "transform .28s cubic-bezier(.2,.9,.3,1.1)" : "none"; b.style.transform = ""; g.row.classList.remove("swp"); const ic3 = g.row.querySelector(".cswi"); if (ic3) { ic3.style.opacity = 0; ic3.style.transform = ""; } setTimeout(() => { b.style.transition = ""; }, 320); };
+  root.addEventListener("pointerdown", (e) => {
+    if (S.screen !== "chat" || (e.button && e.button > 0)) return;
+    const hb = e.target.closest && e.target.closest("[data-chatheart]");
+    if (hb) {
+      G = { kind: "heart", pid: e.pointerId, lp: setTimeout(() => { if (G && G.kind === "heart") { G.fired = true; if (navigator.vibrate) try { navigator.vibrate(14); } catch {} S.sheet = { type: "touch" }; render(true); } }, 450) };
+      return;
+    }
+    const row = e.target.closest && e.target.closest(".cm:not(.touch)"); if (!row || e.target.closest("[data-act]")) return;
+    G = { kind: "row", row, id: row.dataset.id, x: e.clientX, y: e.clientY, mode: "", pid: e.pointerId, dx: 0, armed: false, lp: setTimeout(() => { if (G && G.kind === "row" && !G.mode) { G.mode = "lp"; if (navigator.vibrate) try { navigator.vibrate(12); } catch {} S.sheet = { type: "msgact", id: G.id }; render(true); } }, 520) };
+  });
+  root.addEventListener("pointermove", (e) => {
+    if (!G || G.kind !== "row" || e.pointerId !== G.pid) return;
+    const dx = e.clientX - G.x, dy = e.clientY - G.y;
+    if (!G.mode) {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.8) { G.mode = "h"; clearTimeout(G.lp); G.row.classList.add("swp"); try { G.row.setPointerCapture(e.pointerId); } catch {} }
+      else if (Math.abs(dy) > 8) { G.mode = "v"; clearTimeout(G.lp); }
+    }
+    if (G.mode !== "h") return;
+    const raw = Math.abs(dx) * .6, d = Math.min(SW_MAX, raw) * (dx < 0 ? -1 : 1); G.dx = d;
+    const b = G.row.querySelector(".cbub"), ic2 = G.row.querySelector(".cswi");
+    if (b) { b.style.transition = "none"; b.style.transform = `translateX(${d}px)`; }
+    if (ic2) { ic2.style.left = d > 0 ? "10px" : "auto"; ic2.style.right = d < 0 ? "10px" : "auto"; ic2.style.opacity = Math.min(1, Math.abs(d) / SW_AT); ic2.style.transform = `scale(${.6 + Math.min(1, Math.abs(d) / SW_AT) * .5})`; }
+    const armed = Math.abs(d) >= SW_AT; if (armed && !G.armed && navigator.vibrate) try { navigator.vibrate(8); } catch {} G.armed = armed;
+  });
+  const end = (e, cancel) => {
+    if (!G || e.pointerId !== G.pid) return;
+    const g = G; G = null; clearTimeout(g.lp);
+    if (g.kind === "heart") { if (!g.fired && !cancel) sendChat("touch", touchOptions()[0]); return; }
+    if (g.mode === "h") { release(g, true); if (!cancel && g.armed) startReply(g.id); return; }
+    if (g.mode || cancel) return;
+    const now = Date.now();
+    if (lastTap.id === g.id && now - lastTap.t < 320) { lastTap = { id: "", t: 0 }; toggleHeart(g.id); } else lastTap = { id: g.id, t: now };
+  };
+  root.addEventListener("pointerup", (e) => end(e, false));
+  root.addEventListener("pointercancel", (e) => end(e, true));
+  root.addEventListener("contextmenu", (e) => { if (S.screen === "chat" && e.target.closest && e.target.closest(".cm, .cheart")) e.preventDefault(); });
+  // ما نخلي الزر يسحب التركيز من خانة الكتابة (الكيبورد ما بيسكر)
+  root.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest("[data-keepfocus]")) e.preventDefault(); });
+  root.addEventListener("scroll", (e) => { const t = e.target; if (t && t.id === "cmsgs" && t.scrollTop < 60 && C().more && !C().loadingOlder && C().msgs.length) loadOlder(); }, true);
+  root.addEventListener("input", (e) => { const t = e.target; if (t && t.id === "cin") { autosize(t); if (t.value.trim()) sendTyping(); } });
+  root.addEventListener("keydown", (e) => { const t = e.target; if (t && t.id === "cin" && e.key === "Enter" && !e.shiftKey && window.matchMedia("(pointer:fine)").matches) { e.preventDefault(); sendChat("text"); } });
+  document.addEventListener("focusin", (e) => { if (e.target && e.target.id === "cin") { setTimeout(() => { const l = document.getElementById("cmsgs"); if (l) l.scrollTop = l.scrollHeight; }, 280); } });
+}
+/* بعد كل render للشاشة */
+function chatMounted(first) {
+  paintChatBg(); autosize(document.getElementById("cin"));
+  if (first) { const l = document.getElementById("cmsgs"); if (l) l.scrollTop = l.scrollHeight; refreshSeen(); loadChat().then(() => { if (S.screen === "chat") { refreshChat(); markChatRead(); } }); }
+  markChatRead(); paintSeen();
+  clearInterval(S.chatT); S.chatT = setInterval(() => { if (S.screen !== "chat") { clearInterval(S.chatT); return; } refreshSeen(); paintSeen(); }, 20000);
+}
+function chatCardHTML() {
+  const w = other(myWho()), un = chatUnread(), n = flameDays();
+  return `<button class="uscard chcard" data-act="open" data-v="chat"><span class="pair"><span class="avt ${avCls(w)}"></span></span><span class="tx"><b>دردشة مع ${esc(partnerName())}</b><span class="s">${ue(chatPreview())}</span></span>${un ? `<span class="pill light">${un}</span>` : ""}${n != null ? `<span class="cfl">🔥${n}</span>` : ""}${ic("chev", 22)}</button>`;
+}
+function chatJump(id) {
+  const row = id && document.querySelector(`.cm[data-id="${id}"]`);
+  if (!row) return toast("الرسالة قديمة، حمّل رسائل أقدم");
+  row.scrollIntoView({ block: "center", behavior: "smooth" });
+  row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash"); setTimeout(() => row.classList.remove("flash"), 1400);
+}
 
 /* =====================================================
    4. Rendu
@@ -2127,6 +2610,8 @@ function smoothAnims(snap, finishNew) {
   });
 }
 function render(fresh) {
+  if (!fresh && S.stage === "app" && S.screen === "chat" && !S.sheet && root.querySelector("#cmsgs")) return;
+  const cml = root.querySelector("#cmsgs"), cmTop = cml ? cml.scrollTop : 0, cmNear = cml ? cml.scrollHeight - cml.scrollTop - cml.clientHeight < 140 : true;
   const keep = fresh ? [] : [...root.querySelectorAll("[data-keep]")].map((el) => ({ k: el.dataset.keep, v: el.value, f: el === document.activeElement, s: el.selectionStart, e: el.selectionEnd }));
   const sc = root.querySelector(".in");
   const st = sc ? sc.scrollTop : 0;
@@ -2159,6 +2644,7 @@ function render(fresh) {
   const nsc = root.querySelector(".in");
   if (nsc && key2 === lastKey2) nsc.scrollTop = st;
   const nsh = root.querySelector(".sheet"); if (nsh && key === lastKey) nsh.scrollTop = shst;
+  if (S.screen === "chat" && S.stage === "app") { const nl = root.querySelector("#cmsgs"); if (nl && key2 === lastKey2) nl.scrollTop = cmNear ? nl.scrollHeight : cmTop; chatMounted(key2 !== lastKey2); }
   lastKey = key; lastKey2 = key2;
   if (S.stage === "gate") paintGate();
   Pet.sync();
@@ -2255,9 +2741,10 @@ function appHTML() {
     case "question": body = questionHTML(); break;
     case "capsules": body = capsulesHTML(); break;
     case "notif": body = notifHTML(); break;
+    case "chat": body = chatHTML(); break;
   }
   const fab = S.screen === "mine" || S.screen === "shared" ? `<button class="fab ${tabbed ? "" : "low"}" data-act="add" aria-label="add">${ic("plus", 28)}</button>` : "";
-  const back = !tabbed ? `<button class="back" data-act="back" aria-label="back">${ic("chev", 22)}</button>` : "";
+  const back = !tabbed && S.screen !== "chat" ? `<button class="back" data-act="back" aria-label="back">${ic("chev", 22)}</button>` : "";
   return `<section class="screen"${nav ? ` data-nav="${nav}"` : ""}>${body}${back}${fab}${tabbed ? tabsHTML() : ""}${sheetHTML()}</section>`;
 }
 
@@ -2274,6 +2761,7 @@ function homeHTML() {
   <button class="bellbtn" data-act="notif-open" aria-label="notifications">${ic("bell", 22)}${unread ? `<span class="badge">${unread}</span>` : ""}</button>
   <div class="in" style="padding-top:calc(66px + var(--safe-top))">
     <div class="hello"><div class="avt lg ${avCls(w)}"></div><div><b>مرحباً ${esc(myName())}</b><span>${greeting()}</span></div></div>
+    ${chatCardHTML()}
     <button class="uscard" data-act="tab" data-v="us">
       <span class="pair"><span class="avt h"></span><span class="avt f"></span></span>
       <span class="tx"><b>نحن معا</b><span class="s">مهامنا · سؤال اليوم · كبسولة الزمن</span></span>
@@ -2511,6 +2999,20 @@ function sheetHTML() {
     inner = `<h3>التعليقات</h3><div class="cm-task">${ue(t.title)}</div>
       <div class="clist" id="clist">${commentListHTML(t.id)}</div>
       <div class="cm-send"><span class="avt sm ${avCls(myWho())}"></span><input data-keep="cm-in" id="cm-in" type="text" maxlength="500" autocomplete="off" placeholder="اكتب تعليق…"><button class="cm-btn" data-act="cm-send" data-id="${t.id}" aria-label="send">${ic("send", 20)}</button></div>`;
+  } else if (sh.type === "msgact") {
+    const m = C().msgs.find((x) => x.id === sh.id); if (!m) return "";
+    const hearted = (m.hearts || []).includes(S.user.id);
+    inner = `<h3>الرسالة</h3><div class="cm-task">${ue(m.body.slice(0, 160))}</div>
+      <button class="btn" data-act="msg-reply">↩ رد</button>
+      <button class="btn light" data-act="msg-heart">${hearted ? "إلغاء القلب 💔" : "❤️ قلب"}</button>
+      <button class="btn light" data-act="msg-copy">${ic("clip", 18)} نسخ</button>`;
+  } else if (sh.type === "touch") {
+    inner = `<h3>ابعت لمسة 💗</h3><div class="muted small" style="text-align:center;margin:-2px 0 8px">اختار شو بدك توصّل لـ${esc(partnerName())}</div>${touchOptions().map((t, i) => `<button class="btn light" data-act="touch-pick" data-v="${i}">${t}</button>`).join("")}`;
+  } else if (sh.type === "flame") {
+    const n = flameDays(), nx = n == null ? 0 : nextMilestone(n), sd = sinceDate();
+    inner = `<h3>🔥 فلامنا</h3>${n == null ? `<div class="muted small" style="text-align:center;margin-bottom:8px">اختار التاريخ اللي بلّشتوا فيه. بينعدّ كل يوم لحاله وما بينطفي أبداً.</div>` : `<div class="flm"><div class="flm-f">🔥</div><div class="flm-n">${n}</div><div class="flm-l">يوم مع بعض</div><div class="muted small">منذ ${sd.getDate()}/${sd.getMonth() + 1}/${sd.getFullYear()} · ${ymdSince()}</div><div class="flm-nx">المحطة الجاية: ${nx} يوم (بعد ${nx - n} يوم)</div></div>`}
+      <div class="ink-input"><div class="lbl">تاريخ البداية</div><input data-keep="flame-date" id="flame-date" type="date" max="${localDay()}" value="${esc(S.since || "")}"></div>
+      <button class="btn" data-act="flame-save">حفظ</button>`;
   } else if (sh.type === "notif") {
     const ns = (S.sheet.evs || []).concat(buildNotifs());
     const perm = "Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied"
@@ -2560,11 +3062,15 @@ function sheetHTML() {
       <div class="sgrp small2">الاسم</div>
       <div class="namerow"><input data-keep="pet-nm" id="pet-nm" type="text" maxlength="12" value="${esc(P.petName || "بيمو")}"><button class="btn" data-act="pet-name">حفظ</button></div>
 
+      <div class="sgrp">خلفية الدردشة</div>
+      <div class="opts">${[["none", "بدون"], ["rose", "وردي"], ["hearts", "قلوب"], ["sunset", "غروب"], ["night", "ليل"], ["mint", "نعناع"]].concat(loadJSON(chatPhotoKey(), "") ? [["photo", "صورتي"]] : []).map(([v, l]) => chip("chatBg", v, l, P.chatBg === v)).join("")}</div>
+      <div class="cbgrow"><label class="btn light sm">${ic("camera", 16)} اختيار صورة<input id="cbg-file" type="file" accept="image/*" hidden></label>${loadJSON(chatPhotoKey(), "") ? `<button class="btn light sm" data-act="cbg-clear">حذف الصورة</button>` : ""}</div>
+
       <div class="sgrp">الإشعارات</div>
       <div class="notrow"><span>إشعارات الهاتف</span>${perm === "denied" ? `<b class="nok">مقفلة من إعدادات الجهاز</b>` : perm === "unsupported" ? `<b class="nok">غير مدعومة هون</b>` : pushOn() ? `<b class="okk">مفعّلة ✓</b>` : `<button class="btn light sm" data-act="enable-notif">${ic("bell", 16)} فعّلها</button>`}</div>
       ${pushOn() ? `<div class="notrow"><button class="btn light sm" data-act="test-push">جرّب إشعار</button><button class="btn light sm" data-act="test-open">جرّب فتح الكبسولات من إشعار</button><button class="btn light sm" data-act="disable-push">إيقاف</button></div>` : `<div class="muted small" style="margin:4px 2px 8px">${isIOS() && !isStandalone() ? "بالآيفون: افتح التطبيق من Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية»، وبعدين فعّلها من داخل التطبيق." : "بتوصلك إشعارات حتى لو التطبيق مسكّر."}</div>`}
       <div class="notrow"><button class="btn light sm" data-act="test-partner">${ic("bell", 16)} ابعت إشعار تجريبي لشريكي</button></div>
-      ${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}
+      ${tg("pref-n", "chat", "رسائل الدردشة", P.n.chat)}${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}
       <div class="sgrp small2">التذكير قبل الموعد بـ</div>
       <div class="opts">${[5, 15, 30, 60].map((m) => chip("lead", m, m + " د", P.lead === m)).join("")}</div>
       <div class="sgrp small2">النغمة</div>
@@ -2678,27 +3184,29 @@ async function goOpen(k, id) {
   if (!t && k === "task") { const lt = [...S.tasks].filter((x) => x.created_by !== S.user.id && (x.scope === "shared" || x.owner_id !== S.user.id || true)).sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""))[0]; if (lt) { t = lt; id = lt.id; } }
   if ((k === "comment" || k === "task") && t) { S.nav = "push"; S.screen = t.scope === "shared" ? "shared" : t.owner_id === S.user.id ? "mine" : "partner"; if (S.screen === "mine") S.nav = "tab"; render(true); if (k === "comment") setTimeout(() => openComments(id), 380); return; }
   if (k === "task") { S.nav = "tab"; S.screen = "mine"; render(true); return; }
+  if (k === "chat") { S.nav = "push"; S.screen = "chat"; render(true); return; }
   if (k === "capsule" || k === "capsules") { S.nav = "push"; S.screen = "capsules"; render(true); if (k === "capsule" && id && S.capsules.some((x) => x.id === id)) setTimeout(() => openCapsule(id), 380); return; }
   if (k === "question") { S.nav = "push"; S.screen = "question"; S.editAns = false; render(true); return; }
   S.nav = "tab"; S.screen = "home"; render(true);
 }
 async function enterApp() {
   S.today = localDay();
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies()]);
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), loadChat(), loadSince()]);
   initSeen();
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
   render(true);
   root.classList.add("entering"); setTimeout(() => root.classList.remove("entering"), 900);
-  connectRealtime();
+  connectRealtime(); connectPresence(); seenPing();
   S.timers.forEach(clearInterval);
-  S.timers = [setInterval(tick, 30000), setInterval(poll, 25000)];
+  S.timers = [setInterval(tick, 30000), setInterval(poll, 25000), setInterval(seenPing, 45000)];
   tick();
   if (S.pendingOpen) { const p = S.pendingOpen; S.pendingOpen = null; setTimeout(() => goOpen(p.k, p.id), 900); }
 }
 
 function teardown() {
   S.timers.forEach(clearInterval); S.timers = [];
+  clearInterval(S.chatT); if (S.presCh) { try { sb.removeChannel(S.presCh); } catch {} S.presCh = null; } S.chat = null; S.since = null;
   if (S.dbChannel && sb) { sb.removeChannel(S.dbChannel); S.dbChannel = null; }
   Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], sheet: null, screen: "home", capUrls: {}, creplies: [], picked: [], editAns: false });
 }
@@ -2799,13 +3307,16 @@ function connectRealtime() {
     })
     .on("postgres_changes", { event: "*", schema: "public", table: "task_comments", filter: "couple_id=eq." + cid }, async () => { await loadComments(); checkEvents(); if (S.sheet && S.sheet.type === "comments") refreshComments(); else if (!S.sheet && S.stage === "app") render(); })
     .on("postgres_changes", { event: "*", schema: "public", table: "answers", filter: "couple_id=eq." + cid }, async () => { await loadAnswers(); checkEvents(); if (!S.sheet && S.stage === "app") render(); })
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnInsert(p.new); })
+    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnUpdate(p.new); })
     .subscribe();
 }
 
 async function poll() {
   if (document.hidden || S.stage !== "app" || !S.profile || S.sheet) return;
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncNames()]);
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncNames(), loadChat(), loadSince()]);
   checkEvents();
+  if (S.screen === "chat") { await loadChat(); refreshChat(); markChatRead(); return; }
   render();
 }
 
@@ -2929,7 +3440,7 @@ function tick() {
     }
   });
   if (changed) saveJSON("hf_notified", [...S.notified].slice(-200));
-  checkEvents(); Pet.capCheck();
+  checkEvents(); Pet.capCheck(); flameCheck();
   if (S.today !== localDay()) { S.today = localDay(); loadAnswers().then(() => render()); return; }
   if ((S.screen === "home" || S.screen === "notif") && !S.sheet) render();
 }
@@ -2989,6 +3500,17 @@ async function onClick(e) {
     case "pref-n": { const k = el.dataset.k; if (k in P.n) { P.n[k] = !P.n[k]; savePrefs(); flip(el); } break; }
     case "pref-pet": P.pet = !P.pet; savePrefs(); flip(el); if (P.pet) setTimeout(() => Pet.cheer(), 450); break;
     case "pet-name": { const i = document.getElementById("pet-nm"), nv = ((i && i.value) || "").trim().slice(0, 12); if (!nv) return toast("اكتب اسم"); P.petName = nv; savePrefs(); toast("انحفظ ✓"); render(); break; }
+    case "chat-send": return sendChat("text");
+    case "chat-older": return loadOlder();
+    case "chat-cancel-reply": C().reply = null; return paintReply();
+    case "chat-jump": return chatJump(id);
+    case "flame": S.sheet = { type: "flame" }; render(true); break;
+    case "flame-save": return saveSince();
+    case "touch-pick": { S.sheet = null; render(true); const tx = touchOptions()[+v]; setTimeout(() => sendChat("touch", tx), 60); break; }
+    case "msg-reply": { const mid = S.sheet && S.sheet.id; S.sheet = null; render(true); setTimeout(() => startReply(mid), 80); break; }
+    case "msg-heart": { const mid = S.sheet && S.sheet.id; S.sheet = null; render(true); setTimeout(() => toggleHeart(mid), 80); break; }
+    case "msg-copy": { const m = C().msgs.find((x) => x.id === (S.sheet && S.sheet.id)); S.sheet = null; render(true); if (m) { try { navigator.clipboard.writeText(m.body).then(() => toast("نُسخ ✓"), () => toast("ما قدرت أنسخ")); } catch { toast("ما قدرت أنسخ"); } } break; }
+    case "cbg-clear": P.chatBg = "rose"; try { localStorage.removeItem(chatPhotoKey()); } catch {} savePrefs(); render(); break;
     case "name-save": return saveName();
     case "crop-save": return closeCrop(true);
     case "crop-cancel": return closeCrop(false);
@@ -3306,6 +3828,7 @@ function closeCrop(save) {
 }
 function bind() {
   root.addEventListener("click", onClick);
+  initChat();
   let lpT = null, lpX = 0, lpY = 0;
   root.addEventListener("pointerdown", (e) => {
     const tb = e.target.closest(".tbody"); if (!tb) return;
@@ -3317,6 +3840,7 @@ function bind() {
   root.addEventListener("pointermove", (e) => { if (lpT && Math.hypot(e.clientX - lpX, e.clientY - lpY) > 10) lpCancel(); });
   root.addEventListener("contextmenu", (e) => { if (e.target.closest(".tbody")) e.preventDefault(); });
   root.addEventListener("change", (e) => {
+    if (e.target && e.target.id === "cbg-file") { const f = e.target.files[0]; if (f) pickChatPhoto(f); e.target.value = ""; return; }
     if (e.target && e.target.id === "s-avatar") { const f = e.target.files[0]; if (f) openCrop(f); e.target.value = ""; return; }
     if (e.target && (e.target.id === "s-dfrom" || e.target.id === "s-dto") && e.target.value) { setPref(e.target.id === "s-dfrom" ? "dFrom" : "dTo", e.target.value); return; }
     if (e.target && e.target.id === "c-files") {
@@ -3342,6 +3866,7 @@ function bind() {
   window.addEventListener("pageshow", () => checkOpenCache());
   document.addEventListener("visibilitychange", () => {
     document.documentElement.classList.toggle("bgpause", document.hidden);
+    if (S.stage === "app") { presenceVis(); if (!document.hidden && S.screen === "chat") { loadChat().then(() => { refreshChat(); markChatRead(); }); } }
     if (!document.hidden && P.theme === "auto") applyPrefs();
     if (!document.hidden) checkOpenCache();
     if (document.hidden) { hiddenAt = Date.now(); return; }
@@ -3356,6 +3881,7 @@ function bind() {
       const ae = document.activeElement, typing = !!(ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName));
       const d = document.documentElement.style;
       d.setProperty("--app-h", typing && fullH - vh > 100 ? vh + "px" : "max(100%, 100lvh)");
+      document.documentElement.classList.toggle("kbd", !!(typing && fullH - vh > 100));
       d.setProperty("--gh", fullH + "px"); window.scrollTo(0, 0);
       const kb = typing && fullH - vh > 100, g = document.getElementById("gate");
       if (g) {
@@ -3377,7 +3903,7 @@ function init() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((r) => { try { r.update(); } catch {} }).catch(() => {});
     navigator.serviceWorker.ready.then((r) => { try { (navigator.serviceWorker.controller || r.active).postMessage({ type: "ver" }); } catch {} });
-    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "ver") { S.swv = e.data.v; } if (e.data && e.data.type === "push") playTone(); if (e.data && e.data.type === "open") { try { caches.open("hf-open").then((c) => c.delete("/__open")); } catch {} goOpen(e.data.k, e.data.id); } });
+    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "ver") { S.swv = e.data.v; } if (e.data && e.data.type === "push") { if (e.data.k === "chat" && S.screen === "chat" && !document.hidden) { setTimeout(() => { try { navigator.serviceWorker.getRegistration().then((r) => r && r.getNotifications().then((ns) => ns.forEach((n) => { if (n.data && n.data.k === "chat") n.close(); }))); } catch {} }, 600); } else playTone(); } if (e.data && e.data.type === "open") { try { caches.open("hf-open").then((c) => c.delete("/__open")); } catch {} goOpen(e.data.k, e.data.id); } });
   }
   document.addEventListener("focusin", (e) => { const t = e.target; if (t && t.closest && t.closest(".sheet") && /^(INPUT|TEXTAREA)$/.test(t.tagName)) setTimeout(() => { try { if (document.activeElement === t) t.scrollIntoView({ block: "center", behavior: "smooth" }); } catch {} }, 320); });
   window.addEventListener("hashchange", () => { if (S.stage === "gate") render(true); });
