@@ -1,5 +1,5 @@
 // Réseau d'abord, cache en secours hors-ligne. Change VERSION à chaque mise à jour.
-const VERSION = "v63";
+const VERSION = "v67";
 const CACHE = "hf-" + VERSION;
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
@@ -19,7 +19,11 @@ self.addEventListener("fetch", (e) => {
 });
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
-  e.waitUntil(self.clients.matchAll({ type: "window" }).then((cs) => (cs.length ? cs[0].focus() : self.clients.openWindow("./"))));
+  const d = e.notification.data || {};
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
+    for (const c of cs) { if ("focus" in c) { c.postMessage({ type: "open", k: d.k || "", id: d.id || "" }); return c.focus(); } }
+    return self.clients.openWindow("./#o=" + encodeURIComponent((d.k || "") + ":" + (d.id || "")));
+  }));
 });
 self.addEventListener("push", (e) => {
   let d = {}; try { d = e.data ? e.data.json() : {}; } catch {}
@@ -28,7 +32,7 @@ self.addEventListener("push", (e) => {
     cs.forEach((c) => c.postMessage({ type: "push" }));
     await self.registration.showNotification(d.title || "Hasnaa & Fouad", {
       body: d.body || "", icon: "icon-192.png", badge: "icon-192.png", tag: d.tag || undefined,
-      vibrate: d.vib || [200], dir: "auto", data: { url: d.url || "./" }
+      vibrate: d.vib || [200], dir: "auto", data: { url: d.url || "./", k: d.k || "", id: d.id || "" }
     });
   })());
 });
