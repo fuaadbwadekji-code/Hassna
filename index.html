@@ -1208,6 +1208,26 @@ html.kbd .cbar { padding-bottom: 8px; }
 .flm-nx { margin-top: 6px; font-size: calc(13px * var(--fz, 1)); padding: 4px 12px; border-radius: 999px; background: rgba(255, 126, 182, .18); }
 .cbgrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
 
+.tab .tbadge { position: absolute; top: 1px; right: 3px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: #ff4f93; color: #fff; font-size: 11.5px; font-weight: 800; line-height: 19px; text-align: center; box-shadow: 0 0 0 2px #fff; animation: badgepop .35s cubic-bezier(.3, 1.7, .5, 1) backwards; }
+html[data-theme="dark"] .tab .tbadge { box-shadow: 0 0 0 2px #1e212d; }
+.cwho { display: flex; flex-direction: column; gap: 3px; }
+.cwho b { line-height: 1.2; }
+.cwho span { line-height: 1.3; }
+.cswi { color: var(--cm2); }
+.cswi .ic { display: block; }
+.chh { height: 24px; min-width: 24px; padding: 0 5px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 2px; color: #ff4f86; font-size: 0; line-height: 0; bottom: -12px; box-shadow: 0 1px 5px rgba(0, 0, 0, .22); }
+.chh:not(.two) { width: 24px; padding: 0; }
+.chh .ic { width: 13px; height: 13px; }
+.cbig .ic { color: #ff3d7f; filter: drop-shadow(0 4px 12px rgba(255, 61, 127, .5)); }
+.ctyp { display: flex; justify-content: flex-end; margin-top: 8px; animation: ctin .3s cubic-bezier(.2, .9, .3, 1.15); transform-origin: 0% 100%; }
+.ctyp.out { animation: ctout .22s ease-in forwards; }
+.ctb { display: flex; align-items: center; gap: 5px; height: 38px; padding: 0 16px; border-radius: 18px; border-end-end-radius: 5px; background: var(--cth); box-shadow: 0 1px 2px rgba(60, 20, 70, .16); }
+.ctb i { width: 7px; height: 7px; border-radius: 50%; background: var(--cmeta); animation: cdot 1.3s ease-in-out infinite; }
+.ctb i:nth-child(2) { animation-delay: .16s; } .ctb i:nth-child(3) { animation-delay: .32s; }
+@keyframes cdot { 0%, 60%, 100% { transform: translateY(0) scale(.8); opacity: .4; } 30% { transform: translateY(-4px) scale(1); opacity: 1; } }
+@keyframes ctin { from { opacity: 0; transform: translateY(6px) scale(.6); } to { opacity: 1; transform: none; } }
+@keyframes ctout { to { opacity: 0; transform: scale(.7); } }
+@media (prefers-reduced-motion: reduce) { .ctb i { animation: none; opacity: .8; } }
 </style>
 </head>
 <body>
@@ -1652,7 +1672,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v74";
+const APP_V = "v75";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -1726,6 +1746,7 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>',
   message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  reply: '<path d="M9.500 14.500L4 9l5.500-5.500"/><path d="M20 20v-6.500a4.500 4.500 0 0 0-4.500-4.500H4.500"/>',
   chev: '<path d="M9 18l6-6-6-6"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   x: '<path d="M18 6L6 18M6 6l12 12"/>',
@@ -2215,14 +2236,22 @@ function seenFmt(t) {
 }
 function seenText() {
   const c = C();
-  if (c.typingUntil > Date.now()) return pfemale() ? "عم تكتب..." : "عم يكتب...";
   if (c.online) return "متصل الآن";
   return c.seen ? "آخر ظهور " + seenFmt(c.seen) : "";
+}
+const typingNow = () => C().typingUntil > Date.now();
+const typingHTML = () => `<div class="ctyp" id="ctyp"><div class="ctb"><i></i><i></i><i></i></div></div>`;
+function paintTyping() {
+  const list = document.getElementById("cmsgs"); if (!list) return;
+  const el = document.getElementById("ctyp"), on = typingNow();
+  if (on && !el) { const near = list.scrollHeight - list.scrollTop - list.clientHeight < 140; list.insertAdjacentHTML("beforeend", typingHTML()); if (near) requestAnimationFrame(() => list.scrollTo({ top: list.scrollHeight, behavior: "smooth" })); }
+  else if (on && el) el.classList.remove("out");
+  else if (!on && el && !el.classList.contains("out")) { el.classList.add("out"); setTimeout(() => { if (el.classList.contains("out")) el.remove(); }, 240); }
 }
 function paintSeen() {
   const el = document.getElementById("cseen"); if (!el) return;
   el.textContent = seenText();
-  el.classList.toggle("on", C().online || C().typingUntil > Date.now());
+  el.classList.toggle("on", C().online);
 }
 
 /* ----- بيانات ----- */
@@ -2289,8 +2318,8 @@ function chatItems() {
       const rn = m.reply_by === S.user.id ? "أنت" : partnerName();
       const q = m.reply_body ? `<div class="cq" data-act="chat-jump" data-id="${esc(m.reply_to || "")}"><b>${esc(rn)}</b>${ue(m.reply_body)}</div>` : "";
       const hs = (m.hearts || []).length;
-      const hh = hs ? `<span class="chh">❤️${hs > 1 ? `<i>${hs}</i>` : ""}</span>` : "";
-      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm ${me ? "me" : "th"} ${cls}${hs ? " hs" : ""}" data-id="${m.id}"><span class="cswi">↩</span><div class="cbub"><div class="cb2">${q}<span class="cx">${ue(m.body)}</span><span class="ct">${t}${tick}</span></div>${hh}</div></div>` });
+      const hh = hs ? `<span class="chh${hs > 1 ? " two" : ""}">${ic("heart", 13, true)}${hs > 1 ? ic("heart", 13, true) : ""}</span>` : "";
+      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm ${me ? "me" : "th"} ${cls}${hs ? " hs" : ""}" data-id="${m.id}"><span class="cswi">${ic("reply", 17)}</span><div class="cbub"><div class="cb2">${q}<span class="cx">${ue(m.body)}</span><span class="ct">${t}${tick}</span></div>${hh}</div></div>` });
     }
     prev = m;
   });
@@ -2323,7 +2352,7 @@ function refreshChat(mode) {
       while (cur && !cur.classList.contains("ci")) cur = cur.nextElementSibling;
     } else {
       const n = mkCi(it, html, h, it.fresh);
-      if (cur) list.insertBefore(n, cur); else list.appendChild(n);
+      if (cur) list.insertBefore(n, cur); else { const tp = list.querySelector("#ctyp"); if (tp) list.insertBefore(n, tp); else list.appendChild(n); }
       added = true;
     }
   });
@@ -2349,7 +2378,7 @@ function chatHTML() {
       <div class="cwho"><b>${esc(partnerName())}</b><span id="cseen" class="${c.online ? "on" : ""}">${esc(seenText())}</span></div>
       ${flameChip()}
     </header>
-    <div class="cmsgs" id="cmsgs">${chatListHTML()}</div>
+    <div class="cmsgs" id="cmsgs">${chatListHTML()}${typingNow() ? typingHTML() : ""}</div>
     <div class="crep${rp ? " on" : ""}" id="crep"><div class="crq"><b id="crn">${rp ? esc(rp.author_id === S.user.id ? "ردّ على نفسك" : "ردّ على " + partnerName()) : ""}</b><span id="crt">${rp ? ue(rp.body.slice(0, 120)) : ""}</span></div><button data-act="chat-cancel-reply" aria-label="cancel">${ic("x", 18)}</button></div>
     <div class="cbar">
       <button class="csend" data-act="chat-send" data-keepfocus="1" aria-label="send">${ic("send", 20)}</button>
@@ -2398,7 +2427,7 @@ function burstAtHeart() {
   const b = document.querySelector(".cheart"); if (!b) return;
   const r = b.getBoundingClientRect(); Pet.burst(r.left + r.width / 2, r.top, 9, ["💗", "💕", "❤️", "✨"]);
 }
-const touchOptions = () => { const f = pfemale(); return ["عم فكر فيك" + (f ? "ي" : "") + " 💭", "اشتقتلك 🥺", "بحبك 💕", "حضن كبير 🫂", "صباح الخير ☀️", "تصبح" + (f ? "ي" : "") + " على خير 🌙"]; };
+const touchOptions = () => { const f = pfemale(); return ["عم فكر فيك" + (f ? "ي" : "") + " 💭", "اشتقتلك 🥺", "بحبك 💕", "حضن كبير 🫂"]; };
 async function toggleHeart(id) {
   const m = C().msgs.find((x) => x.id === id); if (!m || m.pending || m.kind === "touch") return;
   const me = S.user.id, hs = (m.hearts || []).slice(), i = hs.indexOf(me);
@@ -2406,7 +2435,7 @@ async function toggleHeart(id) {
   m.hearts = hs; refreshChat();
   if (i < 0) {
     const row = document.querySelector(`.cm[data-id="${id}"]`);
-    if (row) { const h = document.createElement("div"); h.className = "cbig"; h.textContent = "❤️"; row.appendChild(h); setTimeout(() => h.remove(), 850); }
+    if (row) { const h = document.createElement("div"); h.className = "cbig"; h.innerHTML = ic("heart", 76, true); row.appendChild(h); setTimeout(() => h.remove(), 850); }
     if (navigator.vibrate) try { navigator.vibrate(10); } catch {}
   }
   try { const { error } = await sb.rpc("heart_message", { p_id: id }); if (error) throw error; } catch { toast("ما قدرت أحفظ القلب"); loadChat().then(() => refreshChat()); }
@@ -2416,7 +2445,7 @@ function chatOnInsert(m) {
   if (chatMine(m)) { const i = c.msgs.findIndex((x) => x.pending && x.body === m.body && x.kind === m.kind); if (i >= 0) c.msgs.splice(i, 1); }
   mergeMsg(m);
   if (chatMine(m)) { if (S.screen === "chat") refreshChat(); return; }
-  c.typingUntil = 0;
+  c.typingUntil = 0; paintTyping();
   if (S.screen === "chat" && !document.hidden) {
     c.fresh.add(m.id); refreshChat(); paintSeen(); markChatRead();
     if (m.kind === "touch") { const b = document.querySelector(".chead .avt"); if (b) { const r = b.getBoundingClientRect(); Pet.burst(r.left + r.width / 2, r.bottom, 10, ["💗", "💕", "❤️"]); } if (navigator.vibrate) try { navigator.vibrate([20, 40, 20]); } catch {} }
@@ -2450,7 +2479,7 @@ function connectPresence() {
       const on = Object.keys(ch.presenceState()).some((k) => k !== me), c = C();
       if (c.online !== on) { c.online = on; if (!on) setTimeout(refreshSeen, 1500); paintSeen(); }
     }).on("broadcast", { event: "typing" }, (p) => {
-      if (p && p.payload && p.payload.u !== me) { C().typingUntil = Date.now() + 4000; paintSeen(); setTimeout(paintSeen, 4200); }
+      if (p && p.payload && p.payload.u !== me) { C().typingUntil = Date.now() + 4000; paintTyping(); clearTimeout(S.typT); S.typT = setTimeout(paintTyping, 4100); }
     }).subscribe((st) => { if (st === "SUBSCRIBED" && !document.hidden) { try { ch.track({ at: Date.now() }); } catch {} } });
     S.presCh = ch;
   } catch {}
@@ -2722,9 +2751,12 @@ function tabIcon(name) {
   return { home: "home", us: "heart", today: "calendar" }[name];
 }
 const TABBED = ["home", "today", "mine", "us"];
+const TABS = ["home", "today", "chat", "mine", "us"];
 function tabsHTML() {
-  return `<nav class="tabs">${TABBED.map((n) =>
-    `<button class="tab ${S.screen === n ? "on" : ""}" data-act="tab" data-v="${n}" aria-label="${n}">${ic(tabIcon(n), 24)}</button>`).join("")}</nav>`;
+  const un = chatUnread();
+  return `<nav class="tabs">${TABS.map((n) => n === "chat"
+    ? `<button class="tab" data-act="open" data-v="chat" aria-label="chat">${ic("message", 24)}${un ? `<span class="tbadge">${un > 99 ? "99+" : un}</span>` : ""}</button>`
+    : `<button class="tab ${S.screen === n ? "on" : ""}" data-act="tab" data-v="${n}" aria-label="${n}">${ic(tabIcon(n), 24)}</button>`).join("")}</nav>`;
 }
 
 function appHTML() {
@@ -2761,7 +2793,6 @@ function homeHTML() {
   <button class="bellbtn" data-act="notif-open" aria-label="notifications">${ic("bell", 22)}${unread ? `<span class="badge">${unread}</span>` : ""}</button>
   <div class="in" style="padding-top:calc(66px + var(--safe-top))">
     <div class="hello"><div class="avt lg ${avCls(w)}"></div><div><b>مرحباً ${esc(myName())}</b><span>${greeting()}</span></div></div>
-    ${chatCardHTML()}
     <button class="uscard" data-act="tab" data-v="us">
       <span class="pair"><span class="avt h"></span><span class="avt f"></span></span>
       <span class="tx"><b>نحن معا</b><span class="s">مهامنا · سؤال اليوم · كبسولة الزمن</span></span>
@@ -3003,7 +3034,7 @@ function sheetHTML() {
     const m = C().msgs.find((x) => x.id === sh.id); if (!m) return "";
     const hearted = (m.hearts || []).includes(S.user.id);
     inner = `<h3>الرسالة</h3><div class="cm-task">${ue(m.body.slice(0, 160))}</div>
-      <button class="btn" data-act="msg-reply">↩ رد</button>
+      <button class="btn" data-act="msg-reply">${ic("reply", 18)} رد</button>
       <button class="btn light" data-act="msg-heart">${hearted ? "إلغاء القلب 💔" : "❤️ قلب"}</button>
       <button class="btn light" data-act="msg-copy">${ic("clip", 18)} نسخ</button>`;
   } else if (sh.type === "touch") {
