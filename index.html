@@ -1570,6 +1570,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
+const APP_V = "v70";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -2419,7 +2420,7 @@ function sheetHTML() {
 
       <div class="sgrp">الإشعارات</div>
       <div class="notrow"><span>إشعارات الهاتف</span>${perm === "denied" ? `<b class="nok">مقفلة من إعدادات الجهاز</b>` : perm === "unsupported" ? `<b class="nok">غير مدعومة هون</b>` : pushOn() ? `<b class="okk">مفعّلة ✓</b>` : `<button class="btn light sm" data-act="enable-notif">${ic("bell", 16)} فعّلها</button>`}</div>
-      ${pushOn() ? `<div class="notrow"><button class="btn light sm" data-act="test-push">جرّب إشعار</button><button class="btn light sm" data-act="disable-push">إيقاف</button></div>` : `<div class="muted small" style="margin:4px 2px 8px">${isIOS() && !isStandalone() ? "بالآيفون: افتح التطبيق من Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية»، وبعدين فعّلها من داخل التطبيق." : "بتوصلك إشعارات حتى لو التطبيق مسكّر."}</div>`}
+      ${pushOn() ? `<div class="notrow"><button class="btn light sm" data-act="test-push">جرّب إشعار</button><button class="btn light sm" data-act="test-open">جرّب فتح الكبسولات من إشعار</button><button class="btn light sm" data-act="disable-push">إيقاف</button></div>` : `<div class="muted small" style="margin:4px 2px 8px">${isIOS() && !isStandalone() ? "بالآيفون: افتح التطبيق من Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية»، وبعدين فعّلها من داخل التطبيق." : "بتوصلك إشعارات حتى لو التطبيق مسكّر."}</div>`}
       <div class="notrow"><button class="btn light sm" data-act="test-partner">${ic("bell", 16)} ابعت إشعار تجريبي لشريكي</button></div>
       ${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}
       <div class="sgrp small2">التذكير قبل الموعد بـ</div>
@@ -2441,7 +2442,8 @@ function sheetHTML() {
         <input data-keep="s-c2" id="s-c2" class="code-input" type="tel" inputmode="numeric" maxlength="${N}" placeholder="أعد كتابته" autocomplete="off">
       </div>
       <button class="btn" data-act="code-save">حفظ الكود</button>
-      <button class="btn danger" data-act="lock">${ic("lock", 18)} تسجيل الخروج</button>`;
+      <button class="btn danger" data-act="lock">${ic("lock", 18)} تسجيل الخروج</button>
+      <div class="muted small" style="text-align:center;margin-top:10px">نسخة التطبيق ${APP_V} · الخدمة ${esc(S.swv || "؟")}</div>`;
   }
   return `<div class="ov" data-act="ov"><div class="sheet"><div class="sbar"><button class="sback" data-act="${sh.type === "crop" ? "crop-cancel" : "ov-close"}" aria-label="back">${ic("chev", 20)}</button></div><div class="grab"></div>${inner}</div></div>`;
 }
@@ -2530,7 +2532,7 @@ async function goOpen(k, id) {
   S.sheet = null;
   try { await Promise.all([loadTasks(), loadComments(), loadCapsules(), loadReplies(), loadAnswers()]); } catch {}
   const t = id && S.tasks.find((x) => x.id === id);
-  if ((k === "comment" || k === "task") && t) { S.nav = "push"; S.screen = t.scope === "shared" ? "shared" : "mine"; if (S.screen === "mine") S.nav = "tab"; render(true); if (k === "comment") setTimeout(() => openComments(id), 380); return; }
+  if ((k === "comment" || k === "task") && t) { S.nav = "push"; S.screen = t.scope === "shared" ? "shared" : t.owner_id === S.user.id ? "mine" : "partner"; if (S.screen === "mine") S.nav = "tab"; render(true); if (k === "comment") setTimeout(() => openComments(id), 380); return; }
   if (k === "task") { S.nav = "tab"; S.screen = "mine"; render(true); return; }
   if (k === "capsule" || k === "capsules") { S.nav = "push"; S.screen = "capsules"; render(true); if (k === "capsule" && id && S.capsules.some((x) => x.id === id)) setTimeout(() => openCapsule(id), 380); return; }
   if (k === "question") { S.nav = "push"; S.screen = "question"; S.editAns = false; render(true); return; }
@@ -2727,6 +2729,9 @@ async function testPartner() {
     toast(data > 0 ? "انبعت ✓ لازم يوصل لشريكك خلال ثواني" : "شريكك لسا ما فعّل الإشعارات من تطبيقه");
   } catch (e) { toast("خطأ: " + ((e && e.message) || e)); }
 }
+async function testOpen() {
+  try { const reg = await swReady(); await reg.showNotification("اختبار الفتح", { body: trS("اضغط عليّ: لازم يفتح كبسولة الزمن"), icon: "icon-192.png", tag: "test-open", data: { k: "capsules", id: "" } }); toast("اضغط على الإشعار اللي طلع"); } catch (e) { toast("فشل: " + ((e && (e.message || e.name)) || e)); }
+}
 async function testPush() {
   playTone(true);
   try { const reg = await swReady(); await reg.showNotification("Hasnaa & Fouad", { body: trS("هيك بيطلع الإشعار 💌"), icon: "icon-192.png", tag: "test", vibrate: P.vib ? (P.slen === "long" ? [400, 150, 400, 150, 600] : [200]) : [] }); } catch (e) { toast("فشل الإشعار: " + ((e && (e.message || e.name)) || e)); }
@@ -2845,6 +2850,7 @@ async function onClick(e) {
     case "pref-vib": P.vib = !P.vib; savePrefs(); flip(el); if (P.vib && navigator.vibrate) navigator.vibrate(P.slen === "long" ? [400, 150, 400, 150, 600] : [200]); break;
     case "test-sound": playTone(true); if (P.vib && navigator.vibrate) navigator.vibrate(P.slen === "long" ? [400, 150, 400, 150, 600] : [200]); break;
     case "test-push": return testPush();
+    case "test-open": return testOpen();
     case "test-partner": return testPartner();
   }
 }
@@ -3181,6 +3187,8 @@ function bind() {
   root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target && e.target.id === "cm-in") { e.preventDefault(); sendComment(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "cr-in") { e.preventDefault(); sendCapReply(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "codein" && S.stage === "gate" && S.gate.mode === "login") { e.preventDefault(); submitLogin(); } });
   setInterval(() => { if (P.theme === "auto") applyPrefs(); }, 60000);
   setInterval(tickCd, 1000);
+  window.addEventListener("focus", () => checkOpenCache());
+  window.addEventListener("pageshow", () => checkOpenCache());
   document.addEventListener("visibilitychange", () => {
     document.documentElement.classList.toggle("bgpause", document.hidden);
     if (!document.hidden && P.theme === "auto") applyPrefs();
@@ -3216,8 +3224,9 @@ function init() {
   let hasSes = false; try { hasSes = !!(sb && localStorage.getItem("hf-auth")); } catch {}
   if (hasSes) { S.stage = "boot"; render(true); restoreSession(); } else toLogin();
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "push") playTone(); if (e.data && e.data.type === "open") { try { caches.open("hf-open").then((c) => c.delete("/__open")); } catch {} goOpen(e.data.k, e.data.id); } });
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((r) => { try { r.update(); } catch {} }).catch(() => {});
+    navigator.serviceWorker.ready.then((r) => { try { (navigator.serviceWorker.controller || r.active).postMessage({ type: "ver" }); } catch {} });
+    navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "ver") { S.swv = e.data.v; } if (e.data && e.data.type === "push") playTone(); if (e.data && e.data.type === "open") { try { caches.open("hf-open").then((c) => c.delete("/__open")); } catch {} goOpen(e.data.k, e.data.id); } });
   }
   document.addEventListener("focusin", (e) => { const t = e.target; if (t && t.closest && t.closest(".sheet") && /^(INPUT|TEXTAREA)$/.test(t.tagName)) setTimeout(() => { try { if (document.activeElement === t) t.scrollIntoView({ block: "center", behavior: "smooth" }); } catch {} }, 320); });
   window.addEventListener("hashchange", () => { if (S.stage === "gate") render(true); });

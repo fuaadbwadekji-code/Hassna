@@ -1,5 +1,5 @@
 // Réseau d'abord, cache en secours hors-ligne. Change VERSION à chaque mise à jour.
-const VERSION = "v68";
+const VERSION = "v70";
 const CACHE = "hf-" + VERSION;
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
@@ -27,6 +27,7 @@ self.addEventListener("notificationclick", (e) => {
     return self.clients.openWindow("./#o=" + encodeURIComponent((d.k || "") + ":" + (d.id || "")));
   })());
 });
+self.addEventListener("message", (e) => { if (e.data && e.data.type === "ver" && e.source) e.source.postMessage({ type: "ver", v: VERSION }); });
 self.addEventListener("push", (e) => {
   let d = {}; try { d = e.data ? e.data.json() : {}; } catch {}
   e.waitUntil((async () => {
