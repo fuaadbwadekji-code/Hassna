@@ -1126,6 +1126,8 @@ html[data-theme="dark"] .art svg, html[data-theme="dark"] .gate .land svg { filt
 html[data-theme="dark"] .bfly, html[data-theme="dark"] .capart .fh { filter: grayscale(1) brightness(1.05); }
 html[data-theme="white"] .hello b, html[data-theme="white"] .hello span { text-shadow: 0 1px 10px rgba(255, 255, 255, .95), 0 0 18px rgba(255, 255, 255, .9); }
 html[data-theme="dark"] .hello span { color: #e4e8f2; }
+.pn.go { cursor: pointer; }
+.pn.go:active { transform: scale(.98); }
 </style>
 </head>
 <body>
@@ -1570,7 +1572,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v70";
+const APP_V = "v71";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -1753,7 +1755,7 @@ function buildNotifs() {
     if (diff < 0) { head = "فات موعد المهمة"; rel = "منذ " + dur(-diff); }
     else if (diff <= 60) { head = "اقتراب موعد المهمة"; rel = "بعد " + dur(diff); }
     else { head = t.scope === "shared" ? "تذكير بمهمة مشتركة" : "تذكير بمهمة"; rel = "بعد " + dur(diff); }
-    out.push({ sub: t.title, head, rel, diff, key: "r:" + t.id + ":" + t.due_at });
+    out.push({ sub: t.title, head, rel, diff, key: "r:" + t.id + ":" + t.due_at, k: "task", id: t.id });
   });
   return out.sort((a, b) => a.diff - b.diff);
 }
@@ -1761,10 +1763,10 @@ function buildNotifs() {
 function buildEvents(since) {
   const out = [], me = S.user.id, pn = nm(other(myWho()));
   since = since == null ? S.seenAt : since;
-  if (P.n.comments) S.comments.filter((c) => c.author_id !== me && ts(c.created_at) > since).forEach((c) => out.push({ key: "c:" + c.id, at: ts(c.created_at), head: "تعليق جديد 💬", sub: pn + ": " + c.body }));
-  if (P.n.answers) S.answers.filter((a) => a.user_id !== me && a.created_at && ts(a.created_at) > since).forEach((a) => out.push({ key: "a:" + (a.id || a.day + a.user_id), at: ts(a.created_at), head: "جواب جديد 💌", sub: pn + " · " + trS("أجاب على سؤال اليوم") }));
-  if (P.n.shared) S.tasks.filter((t) => t.scope === "shared" && t.created_by !== me && ts(t.created_at) > since).forEach((t) => out.push({ key: "t:" + t.id, at: ts(t.created_at), head: "مهمة مشتركة جديدة 🌸", sub: t.title }));
-  if (P.n.capsules) S.capsules.filter((c) => c.is_open && ts(c.open_at) > since).forEach((c) => out.push({ key: "k:" + c.id, at: ts(c.open_at), head: "انفتحت كبسولة 💌", sub: c.title }));
+  if (P.n.comments) S.comments.filter((c) => c.author_id !== me && ts(c.created_at) > since).forEach((c) => { const tk = S.tasks.find((x) => x.id === c.task_id); out.push({ key: "c:" + c.id, at: ts(c.created_at), head: "تعليق جديد 💬", sub: (tk ? "«" + tk.title + "» · " : "") + pn + ": " + c.body, k: "comment", id: c.task_id }); });
+  if (P.n.answers) S.answers.filter((a) => a.user_id !== me && a.created_at && ts(a.created_at) > since).forEach((a) => out.push({ key: "a:" + (a.id || a.day + a.user_id), at: ts(a.created_at), head: "جواب جديد 💌", sub: pn + " · " + trS("أجاب على سؤال اليوم"), k: "question", id: "" }));
+  if (P.n.shared) S.tasks.filter((t) => t.scope === "shared" && t.created_by !== me && ts(t.created_at) > since).forEach((t) => out.push({ key: "t:" + t.id, at: ts(t.created_at), head: "مهمة مشتركة جديدة 🌸", sub: t.title, k: "task", id: t.id }));
+  if (P.n.capsules) S.capsules.filter((c) => c.is_open && ts(c.open_at) > since).forEach((c) => out.push({ key: "k:" + c.id, at: ts(c.open_at), head: "انفتحت كبسولة 💌", sub: c.title, k: "capsule", id: c.id }));
   return out.sort((a, b) => b.at - a.at).map((e) => ({ ...e, rel: ago(new Date(e.at).toISOString()), diff: 1 }));
 }
 const allNotifs = () => buildEvents().concat(buildNotifs());
@@ -2381,7 +2383,7 @@ function sheetHTML() {
     const ns = (S.sheet.evs || []).concat(buildNotifs());
     const perm = "Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied"
       ? `<button class="btn light" data-act="enable-notif" style="margin-top:6px">${ic("bell", 18)} فعّل التنبيهات</button>` : "";
-    const items = ns.map((n, i) => `<div class="pn" style="--i:${i}"><div class="pn-ic">${ic("heart", 16, true)}</div><div class="pn-b"><div class="pn-h"><b>${esc(n.head)}</b><span class="pn-t ${n.diff < 0 ? "late" : ""}">${esc(n.rel)}</span></div><div class="pn-s">${ue(n.sub)}</div></div></div>`).join("");
+    const items = ns.map((n, i) => `<div class="pn go" style="--i:${i}" data-act="pn-go" data-k="${esc(n.k || "")}" data-id="${esc(n.id || "")}"><div class="pn-ic">${ic("heart", 16, true)}</div><div class="pn-b"><div class="pn-h"><b>${esc(n.head)}</b><span class="pn-t ${n.diff < 0 ? "late" : ""}">${esc(n.rel)}</span></div><div class="pn-s">${ue(n.sub)}</div></div></div>`).join("");
     return `<div class="ov pop" data-act="ov"><div class="popcard" role="dialog" aria-label="الإشعارات">
       <div class="pop-head"><span class="pop-bell">${ic("bell", 22)}</span><div><h3>الإشعارات</h3><div class="pop-sub">${ns.length ? ns.length + " " + "جديد" : "كل شي هادي"}</div></div><button class="pop-x" data-act="ov-close" aria-label="close">${ic("x", 18)}</button></div>
       <div class="pop-list">${items || `<div class="pop-empty"><div class="zz">${ic("bell", 34)}</div><b>ما في إشعارات</b><span>بتظهر هون تذكيرات المهام وجديد شريكك.</span></div>`}</div>
@@ -2827,6 +2829,7 @@ async function onClick(e) {
     case "task-del": return deleteTask(id);
     case "ov": case "ov-close": S.sheet = null; S.picked = []; render(true); break;
     case "notif-open": markSeen(true); break;
+    case "pn-go": goOpen(el.dataset.k, el.dataset.id); break;
 
     case "q-save": return saveAnswer();
     case "q-edit": S.editAns = true; render(true); break;
