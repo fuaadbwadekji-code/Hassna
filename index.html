@@ -1267,6 +1267,16 @@ html.kbd .cbar { padding-bottom: 7px; }
 .csend.fly { animation: cpop .46s cubic-bezier(.3, 1.4, .5, 1); }
 @keyframes cpop { 0% { transform: scale(1); } 30% { transform: scale(.82); box-shadow: 0 0 0 0 rgba(226, 77, 138, .5); } 70% { transform: scale(1.12); box-shadow: 0 0 0 10px rgba(226, 77, 138, 0); } 100% { transform: scale(1); } }
 .ci.gone { pointer-events: none; }
+#root { top: var(--vt, 0px); }
+.ci { overflow-x: clip; }
+.chat { overflow: hidden; }
+.ci.new { animation: cmpop .22s ease-out both; will-change: transform, opacity; }
+.ci.new:has(.cm.me) { animation: cmsend .26s cubic-bezier(.2, .8, .3, 1) both; transform-origin: 90% 100%; }
+@keyframes cmsend { from { opacity: 0; transform: translate3d(0, 26px, 0) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes cmpop { from { opacity: 0; transform: translate3d(0, 12px, 0) scale(.96); } to { opacity: 1; transform: none; } }
+.csend.fly { animation: cpop .3s ease-out; }
+@keyframes cpop { 0% { transform: scale(1); } 40% { transform: scale(.86); } 100% { transform: scale(1); } }
+.cmsgs { will-change: scroll-position; }
 </style>
 </head>
 <body>
@@ -1711,7 +1721,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v76";
+const APP_V = "v77";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -2423,11 +2433,10 @@ function refreshChat(mode) {
   });
   if (!items.length && !list.querySelector(".cempty")) list.insertAdjacentHTML("beforeend", fin(`<div class="cempty">${ic("message", 34)}<b>ابدأ المحادثة</b><span>اكتب أول رسالة، أو ابعت لمسة 💗</span></div>`));
   c.fresh.clear();
-  if (mode === "bottom" || (near && added)) {
-    if (mode === "bottom") list.scrollTop = list.scrollHeight;
-    else requestAnimationFrame(() => list.scrollTo({ top: list.scrollHeight, behavior: "smooth" }));
-  } else if (mode === "keep" && list.scrollHeight !== oldH && oldTop < 80) list.scrollTop = oldTop + (list.scrollHeight - oldH);
-  else if (mode === "stay") list.scrollTop = oldTop;
+  if (list.scrollLeft) list.scrollLeft = 0;
+  const stick = () => { list.scrollTop = list.scrollHeight; requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; }); setTimeout(() => { if (list.isConnected) list.scrollTop = list.scrollHeight; }, 160); };
+  if (mode === "bottom" || (near && added)) stick(); else if (mode === "keep" && list.scrollHeight !== oldH && oldTop < 80) list.scrollTop = oldTop + (list.scrollHeight - oldH);
+  else if (mode === "stay") { if (near && list.scrollHeight !== oldH) stick(); else list.scrollTop = oldTop; }
   else if (near && list.scrollHeight !== oldH) list.scrollTop = list.scrollHeight;
 }
 function mkCi(it, html, h, fresh) {
@@ -2682,7 +2691,7 @@ function initChat() {
   document.addEventListener("touchmove", (e) => { if (S.screen !== "chat" || S.sheet) return; const t = e.target; if (t && t.closest && t.closest("#cmsgs, #cin")) return; e.preventDefault(); }, { passive: false });
   // ما نخلي الزر يسحب التركيز من خانة الكتابة (الكيبورد ما بيسكر)
   root.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest("[data-keepfocus]")) e.preventDefault(); });
-  root.addEventListener("scroll", (e) => { const t = e.target; if (t && t.id === "cmsgs" && t.scrollTop < 60 && C().more && !C().loadingOlder && C().msgs.length) loadOlder(); }, true);
+  root.addEventListener("scroll", (e) => { const t = e.target; if (t && t.id === "cmsgs" && t.scrollLeft) t.scrollLeft = 0; if (t && t.id === "cmsgs" && t.scrollTop < 60 && C().more && !C().loadingOlder && C().msgs.length) loadOlder(); }, true);
   root.addEventListener("input", (e) => { const t = e.target; if (t && t.id === "cin") { autosize(t); if (t.value.trim()) sendTyping(); } });
   root.addEventListener("keydown", (e) => { const t = e.target; if (t && t.id === "cin" && e.key === "Enter" && !e.shiftKey && window.matchMedia("(pointer:fine)").matches) { e.preventDefault(); sendChat("text"); } });
   document.addEventListener("focusin", (e) => { if (e.target && e.target.id === "cin") { setTimeout(() => { const l = document.getElementById("cmsgs"); if (l) l.scrollTop = l.scrollHeight; }, 280); } });
@@ -4025,6 +4034,7 @@ function bind() {
       d.setProperty("--app-h", typing && fullH - vh > 100 ? vh + "px" : "max(100%, 100lvh)");
       document.documentElement.classList.toggle("kbd", !!(typing && fullH - vh > 100));
       d.setProperty("--gh", fullH + "px"); window.scrollTo(0, 0);
+      d.setProperty("--vt", (typing && fullH - vh > 100 ? Math.max(0, window.visualViewport.offsetTop) : 0) + "px");
       const kb = typing && fullH - vh > 100, g = document.getElementById("gate");
       if (g) {
         g.classList.toggle("kb", kb);
@@ -4032,7 +4042,7 @@ function bind() {
         else requestAnimationFrame(() => { const p = g.querySelector(".gpanel"), last = p && p.lastElementChild; if (!last) return; const cur = parseFloat(g.style.getPropertyValue("--gshift")) || 0; g.style.setProperty("--gshift", Math.max(0, last.getBoundingClientRect().bottom + cur + 14 - window.visualViewport.height) + "px"); });
       }
     };
-    window.visualViewport.addEventListener("resize", fit); document.addEventListener("focusout", () => { setTimeout(fit, 60); setTimeout(fit, 350); }); fit();
+    window.visualViewport.addEventListener("resize", fit); window.visualViewport.addEventListener("scroll", () => { window.scrollTo(0, 0); fit(); }); document.addEventListener("focusout", () => { setTimeout(fit, 60); setTimeout(fit, 350); }); fit();
   }
 }
 
