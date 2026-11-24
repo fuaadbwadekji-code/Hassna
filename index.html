@@ -1337,6 +1337,13 @@ html.kbd .sheet:has(#p-body) { padding-bottom: 6px; }
 .prsub { text-align: center; font-size: calc(13px * var(--fz, 1)); opacity: .75; margin: -4px 0 12px; }
 .prayer .ttl .kaaba { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .25)); }
 .tab .kaaba { display: block; }
+.prrow .pri { flex: none; border-radius: 9px; box-shadow: 0 2px 6px rgba(40, 30, 80, .22); }
+.prsun { align-items: center; gap: 12px; }
+.prsun span:first-child { flex: 1; }
+.prex { margin-top: 10px; padding: 11px 14px; border-radius: 18px; background: rgba(255, 255, 255, .45); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .18); }
+.prex b { display: block; font-size: calc(12.5px * var(--fz, 1)); color: #c63d7d; margin-bottom: 3px; }
+.prex p { margin: 0; font-size: calc(13px * var(--fz, 1)); line-height: 1.75; opacity: .85; }
+html[data-theme="dark"] .prex { background: rgba(255, 255, 255, .06); }
 </style>
 </head>
 <body>
@@ -1835,8 +1842,8 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v85";
-const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
+const APP_V = "v86";
+const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true, prayer: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
   const o = JSON.parse(JSON.stringify(DEF_P));
@@ -3074,49 +3081,62 @@ const kaabaSVG = (s = 28) => `<svg class="kaaba" width="${s}" height="${s}" view
 const hdRe = (w) => new RegExp(w.split("").map((c) => (c === " " ? "\\s+" : c + "[\\u064B-\\u0652\\u0670]*")).join(""));
 const HD_PBUH = new RegExp(hdRe("صلى الله عليه وسلم").source + "|" + hdRe("صلى الله عليه وآله وسلم").source + "|ﷺ");
 const HD_LEAD = new RegExp("^(?:" + ["قال", "يقول", "قالت", "وقال"].map((x) => hdRe(x).source).join("|") + ")\\s*[:：]?\\s*");
-const HQ = [528, 574, 527, 645, 662, 615, 1145, 159, 1149];
+const HADITH_X = ["متل نهر جاري قدام بيتك، لو بتغتسل فيه خمس مرات باليوم ما بيضل عليك وسخ. هيك الصلوات الخمس بتمحي الذنوب اللي بينهم.", "البردين هنّي الفجر والعصر. اللي بيحافظ عليهم بيدخل الجنة بإذن الله.", "الصلوات الخمس والجمعة ورمضان بتمحي الذنوب اللي بينهم، بشرط نبتعد عن الكبائر.", "اللي بيصلي الفجر بيصير بحماية الله وأمانو طول يومو.", "اللي بيتوضأ منيح وبيصلي ركعتين وقلبو ووجهو مقبلين على الله، الجنة إلو.", "النبي كان يرتاح ويفرح بالصلاة أكتر من أي شي بالدنيا.", "وانت ساجد بتكون أقرب شي لربك، فادعي كتير وانت بالسجود.", "اللي بيحافظ على 4 ركعات قبل الظهر و4 بعدها، الله بيحرّمو على النار.", "كل يوم 12 ركعة سنة غير الفرض، الله بيبنيلك بيت بالجنة.", "ركعتين سنة الفجر أحسن من الدنيا وما فيها، لا تفوّتن.", "أحب الأعمال لله الصلاة بأول وقتها، فلا تأجّلها.", "الصلاة بالجماعة أجرها 27 ضعف صلاتك لحالك.", "كل مرة بتروح عالمسجد، الله بيجهّزلك ضيافة بالجنة.", "اللي بدو يلاقي الله وهو مرتاح، فليحافظ على الصلوات الخمس.", "الصلاة نور بقلبك ووجهك وحياتك.", "كل سجدة بترفعك درجة عند الله وبتمحي غلطة.", "أي صلاة بتصليها بوضوء منيح وخشوع، بتصير كفارة للذنوب اللي قبلها.", "اللي بيتوضأ ويصلي ركعتين وقلبو حاضر وما بيفكر بشي تاني، بيتغفر إلو ذنوبو.", "أحسن صلاة بعد الفرض هي صلاة الليل، حتى لو ركعتين.", "إذا نمت عن الصلاة أو نسيتها، صلّيها أول ما تتذكرها ولا تأجلها.", "النبي كان يرتاح بالصلاة وما كانت ثقيلة عليه، وهيك لازم نحسها راحة لنفسنا.", "لو الناس عرفت أجر الأذان والصف الأول لتسابقت عليهم حتى بالقرعة.", "أول شي بيتحاسب عليه العبد يوم القيامة هو الصلاة، فإذا انضبطت انضبط باقي عمله."];
+const HQ = [[528, /نهر/], [574, /البردين/], [527, /احب/], [645, /الجماعه/], [662, /المسجد/], [615, /النداء/]];
+const HQ_X = {"528": "متل نهر جاري قدام بيتك، لو بتغتسل فيه خمس مرات باليوم ما بيضل عليك وسخ. هيك الصلوات الخمس بتمحي الذنوب اللي بينهم.", "574": "البردين هنّي الفجر والعصر. اللي بيحافظ عليهم بيدخل الجنة بإذن الله.", "527": "سأل الصحابي النبي: أي عمل أحب لله؟ قال: الصلاة بوقتها، وبعدها برّ الوالدين، وبعدها الجهاد بسبيل الله. فلا تأجّل الصلاة.", "645": "الصلاة بالجماعة أجرها 27 ضعف صلاتك لحالك.", "662": "كل مرة بتروح عالمسجد، الله بيجهّزلك ضيافة بالجنة.", "615": "لو الناس عرفت أجر الأذان والصف الأول لتسابقت عليهم حتى بالقرعة، وكمان أجر صلاة العشاء والفجر بالجماعة كبير."};
 let HD = null;
 const hdKey = () => "hf_hd_" + prDay();
-function hdClean(raw) {
+function hdClean(raw, re) {
   let s = String(raw || "").replace(/\s+/g, " ").trim();
   const m = s.search(HD_PBUH); if (m < 0) return "";
   s = s.slice(m).replace(HD_PBUH, "").trim().replace(HD_LEAD, "").replace(/^[ـ\-–:：،"“”«»\s]+/, "").replace(/["“”«»]+\s*[.،]?$/, "").trim();
-  const plain = s.replace(/[ً-ْٰ]/g, "");
-  if (s.length < 25 || s.length > 480 || !/صلا|صلو|صلى|ركع|سجد|مسجد|اذان|الصف|النداء|الوضوء|توضا/.test(plain)) return "";
+  const plain = s.replace(/[\u064B-\u0652\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي");
+  if (s.length < 25 || s.length > 480 || !re.test(plain)) return "";
   return s;
 }
 async function hdFetch() {
   const day = prDay(); if (HD && HD.day === day) return;
-  try { const v = loadJSON(hdKey(), null); if (v && v.t) { HD = { day, t: v.t }; return; } } catch {}
+  try { const v = loadJSON(hdKey(), null); if (v && v.t) { HD = { day, t: v.t, x: v.x || "" }; return; } } catch {}
   const idx = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 864e5) % HQ.length;
   for (let i = 0; i < HQ.length; i++) {
     try {
-      const r = await fetch("https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-bukhari/" + HQ[(idx + i) % HQ.length] + ".json");
-      const j = await r.json(), t = hdClean(j && j.hadiths && j.hadiths[0] && j.hadiths[0].text);
-      if (t) { HD = { day, t }; saveJSON(hdKey(), { t }); if (S.screen === "prayer" && S.stage === "app" && !S.sheet) render(); return; }
+      const q = HQ[(idx + i) % HQ.length];
+      const r = await fetch("https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-bukhari/" + q[0] + ".json");
+      const j = await r.json(), t = hdClean(j && j.hadiths && j.hadiths[0] && j.hadiths[0].text, q[1]);
+      if (t) { const x = HQ_X[q[0]] || ""; HD = { day, t, x }; saveJSON(hdKey(), { t, x }); if (S.screen === "prayer" && S.stage === "app" && !S.sheet) render(); return; }
     } catch { return; }
   }
 }
-function hadithToday() { if (HD && HD.day === prDay()) return HD.t; const d = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 864e5); return HADITH[d % HADITH.length][0]; }
+function hadithToday() { if (HD && HD.day === prDay()) return HD; const d = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 864e5), i = d % HADITH.length; return { t: HADITH[i][0], x: HADITH_X[i] || "" }; }
 const prFmt = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s / 60) % 60) + ":" + pad(s % 60); };
 function prHijri() { try { return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", { day: "numeric", month: "long", year: "numeric" }).format(new Date()); } catch { return ""; } }
+const PRI = {
+  fajr: ["#1d2860", "#f4a3b9", `<path d="M3 22h22v6H3z" fill="#0f1738"/><path d="M8.500 22a5.500 5.500 0 0 1 11 0z" fill="#ffd27a"/><circle cx="7" cy="7" r=".9" fill="#fff"/><circle cx="21" cy="10" r=".7" fill="#fff"/>`],
+  sunrise: ["#ffe2ad", "#ff9d63", `<path d="M3 21h22v7H3z" fill="#e9794a" opacity=".55"/><path d="M8 21a6 6 0 0 1 12 0z" fill="#fff3b8"/><path d="M14 8v3M6.500 12l2 2M21.500 12l-2 2M3.500 18h2.500M22 18h2.500" stroke="#fff3b8" stroke-width="1.600" stroke-linecap="round"/>`],
+  dhuhr: ["#6fc2ff", "#dff3ff", `<circle cx="14" cy="14" r="5" fill="#ffd23f"/><path d="M14 4.500v2.500M14 21v2.500M4.500 14H7M21 14h2.500M7.300 7.300l1.800 1.800M18.900 18.900l1.800 1.800M20.700 7.300l-1.800 1.800M9.100 18.900l-1.800 1.800" stroke="#ffd23f" stroke-width="1.700" stroke-linecap="round"/>`],
+  asr: ["#ffd79e", "#ff9f6e", `<circle cx="18.500" cy="10.500" r="4.500" fill="#fff0a0"/><path d="M18.500 3v2M25 10.500h-2M23 6l-1.400 1.400M11 6.500l1.400 1.400" stroke="#fff0a0" stroke-width="1.500" stroke-linecap="round"/><path d="M2 27l7-8 5 4 6-5 6 9z" fill="#c9683e" opacity=".6"/>`],
+  maghrib: ["#ff9b5a", "#b83a7a", `<path d="M3 20h22v8H3z" fill="#7a2563" opacity=".7"/><path d="M7.500 20a6.500 6.500 0 0 1 13 0z" fill="#ffe08a"/><path d="M7 23h14M9.500 25.500h9" stroke="#ffd1a0" stroke-width="1.300" stroke-linecap="round" opacity=".8"/>`],
+  isha: ["#141c47", "#2e326e", `<path d="M17.500 6.500a8 8 0 1 0 4.500 14.500 6.500 6.500 0 0 1-4.500-14.500z" fill="#fff3c4"/><path d="M21.500 6l.7 1.700 1.800.2-1.400 1.200.4 1.800-1.500-1-1.600 1 .5-1.800L19 7.900l1.800-.2z" fill="#fff3c4"/><circle cx="6" cy="8" r=".9" fill="#fff"/><circle cx="9" cy="22" r=".7" fill="#fff"/>`]
+};
+const prIcon = (k) => { const d = PRI[k]; return d ? `<svg class="pri" width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="pg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${d[0]}"/><stop offset="1" stop-color="${d[1]}"/></linearGradient><clipPath id="pc-${k}"><rect width="28" height="28" rx="8"/></clipPath></defs><g clip-path="url(#pc-${k})"><rect width="28" height="28" fill="url(#pg-${k})"/>${d[2]}</g></svg>` : ""; };
 function prayerHTML() {
   const day = prDay(), t = ptGet(day), done = prDoneAll()[day] || {}, n = t ? prNext() : null;
   const cnt = PR.filter(([k]) => done[k]).length, streak = prStreak(), hd = hadithToday();
   const rows = t ? PR.map(([k, ar]) => {
     const isN = n && !n.tm && n.key === k, past = prAt(day, t[k]).getTime() <= Date.now();
-    return `<div class="prrow ${done[k] ? "done" : ""} ${isN ? "next" : ""} ${past && !done[k] ? "past" : ""}"><span class="prn">${ar}</span><span class="prt">${t[k]}</span><button class="prchk" data-act="pr-tick" data-v="${k}" aria-label="${ar}">${ic("check", 17)}</button></div>`;
-  }).join("") + `<div class="prsun"><span>الشروق</span><span>${t.sunrise}</span></div>`
+    return `<div class="prrow ${done[k] ? "done" : ""} ${isN ? "next" : ""} ${past && !done[k] ? "past" : ""}"><span class="prn">${ar}</span>${prIcon(k)}<span class="prt">${t[k]}</span><button class="prchk" data-act="pr-tick" data-v="${k}" aria-label="${ar}">${ic("check", 17)}</button></div>`;
+  }).join("") + `<div class="prsun"><span>الشروق</span>${prIcon("sunrise")}<span>${t.sunrise}</span></div>`
     : `<div class="empty small">${ptErr ? "ما قدرت أجيب المواقيت، تأكد من الإنترنت" : "عم جيب المواقيت…"}${ptErr ? `<br><button class="qsm" data-act="pr-retry" style="margin-top:8px"><span>جرّب مرة ثانية</span></button>` : ""}</div>`;
   return `<div class="art">${ART.moon ? ART.moon() : ""}</div>
   <div class="in prayer">
-    <div class="ttl">${kaabaSVG(30)}<span>الصلاة</span></div>
+    <div class="ttl">${kaabaSVG(30)}<span>صلاتك 🫶</span></div>
     <div class="prsub">${prCityAr()} · ${prHijri()}</div>
     ${n ? `<div class="prnext glass"><div class="prl">${n.tm ? "الصلاة القادمة (بكرا)" : "الصلاة القادمة"}</div><div class="prnm">${n.ar}</div><div class="prcd" id="pr-cd" data-at="${n.at.getTime()}">${prFmt(n.at.getTime() - Date.now())}</div><div class="prhm">${n.hm}</div></div>` : ""}
     <div class="prprog"><div class="dots">${PR.map(([k]) => `<i class="${done[k] ? "on" : ""}"></i>`).join("")}</div><span>${cnt} من 5${streak ? " · " + streak + " يوم متتالي" : ""}</span></div>
     <div class="glass prlist">${rows}</div>
     <div class="sec">حديث اليوم</div>
-    <div class="glass prhad"><p>${esc(hd)}</p></div>
+    <div class="glass prhad"><p>${esc(hd.t)}</p></div>
+    ${hd.x ? `<div class="prex"><b>شو يعني؟</b><p>${esc(hd.x)}</p></div>` : ""}
   </div>`;
 }
 function prTick() {
@@ -3475,7 +3495,7 @@ function sheetHTML() {
       <div class="notrow"><span>إشعارات الهاتف</span>${perm === "denied" ? `<b class="nok">مقفلة من إعدادات الجهاز</b>` : perm === "unsupported" ? `<b class="nok">غير مدعومة هون</b>` : pushOn() ? `<b class="okk">مفعّلة ✓</b>` : `<button class="btn light sm" data-act="enable-notif">${ic("bell", 16)} فعّلها</button>`}</div>
       ${pushOn() ? `<div class="notrow"><button class="btn light sm" data-act="test-push">جرّب إشعار</button><button class="btn light sm" data-act="test-open">جرّب فتح الكبسولات من إشعار</button><button class="btn light sm" data-act="disable-push">إيقاف</button></div>` : `<div class="muted small" style="margin:4px 2px 8px">${isIOS() && !isStandalone() ? "بالآيفون: افتح التطبيق من Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية»، وبعدين فعّلها من داخل التطبيق." : "بتوصلك إشعارات حتى لو التطبيق مسكّر."}</div>`}
       <div class="notrow"><button class="btn light sm" data-act="test-partner">${ic("bell", 16)} ابعت إشعار تجريبي لشريكي</button></div>
-      ${tg("pref-n", "chat", "رسائل الدردشة", P.n.chat)}${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}
+      ${tg("pref-n", "chat", "رسائل الدردشة", P.n.chat)}${tg("pref-n", "profile", "تغيير الصورة أو الاسم", P.n.profile)}${tg("pref-n", "capsules", "كبسولة جديدة إلك", P.n.capsules)}${tg("pref-n", "todo", "شي جديد بقائمة شريكي", P.n.todo)}${tg("pref-n", "shared", "مهام مشتركة جديدة", P.n.shared)}${tg("pref-n", "comments", "تعليقات جديدة", P.n.comments)}${tg("pref-n", "answers", "جواب سؤال اليوم", P.n.answers)}${tg("pref-n", "tasks", "تذكير بمواعيد المهام", P.n.tasks)}${tg("pref-n", "prayer", "تذكير الصلاة", P.n.prayer)}
       <div class="sgrp small2">التذكير قبل الموعد بـ</div>
       <div class="opts">${[5, 15, 30, 60].map((m) => chip("lead", m, m + " د", P.lead === m)).join("")}</div>
       <div class="sgrp small2">النغمة</div>
@@ -3589,6 +3609,7 @@ async function goOpen(k, id) {
   if ((k === "comment" || k === "task") && t) { S.nav = "push"; S.screen = t.scope === "shared" ? "shared" : t.owner_id === S.user.id ? "mine" : "partner"; if (S.screen === "mine") S.nav = "tab"; render(true); if (k === "comment") setTimeout(() => openComments(id), 380); return; }
   if (k === "task") { S.nav = "tab"; S.screen = "mine"; render(true); return; }
   if (k === "chat") { S.nav = "push"; S.screen = "chat"; render(true); return; }
+  if (k === "prayer") { S.nav = "tab"; S.screen = "prayer"; render(true); ptEnsure(); return; }
   if (k === "capsule" || k === "capsules") { S.nav = "push"; S.screen = "capsules"; render(true); if (k === "capsule" && id && S.capsules.some((x) => x.id === id)) setTimeout(() => openCapsule(id), 380); return; }
   if (k === "question") { S.nav = "push"; S.screen = "question"; S.editAns = false; render(true); return; }
   S.nav = "tab"; S.screen = "home"; render(true);
