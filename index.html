@@ -1721,7 +1721,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v77";
+const APP_V = "v78";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -2688,7 +2688,10 @@ function initChat() {
   root.addEventListener("pointerup", (e) => end(e, false));
   root.addEventListener("pointercancel", (e) => end(e, true));
   root.addEventListener("contextmenu", (e) => { if (S.screen === "chat" && e.target.closest && e.target.closest(".cm, .cheart")) e.preventDefault(); });
-  document.addEventListener("touchmove", (e) => { if (S.screen !== "chat" || S.sheet) return; const t = e.target; if (t && t.closest && t.closest("#cmsgs, #cin")) return; e.preventDefault(); }, { passive: false });
+  document.addEventListener("touchmove", (e) => { if (S.screen !== "chat" || S.sheet) return; const t = e.target; if (t && t.closest && t.closest("#cmsgs")) return; if (t && t.id === "cin" && t.scrollHeight > t.clientHeight + 2) return; e.preventDefault(); }, { passive: false });
+  { let y0 = null; const bar = (e) => e.target.closest && e.target.closest(".cbar");
+    document.addEventListener("touchstart", (e) => { y0 = bar(e) && S.screen === "chat" ? e.touches[0].clientY : null; }, { passive: true });
+    document.addEventListener("touchmove", (e) => { if (y0 === null) return; if (e.touches[0].clientY - y0 > 22) { y0 = null; const a = document.activeElement; if (a && a.id === "cin") a.blur(); } }, { passive: true }); }
   // ما نخلي الزر يسحب التركيز من خانة الكتابة (الكيبورد ما بيسكر)
   root.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest("[data-keepfocus]")) e.preventDefault(); });
   root.addEventListener("scroll", (e) => { const t = e.target; if (t && t.id === "cmsgs" && t.scrollLeft) t.scrollLeft = 0; if (t && t.id === "cmsgs" && t.scrollTop < 60 && C().more && !C().loadingOlder && C().msgs.length) loadOlder(); }, true);
@@ -4031,10 +4034,12 @@ function bind() {
       const vh = window.visualViewport.height; if (vh > fullH) fullH = vh;
       const ae = document.activeElement, typing = !!(ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName));
       const d = document.documentElement.style;
-      d.setProperty("--app-h", typing && fullH - vh > 100 ? vh + "px" : "max(100%, 100lvh)");
-      document.documentElement.classList.toggle("kbd", !!(typing && fullH - vh > 100));
-      d.setProperty("--gh", fullH + "px"); window.scrollTo(0, 0);
-      d.setProperty("--vt", (typing && fullH - vh > 100 ? Math.max(0, window.visualViewport.offsetTop) : 0) + "px");
+      const kb0 = !!(typing && fullH - vh > 100), vt = (kb0 ? Math.max(0, Math.round(window.visualViewport.offsetTop)) : 0) + "px", ah = kb0 ? vh + "px" : "max(100%, 100lvh)";
+      if (fit.ah !== ah) { d.setProperty("--app-h", ah); fit.ah = ah; }
+      if (fit.kb !== kb0) { document.documentElement.classList.toggle("kbd", kb0); fit.kb = kb0; }
+      if (fit.gh !== fullH) { d.setProperty("--gh", fullH + "px"); fit.gh = fullH; }
+      if (fit.vt !== vt) { d.setProperty("--vt", vt); fit.vt = vt; }
+      if (window.scrollY) window.scrollTo(0, 0);
       const kb = typing && fullH - vh > 100, g = document.getElementById("gate");
       if (g) {
         g.classList.toggle("kb", kb);
@@ -4042,7 +4047,7 @@ function bind() {
         else requestAnimationFrame(() => { const p = g.querySelector(".gpanel"), last = p && p.lastElementChild; if (!last) return; const cur = parseFloat(g.style.getPropertyValue("--gshift")) || 0; g.style.setProperty("--gshift", Math.max(0, last.getBoundingClientRect().bottom + cur + 14 - window.visualViewport.height) + "px"); });
       }
     };
-    window.visualViewport.addEventListener("resize", fit); window.visualViewport.addEventListener("scroll", () => { window.scrollTo(0, 0); fit(); }); document.addEventListener("focusout", () => { setTimeout(fit, 60); setTimeout(fit, 350); }); fit();
+    window.visualViewport.addEventListener("resize", fit); window.visualViewport.addEventListener("scroll", fit); document.addEventListener("focusout", () => { setTimeout(fit, 60); setTimeout(fit, 350); }); fit();
   }
 }
 
