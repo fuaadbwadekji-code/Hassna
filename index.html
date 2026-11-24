@@ -1344,6 +1344,24 @@ html.kbd .sheet:has(#p-body) { padding-bottom: 6px; }
 .prex b { display: block; font-size: calc(12.5px * var(--fz, 1)); color: #c63d7d; margin-bottom: 3px; }
 .prex p { margin: 0; font-size: calc(13px * var(--fz, 1)); line-height: 1.75; opacity: .85; }
 html[data-theme="dark"] .prex { background: rgba(255, 255, 255, .06); }
+.prdome { position: relative; width: 80%; aspect-ratio: 300 / 290; margin: 4px auto 0; }
+.prdome > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 14px rgba(160, 60, 140, .18)); }
+.prdome .d0 { fill: rgba(255, 255, 255, .8); stroke: rgba(226, 77, 138, .2); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.prdome .d1 { fill: none; stroke: url(#prg); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke-dashoffset .9s linear; }
+html[data-theme="dark"] .prdome .d0 { fill: rgba(255, 255, 255, .12); }
+.prdome .dc { position: absolute; inset: 0; padding-top: 31%; display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; }
+.prdome .prl { font-size: calc(12.5px * var(--fz, 1)); opacity: .7; }
+.prdome .prnm { font-size: calc(26px * var(--fz, 1)); font-weight: 800; line-height: 1.2; }
+.prdome .prcd { font-size: calc(30px * var(--fz, 1)); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 1px; direction: ltr; color: #e24d8a; line-height: 1.2; }
+.prdome .prhm { font-size: calc(13px * var(--fz, 1)); opacity: .65; }
+.prdome .prprog { margin: 7px 0 0; justify-content: center; }
+.prdome .prcnt { font-size: calc(12px * var(--fz, 1)); font-weight: 700; opacity: .7; margin-top: 3px; }
+.prstrip { position: relative; z-index: 1; width: calc(100% + 36px); margin: -62px -18px -50px; height: 112px; pointer-events: none; }
+.prstrip svg { width: 100%; height: 100%; display: block; }
+.prayer .prlist { position: relative; z-index: 2; }
+.prchk { width: 34px; height: 34px; padding: 0; line-height: 0; }
+.prdome .dc { padding-top: 37%; }
+.prchk { -webkit-appearance: none; appearance: none; outline: 0; -webkit-tap-highlight-color: transparent; border: 0; overflow: hidden; background-clip: padding-box; }
 </style>
 </head>
 <body>
@@ -1683,6 +1701,15 @@ window.HF_Q_FR = [
      <radialGradient id="gl"><stop offset="0" stop-color="#ffd0a0" stop-opacity=".7"/><stop offset="1" stop-color="#ffd0a0" stop-opacity="0"/></radialGradient>`
   );
 
+  A.roseStrip = () => {
+    const r = rng(11); let back = "", front = "", lv = "";
+    for (let x = -6; x < 420; x += 30) lv += leaf(x + 8, 244, 20, (r() * 80 - 40) | 0) + leaf(x + 22, 250, 18, (r() * 100 + 40) | 0);
+    const cols = ["#f6b3cb", "#ee8fb3", "#f9cadb", "#e57aa3", "#fbd6e3"];
+    for (let x = 4, k = 0; x < 410; x += 30, k++) back += k % 4 === 2 ? lily(x, 226 + r() * 6, 17, k % 2 ? "#e07aa5" : "#d4638f", r() * 60) : rose(x, 228 + r() * 8, 13 + r() * 3, cols[k % 5], r() * 72);
+    for (let x = 20, k = 0; x < 420; x += 34, k++) front += k % 5 === 1 ? lily(x, 250 + r() * 6, 21, "#ec84ad", r() * 60) : rose(x, 252 + r() * 6, 17 + r() * 4, cols[(k + 2) % 5], r() * 72);
+    return `<svg viewBox="0 184 400 100" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${lv}${back}${front}</svg>`;
+  };
+
   A.dawn = () => {
     const r = rng(11); let back = "", front = "", lv = "";
     for (let x = -6; x < 420; x += 30) lv += leaf(x + 8, 244, 20, (r() * 80 - 40) | 0) + leaf(x + 22, 250, 18, (r() * 100 + 40) | 0);
@@ -1842,7 +1869,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v86";
+const APP_V = "v88";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true, prayer: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -3119,20 +3146,30 @@ const PRI = {
   isha: ["#141c47", "#2e326e", `<path d="M17.500 6.500a8 8 0 1 0 4.500 14.500 6.500 6.500 0 0 1-4.500-14.500z" fill="#fff3c4"/><path d="M21.500 6l.7 1.700 1.800.2-1.400 1.200.4 1.800-1.500-1-1.600 1 .5-1.800L19 7.900l1.800-.2z" fill="#fff3c4"/><circle cx="6" cy="8" r=".9" fill="#fff"/><circle cx="9" cy="22" r=".7" fill="#fff"/>`]
 };
 const prIcon = (k) => { const d = PRI[k]; return d ? `<svg class="pri" width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="pg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${d[0]}"/><stop offset="1" stop-color="${d[1]}"/></linearGradient><clipPath id="pc-${k}"><rect width="28" height="28" rx="8"/></clipPath></defs><g clip-path="url(#pc-${k})"><rect width="28" height="28" fill="url(#pg-${k})"/>${d[2]}</g></svg>` : ""; };
+const PR_D = "M150 36A14 14 0 0 1 148.3 8.1A11.0 11.0 0 0 0 163.9 23.7A14 14 0 0 1 150 36V62C94 98 28 140 28 210V262H272V210C272 140 206 98 150 62";
+function prDome(n, done, cnt, streak, t, day) {
+  const now = Date.now(), at = n.at.getTime();
+  const past = PR.map(([k]) => prAt(day, t[k]).getTime()).filter((x) => x <= now);
+  const span = Math.max(30 * 60000, past.length ? at - Math.max(...past) : 6 * 3600000);
+  const off = (100 * (1 - Math.max(0, Math.min(1, (at - now) / span)))).toFixed(1);
+  return `<div class="prdome"><svg viewBox="0 0 300 290" aria-hidden="true"><defs><linearGradient id="prg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9fc4"/><stop offset="1" stop-color="#e24d8a"/></linearGradient></defs><path class="d0" d="${PR_D}"/><path id="pr-arc" class="d1" pathLength="100" d="${PR_D}" style="stroke-dasharray:100;stroke-dashoffset:${off}"/></svg>
+    <div class="dc"><div class="prnm">${n.ar}</div><div class="prcd" id="pr-cd" data-at="${at}" data-span="${span}">${prFmt(at - now)}</div><div class="prhm">${n.hm}${n.tm ? " · بكرا" : ""}</div>
+    <div class="prprog"><div class="dots">${PR.map(([k]) => `<i class="${done[k] ? "on" : ""}"></i>`).join("")}</div></div><div class="prcnt">${cnt} من 5${streak ? " · " + streak + " يوم متتالي" : ""}</div></div></div>`;
+}
 function prayerHTML() {
   const day = prDay(), t = ptGet(day), done = prDoneAll()[day] || {}, n = t ? prNext() : null;
   const cnt = PR.filter(([k]) => done[k]).length, streak = prStreak(), hd = hadithToday();
   const rows = t ? PR.map(([k, ar]) => {
     const isN = n && !n.tm && n.key === k, past = prAt(day, t[k]).getTime() <= Date.now();
-    return `<div class="prrow ${done[k] ? "done" : ""} ${isN ? "next" : ""} ${past && !done[k] ? "past" : ""}"><span class="prn">${ar}</span>${prIcon(k)}<span class="prt">${t[k]}</span><button class="prchk" data-act="pr-tick" data-v="${k}" aria-label="${ar}">${ic("check", 17)}</button></div>`;
+    return `<div class="prrow ${done[k] ? "done" : ""} ${isN ? "next" : ""} ${past && !done[k] ? "past" : ""}"><span class="prn">${ar}</span>${prIcon(k)}<span class="prt">${t[k]}</span><button class="prchk" data-act="pr-tick" data-v="${k}" aria-label="${ar}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M4.500 12.400l5 5L19.500 7.400"/></svg></button></div>`;
   }).join("") + `<div class="prsun"><span>الشروق</span>${prIcon("sunrise")}<span>${t.sunrise}</span></div>`
     : `<div class="empty small">${ptErr ? "ما قدرت أجيب المواقيت، تأكد من الإنترنت" : "عم جيب المواقيت…"}${ptErr ? `<br><button class="qsm" data-act="pr-retry" style="margin-top:8px"><span>جرّب مرة ثانية</span></button>` : ""}</div>`;
   return `<div class="art">${ART.moon ? ART.moon() : ""}</div>
   <div class="in prayer">
     <div class="ttl">${kaabaSVG(30)}<span>صلاتك 🫶</span></div>
     <div class="prsub">${prCityAr()} · ${prHijri()}</div>
-    ${n ? `<div class="prnext glass"><div class="prl">${n.tm ? "الصلاة القادمة (بكرا)" : "الصلاة القادمة"}</div><div class="prnm">${n.ar}</div><div class="prcd" id="pr-cd" data-at="${n.at.getTime()}">${prFmt(n.at.getTime() - Date.now())}</div><div class="prhm">${n.hm}</div></div>` : ""}
-    <div class="prprog"><div class="dots">${PR.map(([k]) => `<i class="${done[k] ? "on" : ""}"></i>`).join("")}</div><span>${cnt} من 5${streak ? " · " + streak + " يوم متتالي" : ""}</span></div>
+    ${n ? prDome(n, done, cnt, streak, t, day) : ""}
+    <div class="prstrip">${ART.roseStrip ? ART.roseStrip() : ""}</div>
     <div class="glass prlist">${rows}</div>
     <div class="sec">حديث اليوم</div>
     <div class="glass prhad"><p>${esc(hd.t)}</p></div>
@@ -3145,6 +3182,7 @@ function prTick() {
   const ms = +el.dataset.at - Date.now();
   if (ms <= 0) { if (S.screen === "prayer" && !S.sheet) render(); return; }
   el.textContent = prFmt(ms);
+  const arc = document.getElementById("pr-arc"); if (arc) arc.style.strokeDashoffset = (100 * (1 - Math.max(0, Math.min(1, ms / (+el.dataset.span || 1))))).toFixed(1);
 }
 
 /* ---------- Accueil (propre à chaque compte) ---------- */
