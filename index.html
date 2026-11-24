@@ -1299,6 +1299,41 @@ html[data-theme="dark"] .pingcard { background: rgba(255, 255, 255, .08); }
 .sheet:has(#p-body) { padding-bottom: calc(8px + var(--safe-bottom)); }
 html.kbd .sheet:has(#p-body) { padding-bottom: 6px; }
 .sheet:has(#p-body) .btn[data-act="ping-send"] { margin-top: 8px; margin-bottom: 0; }
+.pet-b[data-acc="prayer"] .a-prayer { display: inline; }
+.pet-b[data-acc="prayer"] .p-arm path { stroke: #fff3d6 !important; }
+.qdone { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; margin: 4px 0 10px; padding: 11px 14px; border-radius: 16px; font-size: calc(15px * var(--fz, 1)); font-weight: 800; color: #fff; background: linear-gradient(135deg, #ff7eb6, #e24d8a); box-shadow: 0 6px 14px rgba(226, 77, 138, .35), inset 0 1px 0 rgba(255, 255, 255, .45); }
+.qdone:active { transform: scale(.98); }
+.prayer { padding-bottom: 110px; }
+.prhead { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.prhead .kb { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg, #3a3340, #14121a); box-shadow: 0 6px 14px rgba(20, 18, 26, .35), inset 0 0 0 1.5px rgba(255, 216, 74, .55); }
+.prhead b { display: block; font-size: calc(24px * var(--fz, 1)); line-height: 1.15; }
+.prhead span { font-size: calc(13px * var(--fz, 1)); opacity: .75; }
+.prnext { text-align: center; padding: 16px 12px 14px; margin-bottom: 12px; }
+.prnext .prl { font-size: calc(13px * var(--fz, 1)); opacity: .7; }
+.prnext .prnm { font-size: calc(30px * var(--fz, 1)); font-weight: 800; line-height: 1.2; }
+.prnext .prcd { font-size: calc(34px * var(--fz, 1)); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 1px; direction: ltr; color: #e24d8a; line-height: 1.2; }
+.prnext .prhm { font-size: calc(14px * var(--fz, 1)); opacity: .65; }
+.prprog { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 4px 10px; font-size: calc(13.5px * var(--fz, 1)); font-weight: 700; }
+.prprog .dots { display: flex; gap: 7px; }
+.prprog .dots i { width: 13px; height: 13px; border-radius: 50%; background: rgba(226, 77, 138, .18); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .35); transition: background .25s, transform .25s; }
+.prprog .dots i.on { background: #e24d8a; transform: scale(1.12); }
+.prlist { padding: 4px 6px; }
+.prrow { display: flex; align-items: center; gap: 12px; padding: 11px 10px; border-radius: 16px; border-bottom: 1px solid rgba(226, 77, 138, .1); }
+.prrow:last-of-type { border-bottom: 0; }
+.prrow .prn { flex: 1; font-size: calc(18px * var(--fz, 1)); font-weight: 700; }
+.prrow .prt { font-size: calc(18px * var(--fz, 1)); font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; opacity: .85; }
+.prrow.next { background: rgba(226, 77, 138, .12); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .4); }
+.prrow.past:not(.done) .prn, .prrow.past:not(.done) .prt { opacity: .55; }
+.prchk { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: transparent; box-shadow: inset 0 0 0 2px rgba(226, 77, 138, .45); transition: background .2s, color .2s, transform .2s; flex: none; }
+.prrow.done .prchk { color: #fff; background: linear-gradient(135deg, #ff7eb6, #e24d8a); box-shadow: 0 3px 8px rgba(226, 77, 138, .4); }
+.prrow.done .prn { text-decoration: line-through; text-decoration-thickness: 1.5px; opacity: .6; }
+.prchk:active { transform: scale(.88); }
+.prsun { display: flex; justify-content: space-between; padding: 8px 14px 10px; font-size: calc(13.5px * var(--fz, 1)); opacity: .6; }
+.prsun span:last-child { direction: ltr; font-variant-numeric: tabular-nums; }
+.prhad { padding: 16px 16px 12px; }
+.prhad p { margin: 0 0 8px; font-size: calc(18.5px * var(--fz, 1)); line-height: 1.9; font-weight: 600; text-align: center; }
+.prhad span { display: block; text-align: center; font-size: calc(12.5px * var(--fz, 1)); opacity: .65; }
+.prsrc { text-align: center; font-size: calc(11.5px * var(--fz, 1)); opacity: .5; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -1797,7 +1832,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v83";
+const APP_V = "v84";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -1865,6 +1900,7 @@ const ICONS = {
   check: '<path d="M5 12l5 5L20 7"/>',
   camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
   edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  kaaba: '<path d="M5 8l2-3.500h10L19 8v12.500H5z"/><path d="M5 8h14"/><path d="M5 11.500h14"/><path d="M10.500 20.500V16a1.500 1.500 0 0 1 3 0v4.500"/>',
   bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
   calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
   mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/>',
@@ -2073,6 +2109,9 @@ const Pet = (() => {
     <circle cx="31" cy="67" r="5.2" fill="#ffd84a"/><circle cx="31" cy="67" r="2.2" fill="#c99a10"/><path d="M31 63.200v3.800" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
     <rect x="42" y="63" width="14" height="2.6" rx="1.3" style="fill:var(--pcd,#2f8f80)"/><rect x="42" y="69" width="14" height="2.6" rx="1.3" style="fill:var(--pcd,#2f8f80)"/>
     <circle cx="63" cy="68" r="3.6" fill="#ff7aa8"/><circle cx="72" cy="68" r="3.6" fill="#b79bff"/>
+    <g class="acc a-prayer"><path d="M3 99L93 99L87 90L9 90z" fill="#2a9d8f"/><path d="M7 97.500L89 97.500" stroke="#ffd84a" stroke-width="1" stroke-linecap="round"/><path d="M41 96q7-8 14 0" stroke="#ffd84a" stroke-width="1.300" fill="none"/>
+      <path d="M14 56h68v23a9 9 0 0 1-9 9H23a9 9 0 0 1-9-9z" fill="#fffaf0" stroke="#e3d5b3" stroke-width=".8"/><path d="M38 56l10 11 10-11z" fill="#f1e4c2"/><path d="M48 67v21" stroke="#e3d5b3" stroke-width="1"/><circle cx="48" cy="73" r="1.300" fill="#c9b98e"/><circle cx="48" cy="79" r="1.300" fill="#c9b98e"/><circle cx="48" cy="85" r="1.300" fill="#c9b98e"/><path d="M15 84h66" stroke="#d9b44a" stroke-width="1.200" stroke-linecap="round"/>
+      <path d="M30 10q18-18 36 0z" fill="#fff" stroke="#d9d0bc" stroke-width="1"/><path d="M31.500 8.500h33" stroke="#4fb8a6" stroke-width="2" stroke-linecap="round"/><circle cx="48" cy="-1" r="1.500" fill="#4fb8a6"/></g>
     <g class="acc a-bow"><path d="M68 9L56 2v14zM68 9l12-7v14z" fill="#ff4f93"/><circle cx="68" cy="9" r="3.4" fill="#ff9cc4"/></g>
     <g class="acc a-crown"><path d="M32 9l3-11 8 7 5-10 5 10 8-7 3 11z" fill="#ffd84a" stroke="#c99a10" stroke-width="1.4" stroke-linejoin="round"/><circle cx="48" cy="2" r="1.8" fill="#ff5c8a"/></g>
     <g class="acc a-glasses"><rect x="28" y="25" width="17" height="14" rx="5.5" fill="#fff" fill-opacity=".18" stroke="#2a2233" stroke-width="2.4"/><rect x="51" y="25" width="17" height="14" rx="5.5" fill="#fff" fill-opacity=".18" stroke="#2a2233" stroke-width="2.4"/><path d="M45 31h6" stroke="#2a2233" stroke-width="2.4"/></g>
@@ -2096,7 +2135,7 @@ const Pet = (() => {
     if (!body) return;
     const c = COLS[P.petCol] || COLS.mint;
     body.style.setProperty("--pc1", c[0]); body.style.setProperty("--pc2", c[1]); body.style.setProperty("--pcd", c[2]);
-    body.dataset.acc = P.petAcc || "none";
+    body.dataset.acc = S.screen === "prayer" && S.stage === "app" ? "prayer" : (P.petAcc || "none");
   }
   function mk() {
     if (layer) return;
@@ -2184,7 +2223,7 @@ const Pet = (() => {
     sleepT = setTimeout(() => { if (!hidden) { asleep = true; layer.classList.add("sleep"); } }, 45000);
   }
   function sync(force) {
-    mk();
+    mk(); look();
     const show = P.pet && S.stage === "app" && !S.sheet && S.screen !== "chat";
     layer.classList.toggle("hide", !show);
     hidden = !show;
@@ -2921,10 +2960,10 @@ function fail(msg) {
 /* ---------- Application ---------- */
 function tabIcon(name) {
   if (name === "mine") return myWho() === "hasnaa" ? "flower" : "moon";
-  return { home: "home", us: "heart", today: "calendar" }[name];
+  return { home: "home", us: "heart", today: "calendar", prayer: "kaaba" }[name];
 }
-const TABBED = ["home", "today", "mine", "us"];
-const TABS = ["home", "today", "chat", "mine", "us"];
+const TABBED = ["home", "today", "mine", "us", "prayer"];
+const TABS = ["home", "today", "chat", "prayer", "mine", "us"];
 function tabsHTML() {
   const un = chatUnread();
   return `<nav class="tabs">${TABS.map((n) => n === "chat"
@@ -2947,10 +2986,110 @@ function appHTML() {
     case "capsules": body = capsulesHTML(); break;
     case "notif": body = notifHTML(); break;
     case "chat": body = chatHTML(); break;
+    case "prayer": body = prayerHTML(); break;
   }
   const fab = S.screen === "mine" || S.screen === "shared" ? `<button class="fab ${tabbed ? "" : "low"}" data-act="add" aria-label="add">${ic("plus", 28)}</button>` : "";
   const back = !tabbed && S.screen !== "chat" ? `<button class="back" data-act="back" aria-label="back">${ic("chev", 22)}</button>` : "";
   return `<section class="screen"${nav ? ` data-nav="${nav}"` : ""}>${body}${back}${fab}${tabbed ? tabsHTML() : ""}${sheetHTML()}</section>`;
+}
+
+const HADITH = [
+["أَرَأَيْتُمْ لَوْ أَنَّ نَهَرًا بِبَابِ أَحَدِكُمْ يَغْتَسِلُ فِيهِ كُلَّ يَوْمٍ خَمْسَ مَرَّاتٍ، هَلْ يَبْقَى مِنْ دَرَنِهِ شَيْءٌ؟ قَالُوا: لَا يَبْقَى مِنْ دَرَنِهِ شَيْءٌ. قَالَ: فَذَلِكَ مَثَلُ الصَّلَوَاتِ الخَمْسِ، يَمْحُو اللَّهُ بِهِنَّ الخَطَايَا", "متفق عليه"],
+["مَنْ صَلَّى البَرْدَيْنِ دَخَلَ الجَنَّةَ", "متفق عليه"],
+["الصَّلَوَاتُ الخَمْسُ، وَالجُمُعَةُ إِلَى الجُمُعَةِ، وَرَمَضَانُ إِلَى رَمَضَانَ، مُكَفِّرَاتٌ مَا بَيْنَهُنَّ إِذَا اجْتَنَبَ الكَبَائِرَ", "رواه مسلم"],
+["مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ", "رواه مسلم"],
+["مَا مِنْ مُسْلِمٍ يَتَوَضَّأُ فَيُحْسِنُ وُضُوءَهُ ثُمَّ يَقُومُ فَيُصَلِّي رَكْعَتَيْنِ مُقْبِلٌ عَلَيْهِمَا بِقَلْبِهِ وَوَجْهِهِ إِلَّا وَجَبَتْ لَهُ الجَنَّةُ", "رواه مسلم"],
+["جُعِلَتْ قُرَّةُ عَيْنِي فِي الصَّلَاةِ", "رواه النسائي وأحمد"],
+["أَقْرَبُ مَا يَكُونُ العَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ، فَأَكْثِرُوا الدُّعَاءَ", "رواه مسلم"],
+["مَنْ حَافَظَ عَلَى أَرْبَعِ رَكَعَاتٍ قَبْلَ الظُّهْرِ وَأَرْبَعٍ بَعْدَهَا حَرَّمَهُ اللَّهُ عَلَى النَّارِ", "رواه أبو داود والترمذي"],
+["مَا مِنْ عَبْدٍ مُسْلِمٍ يُصَلِّي لِلَّهِ كُلَّ يَوْمٍ ثِنْتَيْ عَشْرَةَ رَكْعَةً تَطَوُّعًا غَيْرَ فَرِيضَةٍ إِلَّا بَنَى اللَّهُ لَهُ بَيْتًا فِي الجَنَّةِ", "رواه مسلم"],
+["رَكْعَتَا الفَجْرِ خَيْرٌ مِنَ الدُّنْيَا وَمَا فِيهَا", "رواه مسلم"],
+["سَأَلْتُ النَّبِيَّ ﷺ: أَيُّ العَمَلِ أَحَبُّ إِلَى اللَّهِ؟ قَالَ: الصَّلَاةُ عَلَى وَقْتِهَا", "متفق عليه"],
+["صَلَاةُ الجَمَاعَةِ تَفْضُلُ صَلَاةَ الفَذِّ بِسَبْعٍ وَعِشْرِينَ دَرَجَةً", "متفق عليه"],
+["مَنْ غَدَا إِلَى المَسْجِدِ أَوْ رَاحَ أَعَدَّ اللَّهُ لَهُ فِي الجَنَّةِ نُزُلًا كُلَّمَا غَدَا أَوْ رَاحَ", "متفق عليه"],
+["مَنْ سَرَّهُ أَنْ يَلْقَى اللَّهَ غَدًا مُسْلِمًا فَلْيُحَافِظْ عَلَى هَؤُلَاءِ الصَّلَوَاتِ حَيْثُ يُنَادَى بِهِنَّ", "رواه مسلم"],
+["الطُّهُورُ شَطْرُ الإِيمَانِ... وَالصَّلَاةُ نُورٌ", "رواه مسلم"],
+["عَلَيْكَ بِكَثْرَةِ السُّجُودِ لِلَّهِ، فَإِنَّكَ لَا تَسْجُدُ لِلَّهِ سَجْدَةً إِلَّا رَفَعَكَ اللَّهُ بِهَا دَرَجَةً وَحَطَّ عَنْكَ بِهَا خَطِيئَةً", "رواه مسلم"],
+["مَا مِنِ امْرِئٍ مُسْلِمٍ تَحْضُرُهُ صَلَاةٌ مَكْتُوبَةٌ فَيُحْسِنُ وُضُوءَهَا وَخُشُوعَهَا وَرُكُوعَهَا إِلَّا كَانَتْ كَفَّارَةً لِمَا قَبْلَهَا مِنَ الذُّنُوبِ", "رواه مسلم"],
+["مَنْ تَوَضَّأَ نَحْوَ وُضُوئِي هَذَا ثُمَّ صَلَّى رَكْعَتَيْنِ لَا يُحَدِّثُ فِيهِمَا نَفْسَهُ غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ", "متفق عليه"],
+["أَفْضَلُ الصَّلَاةِ بَعْدَ الفَرِيضَةِ صَلَاةُ اللَّيْلِ", "رواه مسلم"],
+["مَنْ نَامَ عَنْ صَلَاةٍ أَوْ نَسِيَهَا فَلْيُصَلِّهَا إِذَا ذَكَرَهَا", "متفق عليه"],
+["يَا بِلَالُ، أَقِمِ الصَّلَاةَ أَرِحْنَا بِهَا", "رواه أبو داود"],
+["لَوْ يَعْلَمُ النَّاسُ مَا فِي النِّدَاءِ وَالصَّفِّ الأَوَّلِ ثُمَّ لَمْ يَجِدُوا إِلَّا أَنْ يَسْتَهِمُوا عَلَيْهِ لَاسْتَهَمُوا", "متفق عليه"],
+["أَوَّلُ مَا يُحَاسَبُ بِهِ العَبْدُ يَوْمَ القِيَامَةِ الصَّلَاةُ، فَإِنْ صَلَحَتْ صَلَحَ سَائِرُ عَمَلِهِ", "رواه الطبراني"]
+];
+
+const PR = [["fajr", "الفجر"], ["dhuhr", "الظهر"], ["asr", "العصر"], ["maghrib", "المغرب"], ["isha", "العشاء"]];
+const prCity = () => (myWho() === "hasnaa" ? "Amiens" : "Paris");
+const prCityAr = () => (myWho() === "hasnaa" ? "أميان" : "باريس");
+const prDay = (d = new Date()) => localDay(d);
+const prAt = (day, hm) => new Date(day + "T" + hm + ":00");
+let PT = {}, ptErr = false, lastPrDay = prDay();
+const ptKey = (day) => "hf_pt_" + prCity() + "_" + day;
+function ptGet(day) { if (!PT[day]) { try { const v = loadJSON(ptKey(day), null); if (v && v.fajr) PT[day] = v; } catch {} } return PT[day] || null; }
+async function ptFetch(day) {
+  if (ptGet(day)) return true;
+  const [y, m, d] = day.split("-");
+  try {
+    const r = await fetch("https://api.aladhan.com/v1/timingsByCity/" + d + "-" + m + "-" + y + "?city=" + prCity() + "&country=France&method=12");
+    const j = await r.json(), t = j && j.data && j.data.timings; if (!t) throw 0;
+    const o = {}; ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"].forEach((k) => { o[k.toLowerCase()] = String(t[k]).slice(0, 5); });
+    PT[day] = o; saveJSON(ptKey(day), o); return true;
+  } catch { return false; }
+}
+async function ptEnsure() {
+  const tm = prDay(new Date(Date.now() + 864e5));
+  const a = await ptFetch(prDay()); ptFetch(tm); ptErr = !a;
+  if (S.screen === "prayer" && S.stage === "app" && !S.sheet) render();
+}
+const prDoneKey = () => "hf_pray_" + myWho();
+const prDoneAll = () => { try { return loadJSON(prDoneKey(), {}) || {}; } catch { return {}; } };
+function prToggle(k) {
+  const all = prDoneAll(), day = prDay(), cur = all[day] || {};
+  cur[k] = !cur[k]; all[day] = cur;
+  Object.keys(all).sort().slice(0, -45).forEach((x) => delete all[x]);
+  saveJSON(prDoneKey(), all); return cur[k];
+}
+function prStreak() {
+  const all = prDoneAll(); let n = 0, d = new Date();
+  const full = (day) => all[day] && PR.every(([k]) => all[day][k]);
+  if (!full(prDay(d))) d = new Date(Date.now() - 864e5);
+  while (full(prDay(d))) { n++; d = new Date(d.getTime() - 864e5); }
+  return n;
+}
+function prNext() {
+  const now = Date.now(), day = prDay(), t = ptGet(day); if (!t) return null;
+  for (const [k, ar] of PR) { const at = prAt(day, t[k]); if (at.getTime() > now) return { key: k, ar, at, tm: false, hm: t[k] }; }
+  const tm = prDay(new Date(now + 864e5)), t2 = ptGet(tm);
+  return t2 ? { key: "fajr", ar: "الفجر", at: prAt(tm, t2.fajr), tm: true, hm: t2.fajr } : null;
+}
+function hadithToday() { const d = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 864e5); return HADITH[d % HADITH.length]; }
+const prFmt = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s / 60) % 60) + ":" + pad(s % 60); };
+function prHijri() { try { return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", { day: "numeric", month: "long", year: "numeric" }).format(new Date()); } catch { return ""; } }
+function prayerHTML() {
+  const day = prDay(), t = ptGet(day), done = prDoneAll()[day] || {}, n = t ? prNext() : null;
+  const cnt = PR.filter(([k]) => done[k]).length, streak = prStreak(), hd = hadithToday();
+  const rows = t ? PR.map(([k, ar]) => {
+    const isN = n && !n.tm && n.key === k, past = prAt(day, t[k]).getTime() <= Date.now();
+    return `<div class="prrow ${done[k] ? "done" : ""} ${isN ? "next" : ""} ${past && !done[k] ? "past" : ""}"><span class="prn">${ar}</span><span class="prt">${t[k]}</span><button class="prchk" data-act="pr-tick" data-v="${k}" aria-label="${ar}">${ic("check", 17)}</button></div>`;
+  }).join("") + `<div class="prsun"><span>الشروق</span><span>${t.sunrise}</span></div>`
+    : `<div class="empty small">${ptErr ? "ما قدرت أجيب المواقيت، تأكد من الإنترنت" : "عم جيب المواقيت…"}${ptErr ? `<br><button class="qsm" data-act="pr-retry" style="margin-top:8px"><span>جرّب مرة ثانية</span></button>` : ""}</div>`;
+  return `<div class="in prayer" style="padding-top:calc(22px + var(--safe-top))">
+    <div class="prhead"><div class="kb">${ic("kaaba", 30)}</div><div><b>الصلاة</b><span>${prCityAr()} · ${prHijri()}</span></div></div>
+    ${n ? `<div class="prnext glass"><div class="prl">${n.tm ? "الصلاة القادمة (بكرا)" : "الصلاة القادمة"}</div><div class="prnm">${n.ar}</div><div class="prcd" id="pr-cd" data-at="${n.at.getTime()}">${prFmt(n.at.getTime() - Date.now())}</div><div class="prhm">${n.hm}</div></div>` : ""}
+    <div class="prprog"><div class="dots">${PR.map(([k]) => `<i class="${done[k] ? "on" : ""}"></i>`).join("")}</div><span>${cnt} من 5${streak ? " · " + streak + " يوم متتالي" : ""}</span></div>
+    <div class="glass prlist">${rows}</div>
+    <div class="sec">حديث اليوم</div>
+    <div class="glass prhad"><p>${esc(hd[0])}</p><span>${esc(hd[1])}</span></div>
+    <div class="prsrc">المواقيت حسب اتحاد المنظمات الإسلامية في فرنسا · ${prCityAr()}</div>
+  </div>`;
+}
+function prTick() {
+  const d = prDay(); if (d !== lastPrDay) { lastPrDay = d; ptEnsure(); }
+  const el = document.getElementById("pr-cd"); if (!el) return;
+  const ms = +el.dataset.at - Date.now();
+  if (ms <= 0) { if (S.screen === "prayer" && !S.sheet) render(); return; }
+  el.textContent = prFmt(ms);
 }
 
 /* ---------- Accueil (propre à chaque compte) ---------- */
@@ -3178,7 +3317,7 @@ function sheetHTML() {
     inner = `<h3 class="ptitle">${ic("bell", 21)}<span>ابعت تذكير لـ${esc(partnerName())}</span></h3>
       <div class="opts" style="margin-bottom:6px">${pingSug().map((t, i) => sh.edit ? `<span class="opt qedit">${ue(t)}<button data-act="pq-del" data-v="${i}" aria-label="حذف">×</button></span>` : `<button class="opt" data-act="ping-sug" data-v="${i}">${ue(t)}</button>`).join("")}</div>
       ${sh.edit ? `<div class="namerow" style="margin-bottom:6px"><input data-keep="pq-new" id="pq-new" type="text" maxlength="80" placeholder="اكتب جملة جاهزة جديدة"><button class="btn" data-act="pq-add">إضافة</button></div>
-      <div class="qlinks"><button class="qsm" data-act="pq-reset"><span>رجّع الافتراضية</span></button><button class="qsm on" data-act="ping-edit">${ic("check", 14)}<span>تم</span></button></div>` : `<button class="qsm" data-act="ping-edit">${ic("edit", 14)}<span>تعديل الجمل الجاهزة</span></button>`}
+      <button class="qdone" data-act="ping-edit">${ic("check", 17)}<span>تم</span></button>` : `<button class="qsm" data-act="ping-edit">${ic("edit", 14)}<span>تعديل الجمل الجاهزة</span></button>`}
       <div class="ink-input"><div class="lbl">نص الإشعار</div><textarea data-keep="p-body" id="p-body" rows="2" maxlength="200" placeholder="اكتب اللي بدك توصّله"></textarea></div>
       <div class="opts" style="margin:12px 0 4px"><button class="opt ${!later ? "on" : ""}" data-act="ping-when" data-v="now">هلأ</button><button class="opt ${later ? "on" : ""}" data-act="ping-when" data-v="later">بوقت محدد</button></div>
       ${later ? `<div class="ink-input"><div class="row2"><div><div class="lbl">التاريخ</div><input data-keep="p-date" id="p-date" type="date" value="${dv}"></div><div><div class="lbl">الوقت</div><input data-keep="p-time" id="p-time" type="time" value="${tv}"></div></div></div>
@@ -3423,7 +3562,7 @@ async function enterApp() {
   S.today = localDay();
   loadChat().then(() => { if (S.stage === "app" && !S.sheet) render(); }); loadSince().then(() => { if (S.screen === "chat") render(true); });
   await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncAvatars()]);
-  initSeen();
+  initSeen(); ptEnsure();
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
   render(true);
@@ -3700,7 +3839,9 @@ async function onClick(e) {
     case "setup-start": return toggleSetup();
     case "lock": S.sheet = null; return lockApp();
 
-    case "tab": S.nav = "tab"; S.screen = v; S.sheet = null; render(true); break;
+    case "tab": S.nav = "tab"; S.screen = v; S.sheet = null; render(true); if (v === "prayer") ptEnsure(); break;
+    case "pr-retry": ptErr = false; render(); ptEnsure(); break;
+    case "pr-tick": { const on = prToggle(v); render(); if (on) { const dn = prDoneAll()[prDay()] || {}; if (PR.every(([k]) => dn[k])) Pet.celebrate("اكتملت صلوات اليوم، تقبّل الله 🤲"); else Pet.cheer(); } break; }
     case "open": S.nav = "push"; S.screen = v; S.editAns = false; if (v === "capsules") Promise.all([loadCapsules(), loadReplies()]).then(() => { if (S.screen === "capsules") render(); }); render(true); break;
     case "back": S.nav = "pop"; S.screen = ["shared", "question", "capsules", "partner"].includes(S.screen) ? "us" : "home"; render(true); break;
     case "seg": S.seg[el.dataset.w] = v; render(); break;
@@ -3712,7 +3853,6 @@ async function onClick(e) {
     case "ping-edit": S.sheet.edit = !S.sheet.edit; render(); break;
     case "pq-add": { const i = document.getElementById("pq-new"), t = ((i && i.value) || "").trim().slice(0, 80); if (!t) return toast("اكتب الجملة"); const l = pingSug().slice(); if (l.length >= 12) return toast("الحد الأقصى ١٢ جملة"); l.push(t); P.pingQ = l; savePrefs(); i.value = ""; render(); break; }
     case "pq-del": { const l = pingSug().slice(); l.splice(+v, 1); P.pingQ = l; savePrefs(); render(); break; }
-    case "pq-reset": P.pingQ = null; savePrefs(); render(); break;
     case "ping-send": return sendPing();
     case "ping-del": { const id = el.dataset.id; if (S.sheet) S.sheet.list = (S.sheet.list || []).filter((x) => x.id !== id); render(); sb.rpc("delete_ping", { p_id: id }); break; }
     case "add-home": S.sheet = { type: "task", id: null, scope: "private", home: true }; render(true); break;
@@ -4137,7 +4277,7 @@ function bind() {
   });
   root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target && e.target.id === "cm-in") { e.preventDefault(); sendComment(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "cr-in") { e.preventDefault(); sendCapReply(S.sheet.id); return; } if (e.key === "Enter" && e.target && e.target.id === "codein" && S.stage === "gate" && S.gate.mode === "login") { e.preventDefault(); submitLogin(); } });
   setInterval(() => { if (P.theme === "auto") applyPrefs(); }, 60000);
-  setInterval(tickCd, 1000);
+  setInterval(tickCd, 1000); setInterval(prTick, 1000);
   window.addEventListener("focus", () => checkOpenCache());
   window.addEventListener("pageshow", () => checkOpenCache());
   document.addEventListener("visibilitychange", () => {
