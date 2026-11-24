@@ -1228,6 +1228,45 @@ html[data-theme="dark"] .tab .tbadge { box-shadow: 0 0 0 2px #1e212d; }
 @keyframes ctin { from { opacity: 0; transform: translateY(6px) scale(.6); } to { opacity: 1; transform: none; } }
 @keyframes ctout { to { opacity: 0; transform: scale(.7); } }
 @media (prefers-reduced-motion: reduce) { .ctb i { animation: none; opacity: .8; } }
+.secrow { display: flex; align-items: center; justify-content: space-between; }
+.secadd { display: inline-flex; align-items: center; gap: 4px; padding: 5px 13px 5px 11px; border-radius: 999px; font-size: calc(13px * var(--fz, 1)); font-weight: 700; color: #fff; background: linear-gradient(135deg, #ff8fc3, #e24d8a); box-shadow: 0 4px 12px rgba(226, 77, 138, .4); }
+html[data-theme="dark"] .secadd { color: #0b0c10; background: linear-gradient(135deg, #f1f3f8, #9097a9); box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+html[data-theme="white"] .secadd { background: linear-gradient(135deg, #3d4455, #262b36); color: #fff; }
+.secadd:active { transform: scale(.94); }
+.pn { transition: opacity .22s, transform .22s; }
+.pn.out { opacity: 0; transform: translateX(34px) scale(.96); pointer-events: none; }
+.pn-d { align-self: flex-start; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--ink2, #8a6a94); background: rgba(127, 127, 127, .12); margin-inline-start: 2px; }
+.pn-d:active { transform: scale(.88); }
+.pop-clear { margin-inline-start: auto; font-size: calc(13px * var(--fz, 1)); font-weight: 700; padding: 6px 12px; border-radius: 999px; color: #c2327a; background: rgba(226, 77, 138, .12); white-space: nowrap; }
+.pop-head { flex-wrap: nowrap; }
+html, body { overscroll-behavior: none; }
+.cmsgs { overflow-x: hidden; overscroll-behavior: none; touch-action: pan-y; padding-bottom: 6px; }
+.chead, .cbar, .crep { touch-action: none; }
+.cbar textarea { touch-action: pan-y; overscroll-behavior: contain; }
+.cb2 { font-size: calc(18px * var(--fz, 1)); line-height: 1.5; padding: 8px 13px 6px; }
+.cbub { max-width: 84%; }
+.ct { font-size: 11.5px; }
+.cq { font-size: calc(14.5px * var(--fz, 1)); }
+.cq b { font-size: calc(13px * var(--fz, 1)); }
+.ctouch { font-size: calc(16px * var(--fz, 1)); }
+.ctouch time { font-size: 11.5px; }
+.csep { font-size: calc(13.5px * var(--fz, 1)); }
+.cwho b { font-size: calc(18px * var(--fz, 1)); }
+.cwho span { font-size: calc(13.5px * var(--fz, 1)); }
+.crq b { font-size: calc(13.5px * var(--fz, 1)); } .crq span { font-size: calc(14.5px * var(--fz, 1)); }
+.cbar { gap: 7px; padding: 6px 10px calc(7px + var(--safe-bottom)); }
+html.kbd .cbar { padding-bottom: 7px; }
+.cbar textarea { min-height: 38px; padding: 8px 14px; max-height: 112px; font-size: 16px; line-height: 1.35; }
+.csend, .cheart { width: 38px; height: 38px; }
+.cheart { font-size: 18px; }
+.csend .ic { width: 18px; height: 18px; }
+.ci.new .cm { animation: none; }
+.ci.new { animation: cmpop .26s cubic-bezier(.2, .9, .3, 1.15); }
+.ci.new:has(.cm.me) { animation: cmsend .44s cubic-bezier(.2, .9, .25, 1.05) both; transform-origin: 88% 100%; }
+@keyframes cmsend { 0% { opacity: 0; transform: translateY(64px) scale(.78); } 55% { opacity: 1; transform: translateY(-6px) scale(1.04); } 100% { opacity: 1; transform: none; } }
+.csend.fly { animation: cpop .46s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes cpop { 0% { transform: scale(1); } 30% { transform: scale(.82); box-shadow: 0 0 0 0 rgba(226, 77, 138, .5); } 70% { transform: scale(1.12); box-shadow: 0 0 0 10px rgba(226, 77, 138, 0); } 100% { transform: scale(1); } }
+.ci.gone { pointer-events: none; }
 </style>
 </head>
 <body>
@@ -1672,7 +1711,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v75";
+const APP_V = "v76";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -1858,7 +1897,7 @@ function buildNotifs() {
     else { head = t.scope === "shared" ? "تذكير بمهمة مشتركة" : "تذكير بمهمة"; rel = "بعد " + dur(diff); }
     out.push({ sub: t.title, head, rel, diff, key: "r:" + t.id + ":" + t.due_at, k: "task", id: t.id });
   });
-  return out.sort((a, b) => a.diff - b.diff);
+  return out.filter((x) => !nDis().has(x.key)).sort((a, b) => a.diff - b.diff);
 }
 /* Nouveautés du/de la partenaire depuis la dernière ouverture de la cloche */
 function buildEvents(since) {
@@ -1868,9 +1907,28 @@ function buildEvents(since) {
   if (P.n.answers) S.answers.filter((a) => a.user_id !== me && a.created_at && ts(a.created_at) > since).forEach((a) => out.push({ key: "a:" + (a.id || a.day + a.user_id), at: ts(a.created_at), head: "جواب جديد 💌", sub: pn + " · " + trS("أجاب على سؤال اليوم"), k: "question", id: "" }));
   if (P.n.shared) S.tasks.filter((t) => t.scope === "shared" && t.created_by !== me && ts(t.created_at) > since).forEach((t) => out.push({ key: "t:" + t.id, at: ts(t.created_at), head: "مهمة مشتركة جديدة 🌸", sub: t.title, k: "task", id: t.id }));
   if (P.n.capsules) S.capsules.filter((c) => c.is_open && ts(c.open_at) > since).forEach((c) => out.push({ key: "k:" + c.id, at: ts(c.open_at), head: "انفتحت كبسولة 💌", sub: c.title, k: "capsule", id: c.id }));
-  return out.sort((a, b) => b.at - a.at).map((e) => ({ ...e, rel: ago(new Date(e.at).toISOString()), diff: 1 }));
+  return out.filter((x) => !nDis().has(x.key)).sort((a, b) => b.at - a.at).map((e) => ({ ...e, rel: ago(new Date(e.at).toISOString()), diff: 1 }));
 }
-const allNotifs = () => buildEvents().concat(buildNotifs());
+const nsKey = () => "hf_nstore_" + myWho(), ndKey = () => "hf_ndis_" + myWho(), n0Key = () => "hf_n0_" + myWho();
+const nDis = () => S.nDis || (S.nDis = new Set(loadJSON(ndKey(), [])));
+const nStore = () => S.nStore || (S.nStore = loadJSON(nsKey(), []));
+function saveN() { saveJSON(nsKey(), nStore().slice(0, 300)); saveJSON(ndKey(), [...nDis()].slice(-1500)); }
+/* الإشعارات بتنحفظ وما بتنمسح إلا لما تمسحها إنت */
+function storeEvents() {
+  if (!S.user) return;
+  let n0 = +loadJSON(n0Key(), 0); if (!n0) { n0 = Date.now() - 7 * 864e5; saveJSON(n0Key(), n0); }
+  const st = nStore(), have = new Set(st.map((x) => x.key)); let ch = false;
+  buildEvents(n0).forEach((e) => { if (!have.has(e.key)) { st.push({ key: e.key, at: e.at, head: e.head, sub: e.sub, k: e.k || "", id: e.id || "" }); have.add(e.key); ch = true; } });
+  buildNotifs().forEach((n) => { if (n.diff <= 0 && !have.has(n.key)) { st.push({ key: n.key, at: Date.now() + n.diff * 60000, head: n.head, sub: n.sub, k: n.k || "", id: n.id || "", rem: 1 }); have.add(n.key); ch = true; } });
+  if (ch) { st.sort((a, b) => b.at - a.at); saveN(); }
+}
+function notifItems() {
+  storeEvents();
+  const st = nStore().filter((x) => !nDis().has(x.key)), keys = new Set(st.map((x) => x.key));
+  const live = buildNotifs().filter((n) => n.diff > 0 && !keys.has(n.key));
+  return live.concat(st.map((x) => ({ ...x, rel: ago(new Date(x.at).toISOString()), diff: x.rem ? -1 : 1 })));
+}
+const allNotifs = () => notifItems();
 /* Pastille de la cloche : seulement ce qui n'a pas encore été vu */
 const remSeenKey = () => "hf_rem_" + myWho();
 function unreadCount() {
@@ -2216,6 +2274,7 @@ const Pet = (() => {
 const CHAT_PAGE = 60;
 function C() { return S.chat || (S.chat = { msgs: [], more: true, loaded: false, fresh: new Set(), reply: null, typingUntil: 0, seen: null, online: false, loadingOlder: false, lastTypingSent: 0 }); }
 const chatMine = (m) => m.author_id === S.user.id;
+const chatVis = (m) => !(m.hidden_for || []).includes(S.user.id);
 const pfemale = () => other(myWho()) === "hasnaa";
 const hmOf = (t) => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
 const sameDayT = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
@@ -2281,7 +2340,7 @@ async function loadOlder() {
   } catch {}
   c.loadingOlder = false; refreshChat("keep");
 }
-const chatUnread = () => C().msgs.filter((m) => !chatMine(m) && !m.read_at && !m.pending).length;
+const chatUnread = () => C().msgs.filter((m) => chatVis(m) && !chatMine(m) && !m.read_at && !m.pending).length;
 let readT = null;
 function markChatRead() {
   clearTimeout(readT);
@@ -2298,7 +2357,7 @@ function markChatRead() {
 function chatItems() {
   const c = C(), out = [];
   let prev = null;
-  c.msgs.forEach((m) => {
+  c.msgs.filter(chatVis).forEach((m) => {
     let cls = "", sep = null;
     if (!prev) sep = chatDayLabel(m.created_at), cls = "gap";
     else {
@@ -2312,14 +2371,14 @@ function chatItems() {
     const me = chatMine(m), t = hmOf(m.created_at);
     if (m.kind === "touch") {
       const who = me ? "بعتّ لمسة" : esc(partnerName()) + (pfemale() ? " بعتتلك لمسة" : " بعتلك لمسة");
-      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm touch" data-id="${m.id}"><div class="ctouch"><s>💗</s><span>${who}: ${ue(m.body)}</span><time>${t}</time></div></div>` });
+      out.push({ key: m.lid || m.id, fresh: c.fresh.has(m.lid || m.id), html: `<div class="cm touch" data-id="${m.id}"><div class="ctouch"><s>💗</s><span>${who}: ${ue(m.body)}</span><time>${t}</time></div></div>` });
     } else {
       const tick = me ? `<span class="ctick${m.read_at ? " rd" : ""}">${m.pending ? "🕒" : m.read_at ? "✓✓" : "✓"}</span>` : "";
       const rn = m.reply_by === S.user.id ? "أنت" : partnerName();
       const q = m.reply_body ? `<div class="cq" data-act="chat-jump" data-id="${esc(m.reply_to || "")}"><b>${esc(rn)}</b>${ue(m.reply_body)}</div>` : "";
       const hs = (m.hearts || []).length;
       const hh = hs ? `<span class="chh${hs > 1 ? " two" : ""}">${ic("heart", 13, true)}${hs > 1 ? ic("heart", 13, true) : ""}</span>` : "";
-      out.push({ key: m.id, fresh: c.fresh.has(m.id), html: `<div class="cm ${me ? "me" : "th"} ${cls}${hs ? " hs" : ""}" data-id="${m.id}"><span class="cswi">${ic("reply", 17)}</span><div class="cbub"><div class="cb2">${q}<span class="cx">${ue(m.body)}</span><span class="ct">${t}${tick}</span></div>${hh}</div></div>` });
+      out.push({ key: m.lid || m.id, fresh: c.fresh.has(m.lid || m.id), html: `<div class="cm ${me ? "me" : "th"} ${cls}${hs ? " hs" : ""}" data-id="${m.id}"><span class="cswi">${ic("reply", 17)}</span><div class="cbub"><div class="cb2">${q}<span class="cx">${ue(m.body)}</span><span class="ct">${t}${tick}</span></div>${hh}</div></div>` });
     }
     prev = m;
   });
@@ -2343,13 +2402,19 @@ function refreshChat(mode) {
   const more = list.querySelector(".cmore");
   if (c.more && c.msgs.length && !more) { const b = document.createElement("button"); b.className = "cmore"; b.dataset.act = "chat-older"; b.textContent = "رسائل أقدم"; list.prepend(b); }
   else if (more && !(c.more && c.msgs.length)) more.remove();
-  [...list.querySelectorAll(".ci")].forEach((n) => { if (!wanted.has(n.dataset.k)) n.remove(); });
-  let cur = list.querySelector(".ci"), added = false;
+  [...list.querySelectorAll(".ci:not(.gone)")].forEach((n) => {
+    if (wanted.has(n.dataset.k)) return;
+    n.classList.add("gone"); n.style.overflow = "hidden"; n.style.height = n.offsetHeight + "px"; n.style.transition = "height .24s ease, opacity .2s, transform .2s";
+    requestAnimationFrame(() => { n.style.height = "0px"; n.style.opacity = "0"; n.style.transform = "scale(.9)"; });
+    setTimeout(() => n.remove(), 280);
+  });
+  let cur = list.querySelector(".ci:not(.gone)"), added = false;
   items.forEach((it) => {
     const html = fin(it.html), h = hashStr(html);
     if (cur && cur.dataset.k === it.key) {
-      if (cur.dataset.h !== h) { const n = mkCi(it, html, h, false); cur.replaceWith(n); cur = n.nextElementSibling; } else cur = cur.nextElementSibling;
-      while (cur && !cur.classList.contains("ci")) cur = cur.nextElementSibling;
+      if (cur.dataset.h !== h) { cur.innerHTML = html; cur.dataset.h = h; }
+      cur = cur.nextElementSibling;
+      while (cur && (!cur.classList.contains("ci") || cur.classList.contains("gone"))) cur = cur.nextElementSibling;
     } else {
       const n = mkCi(it, html, h, it.fresh);
       if (cur) list.insertBefore(n, cur); else { const tp = list.querySelector("#ctyp"); if (tp) list.insertBefore(n, tp); else list.appendChild(n); }
@@ -2362,10 +2427,11 @@ function refreshChat(mode) {
     if (mode === "bottom") list.scrollTop = list.scrollHeight;
     else requestAnimationFrame(() => list.scrollTo({ top: list.scrollHeight, behavior: "smooth" }));
   } else if (mode === "keep" && list.scrollHeight !== oldH && oldTop < 80) list.scrollTop = oldTop + (list.scrollHeight - oldH);
-  else if (near) list.scrollTop = list.scrollHeight;
+  else if (mode === "stay") list.scrollTop = oldTop;
+  else if (near && list.scrollHeight !== oldH) list.scrollTop = list.scrollHeight;
 }
 function mkCi(it, html, h, fresh) {
-  const d = document.createElement("div"); d.className = "ci" + (fresh ? " new" : ""); d.dataset.k = it.key; d.dataset.h = h; d.innerHTML = html; return d;
+  const d = document.createElement("div"); d.className = "ci" + (fresh ? " new" : ""); if (fresh) d.addEventListener("animationend", () => d.classList.remove("new"), { once: true }); d.dataset.k = it.key; d.dataset.h = h; d.innerHTML = html; return d;
 }
 
 /* ----- الشاشة ----- */
@@ -2392,7 +2458,7 @@ function flameChip() {
   return `<button class="cflame${n == null ? " none" : ""}" data-act="flame" aria-label="flame"><s>🔥</s><b>${n == null ? "حدّد التاريخ" : n}</b></button>`;
 }
 function chatPreview() {
-  const m = [...C().msgs].reverse().find((x) => !x.pending);
+  const m = [...C().msgs].reverse().find((x) => !x.pending && chatVis(x));
   if (!m) return "ابدأ المحادثة 💬";
   const t = m.kind === "touch" ? "💗 " + m.body : m.body;
   return (chatMine(m) ? "أنت: " : "") + t.slice(0, 60);
@@ -2416,11 +2482,12 @@ async function sendChat(kind, text) {
   if (kind === "text") { if (inp) { inp.value = ""; autosize(inp); } c.reply = null; paintReply(); }
   const tmp = { id: "tmp-" + Date.now() + Math.random().toString(36).slice(2, 6), couple_id: S.profile.couple_id, author_id: S.user.id, kind, body, reply_to: rep ? rep.id : null, reply_body: rep ? rep.body.slice(0, 140) : null, reply_by: rep ? rep.author_id : null, hearts: [], read_at: null, created_at: new Date().toISOString(), pending: true };
   c.msgs.push(tmp); c.fresh.add(tmp.id); refreshChat("bottom");
+  { const sbn = document.querySelector(".csend"); if (sbn) { sbn.classList.remove("fly"); void sbn.offsetWidth; sbn.classList.add("fly"); } if (navigator.vibrate) try { navigator.vibrate(8); } catch {} }
   const row = { couple_id: tmp.couple_id, author_id: tmp.author_id, kind, body, reply_to: tmp.reply_to, reply_body: tmp.reply_body, reply_by: tmp.reply_by };
   let res; try { res = await sb.from("messages").insert(row).select("*").single(); } catch (e) { res = { error: e }; }
   c.msgs = c.msgs.filter((m) => m.id !== tmp.id);
   if (res.error || !res.data) { toast(mapError(res.error)); if (kind === "text" && inp && !inp.value) { inp.value = body; autosize(inp); } refreshChat(); return; }
-  mergeMsg(res.data); refreshChat("bottom");
+  mergeMsg({ ...res.data, lid: tmp.id }); refreshChat("stay");
   if (kind === "touch") { burstAtHeart(); }
 }
 function burstAtHeart() {
@@ -2432,7 +2499,7 @@ async function toggleHeart(id) {
   const m = C().msgs.find((x) => x.id === id); if (!m || m.pending || m.kind === "touch") return;
   const me = S.user.id, hs = (m.hearts || []).slice(), i = hs.indexOf(me);
   if (i >= 0) hs.splice(i, 1); else hs.push(me);
-  m.hearts = hs; refreshChat();
+  m.hearts = hs; refreshChat("stay");
   if (i < 0) {
     const row = document.querySelector(`.cm[data-id="${id}"]`);
     if (row) { const h = document.createElement("div"); h.className = "cbig"; h.innerHTML = ic("heart", 76, true); row.appendChild(h); setTimeout(() => h.remove(), 850); }
@@ -2442,8 +2509,8 @@ async function toggleHeart(id) {
 }
 function chatOnInsert(m) {
   const c = C(); if (c.msgs.some((x) => x.id === m.id)) return;
-  if (chatMine(m)) { const i = c.msgs.findIndex((x) => x.pending && x.body === m.body && x.kind === m.kind); if (i >= 0) c.msgs.splice(i, 1); }
-  mergeMsg(m);
+  let lid = ""; if (chatMine(m)) { const i = c.msgs.findIndex((x) => x.pending && x.body === m.body && x.kind === m.kind); if (i >= 0) { lid = c.msgs[i].id; c.msgs.splice(i, 1); } }
+  mergeMsg(lid ? { ...m, lid } : m);
   if (chatMine(m)) { if (S.screen === "chat") refreshChat(); return; }
   c.typingUntil = 0; paintTyping();
   if (S.screen === "chat" && !document.hidden) {
@@ -2457,7 +2524,22 @@ function chatOnInsert(m) {
 }
 function chatOnUpdate(m) {
   const c = C(), cur = c.msgs.find((x) => x.id === m.id); if (!cur) return;
-  mergeMsg(m); if (S.screen === "chat") refreshChat();
+  mergeMsg(m); if (S.screen === "chat") refreshChat("stay");
+}
+function chatOnDelete(o) {
+  const c = C(); if (!o || !o.id) return;
+  c.msgs = c.msgs.filter((x) => x.id !== o.id);
+  if (c.reply && c.reply.id === o.id) { c.reply = null; paintReply(); }
+  if (S.screen === "chat") refreshChat("stay"); else if (S.stage === "app" && !S.sheet) render();
+}
+async function deleteMsg(id) {
+  const c = C(), m = c.msgs.find((x) => x.id === id); if (!m || m.pending) return;
+  const mineM = chatMine(m), snap = c.msgs.slice();
+  if (mineM) c.msgs = c.msgs.filter((x) => x.id !== id); else m.hidden_for = [...(m.hidden_for || []), S.user.id];
+  if (c.reply && c.reply.id === id) { c.reply = null; paintReply(); }
+  refreshChat("stay");
+  try { const { error } = await sb.rpc(mineM ? "delete_message" : "hide_message", { p_id: id }); if (error) throw error; }
+  catch { if (mineM) c.msgs = snap; else m.hidden_for = (m.hidden_for || []).filter((x) => x !== S.user.id); toast("ما انحذفت، تأكد من تشغيل chat-delete.sql"); refreshChat("stay"); }
 }
 
 /* ----- الحضور وآخر ظهور ----- */
@@ -2568,7 +2650,7 @@ function initChat() {
       G = { kind: "heart", pid: e.pointerId, lp: setTimeout(() => { if (G && G.kind === "heart") { G.fired = true; if (navigator.vibrate) try { navigator.vibrate(14); } catch {} S.sheet = { type: "touch" }; render(true); } }, 450) };
       return;
     }
-    const row = e.target.closest && e.target.closest(".cm:not(.touch)"); if (!row || e.target.closest("[data-act]")) return;
+    const row = e.target.closest && e.target.closest(".cm"); if (!row || e.target.closest("[data-act]")) return;
     G = { kind: "row", row, id: row.dataset.id, x: e.clientX, y: e.clientY, mode: "", pid: e.pointerId, dx: 0, armed: false, lp: setTimeout(() => { if (G && G.kind === "row" && !G.mode) { G.mode = "lp"; if (navigator.vibrate) try { navigator.vibrate(12); } catch {} S.sheet = { type: "msgact", id: G.id }; render(true); } }, 520) };
   });
   root.addEventListener("pointermove", (e) => {
@@ -2597,6 +2679,7 @@ function initChat() {
   root.addEventListener("pointerup", (e) => end(e, false));
   root.addEventListener("pointercancel", (e) => end(e, true));
   root.addEventListener("contextmenu", (e) => { if (S.screen === "chat" && e.target.closest && e.target.closest(".cm, .cheart")) e.preventDefault(); });
+  document.addEventListener("touchmove", (e) => { if (S.screen !== "chat" || S.sheet) return; const t = e.target; if (t && t.closest && t.closest("#cmsgs, #cin")) return; e.preventDefault(); }, { passive: false });
   // ما نخلي الزر يسحب التركيز من خانة الكتابة (الكيبورد ما بيسكر)
   root.addEventListener("pointerdown", (e) => { if (e.target.closest && e.target.closest("[data-keepfocus]")) e.preventDefault(); });
   root.addEventListener("scroll", (e) => { const t = e.target; if (t && t.id === "cmsgs" && t.scrollTop < 60 && C().more && !C().loadingOlder && C().msgs.length) loadOlder(); }, true);
@@ -2799,7 +2882,7 @@ function homeHTML() {
       ${!mine ? `<span class="pill light">!</span>` : ""}${ic("chev", 22)}
     </button>
     ${todayCaps.length ? `<div class="sec">${todayCaps.length > 1 ? "كبسولات" : "كبسولة"} ⏳</div>${todayCaps.map((c) => capCard(c, false)).join("")}` : ""}
-    <div class="sec">مهام اليوم</div>
+    <div class="sec secrow"><span>مهام اليوم</span><button class="secadd" data-act="add-home">${ic("plus", 15)} مهمة</button></div>
     <div class="glass">${todayList.length ? todayList.map(taskRow).join("") : `<div class="empty small">ما في مهام لليوم 🌙</div>`}</div>
   </div>`;
 }
@@ -2984,8 +3067,10 @@ function sheetHTML() {
   if (sh.type === "task") {
     const t = sh.id ? S.tasks.find((x) => x.id === sh.id) : null;
     let dv = "", tv = "";
+    if (!t && sh.home) dv = localDay();
     if (t && t.due_at) { const d = new Date(t.due_at); dv = localDay(d); tv = t.due_all_day ? "" : `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
     inner = `<h3>${t ? "تعديل المهمة" : sh.scope === "shared" ? "مهمة مشتركة جديدة" : "مهمة جديدة"}</h3>
+      ${!t && sh.home ? `<div class="opts" style="margin-bottom:10px"><button class="opt ${sh.scope === "private" ? "on" : ""}" data-act="task-scope" data-v="private">خاصة فيّي</button><button class="opt ${sh.scope === "shared" ? "on" : ""}" data-act="task-scope" data-v="shared">مشتركة</button></div>` : ""}
       <div class="ink-input">
       <div class="lbl">العنوان</div><input data-keep="f-title" id="f-title" type="text" maxlength="200" value="${ue(t ? t.title : "")}" placeholder="شو بدك تعمل؟">
       <div class="row2"><div><div class="lbl">التاريخ</div><input data-keep="f-date" id="f-date" type="date" value="${dv}"></div><div><div class="lbl">الوقت</div><input data-keep="f-time" id="f-time" type="time" value="${tv}"></div></div>
@@ -3033,10 +3118,19 @@ function sheetHTML() {
   } else if (sh.type === "msgact") {
     const m = C().msgs.find((x) => x.id === sh.id); if (!m) return "";
     const hearted = (m.hearts || []).includes(S.user.id);
+    const mineM = m.author_id === S.user.id, isT = m.kind === "touch";
     inner = `<h3>الرسالة</h3><div class="cm-task">${ue(m.body.slice(0, 160))}</div>
-      <button class="btn" data-act="msg-reply">${ic("reply", 18)} رد</button>
+      ${isT ? "" : `<button class="btn" data-act="msg-reply">${ic("reply", 18)} رد</button>
       <button class="btn light" data-act="msg-heart">${hearted ? "إلغاء القلب 💔" : "❤️ قلب"}</button>
-      <button class="btn light" data-act="msg-copy">${ic("clip", 18)} نسخ</button>`;
+      <button class="btn light" data-act="msg-copy">${ic("clip", 18)} نسخ</button>`}
+      <button class="btn danger" data-act="msg-del">${ic("trash", 18)} ${mineM ? "حذف للجميع" : "حذف عندي"}</button>`;
+  } else if (sh.type === "msgdel") {
+    const m = C().msgs.find((x) => x.id === sh.id); if (!m) return "";
+    const mineM = m.author_id === S.user.id;
+    inner = `<h3>تأكيد الحذف</h3><div class="cm-task">${ue(m.body.slice(0, 160))}</div>
+      <div class="muted small" style="text-align:center;margin:2px 0 12px">${mineM ? "رح تنحذف الرسالة عندك وعند " + esc(partnerName()) + " ولا فيك ترجّعها." : "رح تنحذف الرسالة من عندك بس، وبتضل عند " + esc(partnerName()) + "."}</div>
+      <button class="btn danger" data-act="msg-del-ok">${ic("trash", 18)} حذف</button>
+      <button class="btn light" data-act="ov-close">إلغاء</button>`;
   } else if (sh.type === "touch") {
     inner = `<h3>ابعت لمسة 💗</h3><div class="muted small" style="text-align:center;margin:-2px 0 8px">اختار شو بدك توصّل لـ${esc(partnerName())}</div>${touchOptions().map((t, i) => `<button class="btn light" data-act="touch-pick" data-v="${i}">${t}</button>`).join("")}`;
   } else if (sh.type === "flame") {
@@ -3045,12 +3139,12 @@ function sheetHTML() {
       <div class="ink-input"><div class="lbl">تاريخ البداية</div><input data-keep="flame-date" id="flame-date" type="date" max="${localDay()}" value="${esc(S.since || "")}"></div>
       <button class="btn" data-act="flame-save">حفظ</button>`;
   } else if (sh.type === "notif") {
-    const ns = (S.sheet.evs || []).concat(buildNotifs());
+    const ns = notifItems();
     const perm = "Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied"
       ? `<button class="btn light" data-act="enable-notif" style="margin-top:6px">${ic("bell", 18)} فعّل التنبيهات</button>` : "";
-    const items = ns.map((n, i) => `<div class="pn go" style="--i:${i}" data-act="pn-go" data-k="${esc(n.k || "")}" data-id="${esc(n.id || "")}"><div class="pn-ic">${ic("heart", 16, true)}</div><div class="pn-b"><div class="pn-h"><b>${esc(n.head)}</b><span class="pn-t ${n.diff < 0 ? "late" : ""}">${esc(n.rel)}</span></div><div class="pn-s">${ue(n.sub)}</div></div></div>`).join("");
+    const items = ns.map((n, i) => `<div class="pn go" style="--i:${i}" data-act="pn-go" data-k="${esc(n.k || "")}" data-id="${esc(n.id || "")}"><div class="pn-ic">${ic("heart", 16, true)}</div><div class="pn-b"><div class="pn-h"><b>${esc(n.head)}</b><span class="pn-t ${n.diff < 0 ? "late" : ""}">${esc(n.rel)}</span></div><div class="pn-s">${ue(n.sub)}</div></div><button class="pn-d" data-act="pn-del" data-key="${esc(n.key)}" aria-label="delete">${ic("x", 15)}</button></div>`).join("");
     return `<div class="ov pop" data-act="ov"><div class="popcard" role="dialog" aria-label="الإشعارات">
-      <div class="pop-head"><span class="pop-bell">${ic("bell", 22)}</span><div><h3>الإشعارات</h3><div class="pop-sub">${ns.length ? ns.length + " " + "جديد" : "كل شي هادي"}</div></div><button class="pop-x" data-act="ov-close" aria-label="close">${ic("x", 18)}</button></div>
+      <div class="pop-head"><span class="pop-bell">${ic("bell", 22)}</span><div><h3>الإشعارات</h3><div class="pop-sub">${ns.length ? ns.length + " إشعار" : "كل شي هادي"}</div></div>${ns.length ? `<button class="pop-clear" data-act="pn-clear">مسح الكل</button>` : ""}<button class="pop-x" data-act="ov-close" aria-label="close">${ic("x", 18)}</button></div>
       <div class="pop-list">${items || `<div class="pop-empty"><div class="zz">${ic("bell", 34)}</div><b>ما في إشعارات</b><span>بتظهر هون تذكيرات المهام وجديد شريكك.</span></div>`}</div>
       ${perm}</div></div>`;
   } else if (sh.type === "crop") {
@@ -3191,8 +3285,7 @@ async function boot(session, who) {
     prof = again.data;
   }
   if (!prof) { await sb.auth.signOut(); S.user = null; return bootFail("صار خطأ، جرب مرة تانية"); }
-  S.profile = prof;
-  await syncAvatars();
+  S.profile = prof; saveJSON("hf_prof", prof);
   await enterApp();
 }
 
@@ -3222,7 +3315,8 @@ async function goOpen(k, id) {
 }
 async function enterApp() {
   S.today = localDay();
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), loadChat(), loadSince()]);
+  loadChat().then(() => { if (S.stage === "app" && !S.sheet) render(); }); loadSince().then(() => { if (S.screen === "chat") render(true); });
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncAvatars()]);
   initSeen();
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
@@ -3248,8 +3342,14 @@ async function restoreSession() {
     const who = ses && Object.keys(WHO).find((k) => WHO[k].email === ses.user.email);
     if (ses && who) {
       S.user = ses.user;
+      const cached = loadJSON("hf_prof", null);
+      if (cached && cached.id === ses.user.id && cached.couple_id) {
+        S.profile = cached;
+        sb.from("profiles").select("*").eq("id", ses.user.id).maybeSingle().then((r) => { if (r && r.data) { S.profile = r.data; saveJSON("hf_prof", r.data); } }).catch(() => {});
+        await enterApp(); return;
+      }
       const { data: prof, error } = await sb.from("profiles").select("*").eq("id", ses.user.id).maybeSingle();
-      if (!error && prof) { S.profile = prof; await syncAvatars(); await enterApp(); return; }
+      if (!error && prof) { S.profile = prof; saveJSON("hf_prof", prof); await enterApp(); return; }
       S.user = null;
     }
   } catch { S.user = null; }
@@ -3340,6 +3440,7 @@ function connectRealtime() {
     .on("postgres_changes", { event: "*", schema: "public", table: "answers", filter: "couple_id=eq." + cid }, async () => { await loadAnswers(); checkEvents(); if (!S.sheet && S.stage === "app") render(); })
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnInsert(p.new); })
     .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnUpdate(p.new); })
+    .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.old) chatOnDelete(p.old); })
     .subscribe();
 }
 
@@ -3498,6 +3599,8 @@ async function onClick(e) {
     case "back": S.nav = "pop"; S.screen = ["shared", "question", "capsules", "partner"].includes(S.screen) ? "us" : "home"; render(true); break;
     case "seg": S.seg[el.dataset.w] = v; render(); break;
 
+    case "add-home": S.sheet = { type: "task", id: null, scope: "private", home: true }; render(true); break;
+    case "task-scope": S.sheet.scope = v; render(true); break;
     case "add": S.sheet = { type: "task", id: null, scope: S.screen === "shared" ? "shared" : "private" }; render(true); break;
     case "edit":
       if (S.noTap) { S.noTap = false; return; }
@@ -3516,6 +3619,12 @@ async function onClick(e) {
     case "ov": case "ov-close": S.sheet = null; S.picked = []; render(true); break;
     case "notif-open": markSeen(true); break;
     case "pn-go": goOpen(el.dataset.k, el.dataset.id); break;
+    case "pn-del": {
+      const k = el.dataset.key, row = el.closest(".pn"); nDis().add(k); S.nStore = nStore().filter((x) => x.key !== k); saveN();
+      if (row) { row.classList.add("out"); setTimeout(() => { row.remove(); const left = document.querySelectorAll(".pop-list .pn").length; if (!left) render(true); else { const sub = document.querySelector(".pop-sub"); if (sub) sub.textContent = left + " إشعار"; } }, 230); } else render(true);
+      break;
+    }
+    case "pn-clear": notifItems().forEach((n) => nDis().add(n.key)); S.nStore = []; saveN(); render(true); break;
 
     case "q-save": return saveAnswer();
     case "q-edit": S.editAns = true; render(true); break;
@@ -3538,6 +3647,8 @@ async function onClick(e) {
     case "flame": S.sheet = { type: "flame" }; render(true); break;
     case "flame-save": return saveSince();
     case "touch-pick": { S.sheet = null; render(true); const tx = touchOptions()[+v]; setTimeout(() => sendChat("touch", tx), 60); break; }
+    case "msg-del": { const mid = S.sheet && S.sheet.id; S.sheet = { type: "msgdel", id: mid }; render(true); break; }
+    case "msg-del-ok": { const mid = S.sheet && S.sheet.id; S.sheet = null; render(true); setTimeout(() => deleteMsg(mid), 60); break; }
     case "msg-reply": { const mid = S.sheet && S.sheet.id; S.sheet = null; render(true); setTimeout(() => startReply(mid), 80); break; }
     case "msg-heart": { const mid = S.sheet && S.sheet.id; S.sheet = null; render(true); setTimeout(() => toggleHeart(mid), 80); break; }
     case "msg-copy": { const m = C().msgs.find((x) => x.id === (S.sheet && S.sheet.id)); S.sheet = null; render(true); if (m) { try { navigator.clipboard.writeText(m.body).then(() => toast("نُسخ ✓"), () => toast("ما قدرت أنسخ")); } catch { toast("ما قدرت أنسخ"); } } break; }
