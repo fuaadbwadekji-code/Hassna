@@ -1288,6 +1288,9 @@ html[data-theme="dark"] .pingcard { background: rgba(255, 255, 255, .08); }
 .qedit button { width: 20px; height: 20px; border-radius: 50%; font-size: 15px; line-height: 20px; color: #fff; background: #d33a5f; }
 .qlinks { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
 .qlinks button { font-size: calc(13px * var(--fz, 1)); font-weight: 700; color: #c63d7d; padding: 4px 2px; }
+.qbtn { display: block; width: 100%; margin: 4px 0 8px; padding: 10px 14px; border-radius: 14px; font-weight: 800; font-size: calc(14.5px * var(--fz, 1)); color: #c63d7d; background: rgba(226, 77, 138, .1); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .45); }
+.qbtn.on { color: #fff; background: linear-gradient(135deg, #ff7eb6, #e24d8a); box-shadow: none; }
+.qlinks .qbtn { width: auto; flex: 1; }
 </style>
 </head>
 <body>
@@ -1786,7 +1789,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v81";
+const APP_V = "v82";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -3166,7 +3169,7 @@ function sheetHTML() {
     inner = `<h3>ابعت تذكير لـ${esc(partnerName())} 🔔</h3>
       <div class="opts" style="margin-bottom:6px">${pingSug().map((t, i) => sh.edit ? `<span class="opt qedit">${ue(t)}<button data-act="pq-del" data-v="${i}" aria-label="حذف">×</button></span>` : `<button class="opt" data-act="ping-sug" data-v="${i}">${ue(t)}</button>`).join("")}</div>
       ${sh.edit ? `<div class="namerow" style="margin-bottom:6px"><input data-keep="pq-new" id="pq-new" type="text" maxlength="80" placeholder="اكتب جملة جاهزة جديدة"><button class="btn" data-act="pq-add">إضافة</button></div>
-      <div class="qlinks"><button data-act="pq-reset">رجّع الافتراضية</button><button data-act="ping-edit">تم</button></div>` : `<div class="qlinks"><button data-act="ping-edit">تعديل الجمل الجاهزة ✏️</button></div>`}
+      <div class="qlinks"><button class="qbtn" data-act="pq-reset">رجّع الافتراضية</button><button class="qbtn on" data-act="ping-edit">✓ تم</button></div>` : `<button class="qbtn" data-act="ping-edit">✏️ تعديل الجمل الجاهزة</button>`}
       <div class="ink-input"><div class="lbl">نص الإشعار</div><textarea data-keep="p-body" id="p-body" rows="2" maxlength="200" placeholder="اكتب اللي بدك توصّله"></textarea></div>
       <div class="opts" style="margin:12px 0 4px"><button class="opt ${!later ? "on" : ""}" data-act="ping-when" data-v="now">هلأ</button><button class="opt ${later ? "on" : ""}" data-act="ping-when" data-v="later">بوقت محدد</button></div>
       ${later ? `<div class="ink-input"><div class="row2"><div><div class="lbl">التاريخ</div><input data-keep="p-date" id="p-date" type="date" value="${dv}"></div><div><div class="lbl">الوقت</div><input data-keep="p-time" id="p-time" type="time" value="${tv}"></div></div></div>
