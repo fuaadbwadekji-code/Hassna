@@ -1373,6 +1373,19 @@ html[data-theme="dark"] .prdome .d0 { fill: rgba(255, 255, 255, .12); }
 .prex b { color: #e24d8a; }
 .prrow.next { position: relative; background: linear-gradient(90deg, rgba(226, 77, 138, .26), rgba(226, 77, 138, .07)); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .55), 0 0 16px rgba(226, 77, 138, .38), 0 0 4px rgba(255, 140, 190, .55); animation: prglow 2.6s ease-in-out infinite; }
 @keyframes prglow { 0%, 100% { box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .5), 0 0 10px rgba(226, 77, 138, .28), 0 0 3px rgba(255, 140, 190, .4); } 50% { box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .7), 0 0 20px rgba(226, 77, 138, .5), 0 0 6px rgba(255, 140, 190, .7); } }
+.prpart { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 12px 8px; }
+.prchip { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 2px 6px; border-radius: 16px; font: inherit; color: inherit; background: rgba(255, 255, 255, .35); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .15); -webkit-tap-highlight-color: transparent; }
+.prchip .pri { border-radius: 10px; opacity: .55; filter: grayscale(.5); }
+.prchip .cn { font-size: calc(11.5px * var(--fz, 1)); font-weight: 700; opacity: .8; }
+.prchip .cs { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: inset 0 0 0 1.8px rgba(226, 77, 138, .4); }
+.prchip.on .pri { opacity: 1; filter: none; }
+.prchip.on .cs { background: linear-gradient(135deg, #ff9fc4, #e24d8a); box-shadow: 0 2px 6px rgba(226, 77, 138, .4); }
+.prchip.on { background: rgba(226, 77, 138, .1); box-shadow: inset 0 0 0 1.5px rgba(226, 77, 138, .4); }
+.prchip .cb { position: absolute; top: -5px; inset-inline-start: -3px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #e24d8a; color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(226, 77, 138, .45); }
+.prphint { text-align: center; font-size: calc(12px * var(--fz, 1)); opacity: .6; margin-top: 6px; }
+.prbub { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 12px; font: inherit; font-size: 12px; font-weight: 800; color: #e24d8a; background: rgba(226, 77, 138, .12); -webkit-tap-highlight-color: transparent; }
+.prbub b { font-weight: 800; }
+.prchip { cursor: default; }
 </style>
 </head>
 <body>
@@ -1880,7 +1893,7 @@ const ue = (s) => "\uE000" + esc(s) + "\uE001"; // contenu de l'utilisateur : ja
 const AR_FONTS = ["Cairo", "Tajawal", "Almarai", "Amiri", "Noto Kufi Arabic", "Noto Naskh Arabic"];
 const FR_FONTS = ["Nunito", "Poppins", "Montserrat", "Quicksand", "Lora", "Playfair Display", "Dancing Script"];
 const FZ_OPTS = [["صغير", 0.9], ["عادي", 1], ["كبير", 1.12], ["كبير جداً", 1.25]];
-const APP_V = "v89";
+const APP_V = "v92";
 const DEF_P = { lang: "ar", theme: "light", dFrom: "20:00", dTo: "07:00", fz: 1, arFont: "Cairo", frFont: "Nunito", pet: true, petCol: "mint", petAcc: "none", petTalk: "normal", petName: "بيمو", chatBg: "rose", pingQ: null, lead: 15, tone: "chime", slen: "short", vol: 0.7, vib: true, n: { tasks: true, comments: true, answers: true, shared: true, capsules: true, profile: true, todo: true, chat: true, prayer: true } };
 let P = JSON.parse(JSON.stringify(DEF_P)), LANG = "ar";
 function mergeP(raw) {
@@ -2029,7 +2042,7 @@ function saveJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } ca
 const S = {
   stage: "gate", code: "", err: "", busy: false, nav: null, gate: { phase: "pick", who: null, mode: "login", step: null, first: "" },
   user: null, profile: null,
-  tasks: [], answers: [], capsules: [], comments: [],
+  tasks: [], answers: [], capsules: [], comments: [], prLog: [], ids: {},
   screen: "home", seg: { mine: "todo", shared: "todo", partner: "todo" },
   sheet: null, today: localDay(), editAns: false,
   picked: [], capUrls: {}, uploading: false,
@@ -3096,7 +3109,7 @@ function prToggle(k) {
   const all = prDoneAll(), day = prDay(), cur = all[day] || {};
   cur[k] = !cur[k]; all[day] = cur;
   Object.keys(all).sort().slice(0, -45).forEach((x) => delete all[x]);
-  saveJSON(prDoneKey(), all); return cur[k];
+  saveJSON(prDoneKey(), all); prPush(k, cur[k]); return cur[k];
 }
 function prStreak() {
   const all = prDoneAll(); let n = 0, d = new Date();
@@ -3167,6 +3180,40 @@ function prDome(n, done, cnt, streak, t, day) {
     <div class="dc"><div class="prnm">${n.ar}</div><div class="prcd" id="pr-cd" data-at="${at}" data-span="${span}">${prFmt(at - now)}</div><div class="prhm">${n.hm}${n.tm ? " · بكرا" : ""}</div>
     <div class="prprog"><div class="dots">${PR.map(([k]) => `<i class="${done[k] ? "on" : ""}"></i>`).join("")}</div></div><div class="prcnt">${cnt} من 5${streak ? " · " + streak + " يوم متتالي" : ""}</div></div></div>`;
 }
+/* ---------- مشاركة الصلوات + التعليق ---------- */
+const partnerUid = () => (S.ids && S.ids[other(myWho())]) || (S.prLog.find((r) => r.user_id !== S.user.id) || {}).user_id || null;
+async function prPush(k, on) {
+  if (!sb || !S.user || !S.profile) return;
+  const day = prDay(), uid = S.user.id;
+  S.prLog = S.prLog.filter((r) => !(r.user_id === uid && r.day === day && r.k === k));
+  if (on) S.prLog.push({ user_id: uid, day, k });
+  try {
+    if (on) await sb.from("prayer_log").upsert({ user_id: uid, couple_id: S.profile.couple_id, day, k }, { onConflict: "user_id,day,k" });
+    else await sb.from("prayer_log").delete().match({ user_id: uid, day, k });
+  } catch {}
+}
+async function loadPrayerShare() {
+  if (!sb || !S.user || !S.profile) return;
+  try {
+    if (!S.ids[other(myWho())]) await syncNames();
+    const since = prDay(new Date(Date.now() - 3 * 864e5)), cid = S.profile.couple_id;
+    const a = await sb.from("prayer_log").select("user_id,day,k").eq("couple_id", cid).gte("day", since).limit(500);
+    if (a.error) return;
+    S.prLog = a.data || [];
+    const day = prDay(), mine = prDoneAll()[day] || {}, uid = S.user.id;
+    const miss = PR.map(([k]) => k).filter((k) => mine[k] && !S.prLog.some((r) => r.user_id === uid && r.day === day && r.k === k));
+    if (miss.length) { await sb.from("prayer_log").upsert(miss.map((k) => ({ user_id: uid, couple_id: cid, day, k })), { onConflict: "user_id,day,k" }); miss.forEach((k) => S.prLog.push({ user_id: uid, day, k })); }
+  } catch {}
+}
+function prPartnerHTML() {
+  const pid = partnerUid(), day = prDay(), pn = partnerName();
+  const chips = PR.map(([k, ar]) => {
+    const on = !!pid && S.prLog.some((r) => r.user_id === pid && r.day === day && r.k === k);
+    return `<div class="prchip ${on ? "on" : ""}" aria-label="${ar}">${prIcon(k)}<span class="cn">${ar}</span><span class="cs">${on ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.400" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.500 12.400l5 5L19.500 7.400"/></svg>` : ""}</span></div>`;
+  }).join("");
+  const cnt = PR.filter(([k]) => pid && S.prLog.some((r) => r.user_id === pid && r.day === day && r.k === k)).length;
+  return `<div class="sec">صلوات ${esc(pn)} اليوم · ${cnt} من 5</div><div class="glass prpart">${chips}</div>`;
+}
 function prayerHTML() {
   const day = prDay(), t = ptGet(day), done = prDoneAll()[day] || {}, n = t ? prNext() : null;
   const cnt = PR.filter(([k]) => done[k]).length, streak = prStreak(), hd = hadithToday();
@@ -3182,6 +3229,7 @@ function prayerHTML() {
     ${n ? prDome(n, done, cnt, streak, t, day) : ""}
     <div class="prstrip">${ART.roseStrip ? ART.roseStrip() : ""}</div>
     <div class="glass prlist">${rows}</div>
+    ${t ? prPartnerHTML() : ""}
     <div class="sec">حديث اليوم</div>
     <div class="glass prhad"><svg class="orn" width="60" height="14" viewBox="0 0 60 14" aria-hidden="true"><path d="M2 7h20M38 7h20" stroke="#e8b94a" stroke-width="1.400" stroke-linecap="round" fill="none"/><path d="M30 1l4 6-4 6-4-6z" fill="#e8b94a"/></svg><p>${esc(hd.t)}</p></div>
     ${hd.x ? `<div class="prex"><b>شو يعني؟</b><p>${esc(hd.x)}</p></div>` : ""}
@@ -3651,7 +3699,7 @@ async function goOpen(k, id) {
   goOpen.last = k + ":" + id; goOpen.t = Date.now();
   if (!S.profile || S.stage !== "app") { S.pendingOpen = { k, id }; return; }
   S.sheet = null;
-  try { await Promise.all([loadTasks(), loadComments(), loadCapsules(), loadReplies(), loadAnswers()]); } catch {}
+  try { await Promise.all([loadTasks(), loadComments(), loadCapsules(), loadReplies(), loadAnswers(), loadPrayerShare()]); } catch {}
   let t = id && S.tasks.find((x) => x.id === id);
   if (!t && k === "comment") { const lc = [...S.comments].reverse().find((c) => c.author_id !== S.user.id); if (lc) { id = lc.task_id; t = S.tasks.find((x) => x.id === id); } }
   if (!t && k === "task") { const lt = [...S.tasks].filter((x) => x.created_by !== S.user.id && (x.scope === "shared" || x.owner_id !== S.user.id || true)).sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""))[0]; if (lt) { t = lt; id = lt.id; } }
@@ -3666,8 +3714,8 @@ async function goOpen(k, id) {
 async function enterApp() {
   S.today = localDay();
   loadChat().then(() => { if (S.stage === "app" && !S.sheet) render(); }); loadSince().then(() => { if (S.screen === "chat") render(true); });
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncAvatars()]);
-  initSeen(); ptEnsure();
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncAvatars(), loadPrayerShare()]);
+  initSeen(); ptEnsure(); pushResync();
   await leaveGate();
   S.stage = "app"; S.screen = "home"; S.sheet = null; S.code = ""; S.err = ""; S.busy = false; S.nav = null;
   render(true);
@@ -3683,7 +3731,7 @@ function teardown() {
   S.timers.forEach(clearInterval); S.timers = [];
   clearInterval(S.chatT); if (S.presCh) { try { sb.removeChannel(S.presCh); } catch {} S.presCh = null; } S.chat = null; S.since = null;
   if (S.dbChannel && sb) { sb.removeChannel(S.dbChannel); S.dbChannel = null; }
-  Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], sheet: null, screen: "home", capUrls: {}, creplies: [], picked: [], editAns: false });
+  Object.assign(S, { prefsSynced: false, evN: null, user: null, profile: null, tasks: [], answers: [], capsules: [], comments: [], prLog: [], ids: {}, sheet: null, screen: "home", capUrls: {}, creplies: [], picked: [], editAns: false });
 }
 async function restoreSession() {
   try {
@@ -3787,6 +3835,7 @@ function connectRealtime() {
       if (!S.sheet && S.stage === "app") render();
     })
     .on("postgres_changes", { event: "*", schema: "public", table: "task_comments", filter: "couple_id=eq." + cid }, async () => { await loadComments(); checkEvents(); if (S.sheet && S.sheet.type === "comments") refreshComments(); else if (!S.sheet && S.stage === "app") render(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "prayer_log", filter: "couple_id=eq." + cid }, async () => { await loadPrayerShare(); if (!S.sheet && S.stage === "app" && S.screen === "prayer") render(); })
     .on("postgres_changes", { event: "*", schema: "public", table: "answers", filter: "couple_id=eq." + cid }, async () => { await loadAnswers(); checkEvents(); if (!S.sheet && S.stage === "app") render(); })
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnInsert(p.new); })
     .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: "couple_id=eq." + cid }, (p) => { if (p && p.new) chatOnUpdate(p.new); })
@@ -3796,7 +3845,7 @@ function connectRealtime() {
 
 async function poll() {
   if (document.hidden || S.stage !== "app" || !S.profile || S.sheet) return;
-  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncNames(), loadChat(), loadSince()]);
+  await Promise.all([loadTasks(), loadAnswers(), loadCapsules(), loadComments(), loadReplies(), syncNames(), loadChat(), loadSince(), loadPrayerShare()]);
   checkEvents();
   if (S.screen === "chat") { await loadChat(); refreshChat(); markChatRead(); return; }
   render();
@@ -3843,6 +3892,13 @@ async function pushSubscribe() {
   const { error } = await sb.from("push_subs").upsert({ user_id: S.user.id, endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth }, { onConflict: "endpoint" });
   if (error) throw error;
 }
+let pushSyncAt = 0;
+async function pushResync() {
+  if (!sb || !S.user || !S.profile || !pushOn()) return;
+  if (Date.now() - pushSyncAt < 20 * 60000) return; pushSyncAt = Date.now();
+  try { await pushSubscribe(); } catch {}
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) pushResync(); });
 async function enablePush() {
   if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) { toast(isIOS() ? "ضيف التطبيق للشاشة الرئيسية من Safari أولاً" : "المتصفح ما بيدعم الإشعارات"); return; }
   try {
@@ -3944,7 +4000,7 @@ async function onClick(e) {
     case "setup-start": return toggleSetup();
     case "lock": S.sheet = null; return lockApp();
 
-    case "tab": S.nav = "tab"; S.screen = v; S.sheet = null; render(true); if (v === "prayer") ptEnsure(); break;
+    case "tab": S.nav = "tab"; S.screen = v; S.sheet = null; render(true); if (v === "prayer") { ptEnsure(); loadPrayerShare().then(() => { if (S.screen === "prayer" && S.stage === "app" && !S.sheet) render(); }); } break;
     case "pr-retry": ptErr = false; render(); ptEnsure(); break;
     case "pr-tick": { const on = prToggle(v); render(); if (on) { const dn = prDoneAll()[prDay()] || {}; if (PR.every(([k]) => dn[k])) Pet.celebrate("اكتملت صلوات اليوم، تقبّل الله 🤲"); else Pet.cheer(); } break; }
     case "open": S.nav = "push"; S.screen = v; S.editAns = false; if (v === "capsules") Promise.all([loadCapsules(), loadReplies()]).then(() => { if (S.screen === "capsules") render(); }); render(true); break;
@@ -4233,8 +4289,8 @@ async function syncAvatars() {
 async function syncNames() {
   if (!sb || !S.user) return;
   try {
-    const r = await sb.from("profiles").select("who,display_name"); if (r.error) return;
-    (r.data || []).forEach((x) => { S.names[x.who] = x.display_name || null; });
+    const r = await sb.from("profiles").select("id,who,display_name"); if (r.error) return;
+    (r.data || []).forEach((x) => { S.names[x.who] = x.display_name || null; if (x.id) S.ids[x.who] = x.id; });
   } catch {}
 }
 async function saveName() {
